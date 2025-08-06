@@ -1,0 +1,22 @@
+{
+  "name": "kronos",
+  "private": true,
+  "version": "0.0.0",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview"
+  },
+  "devDependencies": {
+    "vite": "^7.0.0",
+    "vite-plugin-svgr": "^4.3.0"
+  },
+  "dependencies": {
+    "@vitejs/plugin-react": "^4.7.0",
+    "react": "^19.1.0",
+    "react-dom": "^19.1.0",
+    "react-router-dom": "^7.6.3",
+    "styled-components": "^6.1.19"
+  }
+}
