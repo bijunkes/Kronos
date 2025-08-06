@@ -9,7 +9,7 @@ export const cadastro = async (req, res) => {
 
     try {
         const iconString = JSON.stringify(icon);
-        const[linhas] = await pool.query('INSERT INTO usuarios (username, nome, email, senha, dataCriacao, icon) VALEUS (?, ?, ?, ?, ?, ?)', [username, nome, email, senhaCriptografada, dataCriacao, iconString]);
+        const[linhas] = await pool.query('INSERT INTO usuarios (username, nome, email, senha, dataCriacao, icon) VALUES (?, ?, ?, ?, ?, ?)', [username, nome, email, senhaCriptografada, dataCriacao, iconString]);
         res.status(200).json({message: 'Usuário cadastrado'});
     } catch (err) {
         res.status(400).json({error: 'Erro ao cadastrar usuário'});
