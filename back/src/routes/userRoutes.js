@@ -1,12 +1,10 @@
 const express = require('express');
 const router = express.Router();
-const db = requise('../db');
+import verificarToken from '../middlewares/userMiddleare.js';
+import {cadastro, login, perfil} from '../src/controllers/userControllers.js';
 
-router.get('/', (req, res) => {
-    db.query('SELECT * FROM usuarios', (err, results) => {
-        if(err) return res.status(500).send(err);
-        res.json(results);
-    });
-});
+router.post('/cadastro', cadastro);
+router.post('/login', login);
+router.get('/perfil', verificarToken, perfil);
 
-module.exports = router;
+export default router;
