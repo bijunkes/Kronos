@@ -1,8 +1,10 @@
 import pool from "../database.js";
 import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
+import app from '../server.js';
 
-export const cadastro = async (req, res) => {
+
+export const cadastro = app.post( '/cadastro', async (req, res) => {
     const {username, nome, email, senha, icon} = req.body;
     const senhaCriptografada = bcrypt.hashSync(senha, 8);
     const dataCriacao = new Date();
@@ -14,7 +16,7 @@ export const cadastro = async (req, res) => {
     } catch (err) {
         res.status(400).json({error: 'Erro ao cadastrar usuário'});
     }
-};
+});
 
 export const login = async (req, res) => {
     const{email, senha} = req.body;

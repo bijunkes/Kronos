@@ -14,9 +14,13 @@ import {
     Opaco2,
     Input,
     ButtonCadastrar,
-} from './styles.js'
+} from './styles.js';
+import Axios from 'axios';
+import api from '../../../services/API.js'
 
 function Cadastro() {
+
+    let user = []
     const navigate = useNavigate()
 
     const [nome, setNome] = useState('');
@@ -24,12 +28,68 @@ function Cadastro() {
     const [email, setEmail] = useState('')
     const [senha, setSenha] = useState('')
 
+    const [formData, setFormData] = useState({
+
+        nome: "",
+        email:"",
+        senha:"",
+        username:"",
+
+    })
+
     async function handleSubmit(e) {
         
     }
 
+    async function getUsers(params) {
+        
+      const usersFromAPI =  await api.get('/usuarios')
+
+      users = usersFromAPI.data
+
+      console.log(users)
+    }
+
     function handleEntrar() {
         navigate('/login')
+    }
+
+    const handleFormEdit = (event, name) => {
+
+        setFormData(...formData,
+            [name]= event.target.value
+        )
+
+    }
+
+    const handleForm = async(event) => {
+
+        try{
+
+            event.preventDefault()
+            const response = await fetch
+
+        }catch{
+
+        }
+
+
+    }
+
+    const handleClickButton = () => {
+
+        Axios.post("http://localhost:3000/cadastro", {
+
+            nome: formData.nome,
+            email: formData.email,
+            senha: formData.senha,
+            username: formData.username,
+
+        }).then((response) => {
+
+            console.log(response)
+
+        })
     }
 
     return (
@@ -51,27 +111,31 @@ function Cadastro() {
                         type="text"
                         placeholder="Nome"
                         value={nome}
-                        onChange={e => setNome(e.target.value)}
+                        requiredvalue = {formData.nome}
+                        onChange = {(e) => {handleFormEdit(e,'name')}}
                     />
                     <Input
                         type="text"
                         placeholder="Username"
                         value={username}
-                        onChange={e => setUsername(e.target.value)}
+                        requiredvalue={formData.username}
+                        onChange= {(e) => {handleFormEdit(e,'name')}}
                     />
                     <Input
                         type="email"
                         placeholder="Email"
                         value={email}
-                        onChange={e => setEmail(e.target.value)}
+                        requiredvalue={formData.email}
+                        onChange= {(e) => {handleFormEdit(e,'name')}}
                     />
                     <Input
                         type="password"
                         placeholder="Senha"
                         value={senha}
-                        onChange={e => setSenha(e.target.value)}
+                        requiredvalue={formData.senha}
+                        onChange= {(e) => {handleFormEdit(e,'name')}}
                     />
-                    <ButtonCadastrar type="submit">CADASTRAR</ButtonCadastrar>
+                    <ButtonCadastrar type="submit" onClick={() => handleClickButton()}>CADASTRAR</ButtonCadastrar>
                     {error && <p style={{ color: 'red' }}>{error}</p>}
                 </Form>
             </Parte2>

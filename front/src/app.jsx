@@ -14,7 +14,8 @@ import Kanban from './containers/Kanban';
 import Eisenhower from './containers/Einsenhower';
 import RelatorioDiario from './containers/RelatorioDiario';
 import RelatorioSemanal from './containers/RelatorioSemanal';
-import NotFound from './containers/NotFound'
+import NotFound from './containers/NotFound';
+
 
 function App() {
     return (

@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom'
 import {
     Container,
@@ -30,6 +30,12 @@ function Login() {
         navigate('/cadastro')
     }
 
+    const verificaLogin = () => {
+
+        
+
+    }
+
     return (
             <Container>
                 <Parte1>
@@ -57,7 +63,7 @@ function Login() {
                             value={senha}
                             onChange={e => setSenha(e.target.value)}
                         />
-                        <ButtonCadastrar type="submit">ENTRAR</ButtonCadastrar>
+                        <ButtonCadastrar type="submit" onClick ={() => verificaLogin()}>ENTRAR</ButtonCadastrar>
                         {error && <p style={{ color: 'red' }}>{error}</p>}
                     </Form>
                 </Parte2>
