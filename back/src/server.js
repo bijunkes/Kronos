@@ -8,16 +8,7 @@ dotenv.config();
 
 const app = express();
 app.use(express.json());
-app.use(cors())
-
-app.post('/cadastro',(req,res) => {
-
-    const {nome} = req.body;
-    const {email} = req.body;
-    const {senha} = req.body;
-    const {username} = req.body;
-
-})
+app.use(cors());
 
 app.get('/usuarios',(req,res) => {
 
