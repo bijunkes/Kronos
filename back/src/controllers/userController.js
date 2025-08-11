@@ -1,22 +1,24 @@
-import pool from "../database.js";
+import pool from "../../db.js";
 import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
-import app from '../server.js';
 
-
-export const cadastro = app.post( '/cadastro', async (req, res) => {
+export const cadastro = async (req, res) => {
     const {username, nome, email, senha, icon} = req.body;
     const senhaCriptografada = bcrypt.hashSync(senha, 8);
     const dataCriacao = new Date();
 
     try {
         const iconString = JSON.stringify(icon);
-        const[linhas] = await pool.query('INSERT INTO usuarios (username, nome, email, senha, dataCriacao, icon) VALUES (?, ?, ?, ?, ?, ?)', [username, nome, email, senhaCriptografada, dataCriacao, iconString]);
+        await pool.query(
+            'INSERT INTO usuarios (username, nome, email, senha, dataCriacao, icon) VALUES (?, ?, ?, ?, ?, ?)', 
+            [username, nome, email, senhaCriptografada, dataCriacao, iconString]
+        );
         res.status(200).json({message: 'Usuário cadastrado'});
     } catch (err) {
+        console.error('Erro ao cadastrar usuário:', err);
         res.status(400).json({error: 'Erro ao cadastrar usuário'});
     }
-});
+};
 
 export const login = async (req, res) => {
     const{email, senha} = req.body;
