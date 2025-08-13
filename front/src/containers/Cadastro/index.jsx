@@ -1,5 +1,5 @@
 import React, { useState } from "react"
-import { useNavigate } from 'react-router-dom'
+import axios from 'axios';
 import {
     Container,
     Parte1,
@@ -15,22 +15,43 @@ import {
     Input,
     ButtonCadastrar,
 } from './styles.js'
+import { useNavigate } from "react-router-dom";
 
 function Cadastro() {
-    const navigate = useNavigate()
 
-    const [nome, setNome] = useState('');
-    const [username, setUsername] = useState('')
-    const [email, setEmail] = useState('')
-    const [senha, setSenha] = useState('')
+    const navigate = useNavigate(); 
 
-    async function handleSubmit(e) {
-        
+    const [form, setForm] = useState({
+        username: '',
+        nome: '',
+        email: '',
+        senha: '',
+        icon: null
+    });
+    const [error, setError] = useState('');
+
+    const handleChange = (e) => {
+        const { name, value } = e.target;
+        setForm((prev) => ({
+            ...prev,
+            [name]: value
+        }));
     }
 
-    function handleEntrar() {
-        navigate('/login')
+    const handleSubmit = async (e) => {
+        e.preventDefault();
+        try {
+            const response = await axios.post('http://localhost:3000/cadastro', form);
+            alert(response.data.message);
+        } catch (err) {
+            console.error(err);
+            alert('Erro no cadastro');
+        }
     }
+
+    const irParaLogin = () => {
+        navigate("/login");
+    };
 
     return (
         <Container>
@@ -40,7 +61,7 @@ function Cadastro() {
                     <Negrito>Bem-vindo <br />de volta!</Negrito>
                     <Opaco>Acesse sua conta agora mesmo.</Opaco>
                 </LeftAlign>
-                <ButtonEntrar onClick={handleEntrar}>ENTRAR</ButtonEntrar>
+                <ButtonEntrar onClick={irParaLogin}>ENTRAR</ButtonEntrar>
             </Parte1>
             <Parte2>
 
@@ -49,27 +70,31 @@ function Cadastro() {
                     <Opaco2>Preencha seus dados.</Opaco2>
                     <Input
                         type="text"
+                        name="nome"
                         placeholder="Nome"
-                        value={nome}
-                        onChange={e => setNome(e.target.value)}
+                        value={form.nome}
+                        onChange={handleChange}
                     />
                     <Input
                         type="text"
+                        name="username"
                         placeholder="Username"
-                        value={username}
-                        onChange={e => setUsername(e.target.value)}
+                        value={form.username}
+                        onChange={handleChange}
                     />
                     <Input
                         type="email"
+                        name="email"
                         placeholder="Email"
-                        value={email}
-                        onChange={e => setEmail(e.target.value)}
+                        value={form.email}
+                        onChange={handleChange}
                     />
                     <Input
                         type="password"
+                        name="senha"
                         placeholder="Senha"
-                        value={senha}
-                        onChange={e => setSenha(e.target.value)}
+                        value={form.senha}
+                        onChange={handleChange}
                     />
                     <ButtonCadastrar type="submit">CADASTRAR</ButtonCadastrar>
                     {error && <p style={{ color: 'red' }}>{error}</p>}

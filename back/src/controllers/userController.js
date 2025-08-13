@@ -2,7 +2,6 @@ import pool from "../../db.js";
 import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
 
-
 export const cadastro = async (req, res) => {
     const {username, nome, email, senha, icon} = req.body;
     const senhaCriptografada = bcrypt.hashSync(senha, 8);

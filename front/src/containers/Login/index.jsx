@@ -21,6 +21,7 @@ function Login() {
 
     const [email, setEmail] = useState('')
     const [senha, setSenha] = useState('')
+    const [error, setError] = useState('');
 
     async function handleSubmit(e) {
 
