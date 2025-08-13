@@ -40,6 +40,12 @@ function Cadastro() {
 
     const handleSubmit = async (e) => {
         e.preventDefault();
+
+        if (!form.nome || !form.username || !form.email || !form.senha) {
+            alert('Preencha todos os campos');
+            return;
+        }
+
         try {
             const response = await axios.post('http://localhost:3000/cadastro', form);
             alert(response.data.message);
