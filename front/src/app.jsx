@@ -26,7 +26,7 @@ function App() {
                 <Route path="*" element={<NotFound />} />
 
                 <Route element={<Padrao />}> 
-                    <Route path="/" element={<Home />} />
+                    <Route path="/home" element={<Home />} />
                     <Route path="/hoje" element={<Hoje />} />
                     <Route path="/semana" element={<Semana />} />
                     <Route path="/tarefas" element={<Tarefas />} />

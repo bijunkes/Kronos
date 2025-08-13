@@ -57,8 +57,8 @@ function Login() {
             <Parte1>
                 <Logo>KRONOS</Logo>
                 <LeftAlign>
-                    <Negrito>Bem-vindo <br />de volta!</Negrito>
-                    <Opaco>Acesse sua conta agora mesmo.</Opaco>
+                    <Negrito>Não possui<br />um cadastro?</Negrito>
+                    <Opaco>Cadastre-se clicando logo abaixo.</Opaco>
                 </LeftAlign>
                 <ButtonEntrar onClick={handleVoltar}>VOLTAR</ButtonEntrar>
             </Parte1>

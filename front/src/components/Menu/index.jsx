@@ -24,7 +24,7 @@ function Menu() {
   const handleClick = (item, temRota = true) => {
     if (submenuAberto === item) {
       setSubmenuAberto('');
-      if (temRota) navigate('/');
+      if (temRota) navigate('/home');
     } else {
       setSubmenuAberto(item);
       if (temRota) navigate('/' + item);
