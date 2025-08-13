@@ -1,5 +1,6 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
+import axios from 'axios';
 import {
   MenuWrapper,
   Usuario,
@@ -18,8 +19,21 @@ import {
 
 function Menu() {
   const navigate = useNavigate();
+
+  const [usuario, setUsuario] = useState({nome: '', username: ''});
   const [submenuAberto, setSubmenuAberto] = useState('');
   const [submenuSelecionado, setSubmenuSelecionado] = useState({ pai: '', item: '' });
+
+  useEffect(() => {
+    const token = localStorage.getItem('token');
+    if (!token) return;
+
+    axios.get('http://localhost:3000/perfil', {
+      headers: {Authorization: `Bearer ${token}`}
+    })
+    .then(res => setUsuario(res.data))
+    .catch(err => console.error('Erro ao buscar usuário:', err));
+  }, []);
 
   const handleClick = (item, temRota = true) => {
     if (submenuAberto === item) {
@@ -41,8 +55,8 @@ function Menu() {
       <Usuario>
         <IconUsuario />
         <InfoUsuario>
-          <NomeUsuario>Nome Usuário</NomeUsuario>
-          <Username>@username</Username>
+          <NomeUsuario>{usuario.nome}</NomeUsuario>
+          <Username>@{usuario.username}</Username>
         </InfoUsuario>
       </Usuario>
 
