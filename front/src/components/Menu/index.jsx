@@ -15,12 +15,14 @@ import {
   SubmenuItem,
   ListasHeader,
   BotaoAdicionar,
+  OpcoesAbaixo,
+  OpcoesAbaixo1
 } from './styles';
 
 function Menu() {
   const navigate = useNavigate();
 
-  const [usuario, setUsuario] = useState({nome: '', username: ''});
+  const [usuario, setUsuario] = useState({ nome: '', username: '' });
   const [submenuAberto, setSubmenuAberto] = useState('');
   const [submenuSelecionado, setSubmenuSelecionado] = useState({ pai: '', item: '' });
 
@@ -29,10 +31,10 @@ function Menu() {
     if (!token) return;
 
     axios.get('http://localhost:3000/perfil', {
-      headers: {Authorization: `Bearer ${token}`}
+      headers: { Authorization: `Bearer ${token}` }
     })
-    .then(res => setUsuario(res.data))
-    .catch(err => console.error('Erro ao buscar usuário:', err));
+      .then(res => setUsuario(res.data))
+      .catch(err => console.error('Erro ao buscar usuário:', err));
   }, []);
 
   const handleClick = (item, temRota = true) => {
@@ -43,11 +45,17 @@ function Menu() {
       setSubmenuAberto(item);
       if (temRota) navigate('/' + item);
     }
-    setSubmenuSelecionado({ pai: '', item: '' });
   };
 
   const handleSubmenuClick = (pai, item) => {
     setSubmenuSelecionado({ pai, item });
+  };
+
+
+  const handleLogout = () => {
+    localStorage.removeItem("token");
+    localStorage.removeItem("user");
+    window.location.href = "/login";
   };
 
   return (
@@ -112,19 +120,19 @@ function Menu() {
         </ItemMaior>
         <Submenu style={{ display: submenuAberto === 'tecnicas' ? 'block' : 'none' }}>
           <SubmenuItem
-            onClick={() => handleSubmenuClick('tecnicas', 'Pomodoro')}
+            onClick={() => { handleSubmenuClick('tecnicas', 'Pomodoro'); navigate('/pomodoro') }}
             style={{ color: submenuSelecionado.item === 'Pomodoro' ? '#B3261E' : '' }}
           >
             Pomodoro
           </SubmenuItem>
           <SubmenuItem
-            onClick={() => handleSubmenuClick('tecnicas', 'Kanban')}
+            onClick={() => { handleSubmenuClick('tecnicas', 'Kanban'); navigate('/kanban') }}
             style={{ color: submenuSelecionado.item === 'Kanban' ? '#007AFF' : '' }}
           >
             Kanban
           </SubmenuItem>
           <SubmenuItem
-            onClick={() => handleSubmenuClick('tecnicas', 'Eisenhower')}
+            onClick={() => { handleSubmenuClick('tecnicas', 'Eisenhower'); navigate('/eisenhower') }}
             style={{ color: submenuSelecionado.item === 'Eisenhower' ? '#FFCC00' : '' }}
           >
             Eisenhower
@@ -139,19 +147,32 @@ function Menu() {
         </ItemMaior>
         <Submenu style={{ display: submenuAberto === 'relatorios' ? 'block' : 'none' }}>
           <SubmenuItem
-            onClick={() => handleSubmenuClick('relatorios', 'Diário')}
+            onClick={() => { handleSubmenuClick('relatorios', 'Diário'); navigate('/relatoriodiario') }}
             style={{ color: submenuSelecionado.item === 'Diário' ? '#B3261E' : '' }}
           >
             Diário
           </SubmenuItem>
           <SubmenuItem
-            onClick={() => handleSubmenuClick('relatorios', 'Semanal')}
+            onClick={() => { handleSubmenuClick('relatorios', 'Semanal'); navigate('/relatoriosemanal') }}
             style={{ color: submenuSelecionado.item === 'Semanal' ? '#B3261E' : '' }}
           >
             Semanal
           </SubmenuItem>
         </Submenu>
       </Lista>
+      <OpcoesAbaixo>
+        <OpcoesAbaixo1>
+          <span class="material-symbols-outlined">
+            schedule
+          </span>
+          <span class="material-symbols-outlined">
+            notifications
+          </span>
+        </OpcoesAbaixo1>
+        <span class="material-symbols-outlined" onClick={handleLogout}>
+          logout
+        </span>
+      </OpcoesAbaixo>
     </MenuWrapper>
   );
 }
