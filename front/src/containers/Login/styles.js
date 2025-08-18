@@ -64,7 +64,6 @@ export const Form = styled.form`
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 3vh;
   width: 70vh
 `;
 
@@ -87,6 +86,7 @@ export const Input = styled.input`
   border-radius: 40px;
   width: 100%;
   cursor: pointer;
+  margin-bottom: 1vh;
 `;
 
 export const ButtonCadastrar = styled.button`
@@ -100,5 +100,17 @@ export const ButtonCadastrar = styled.button`
 
   &:hover {
     background-color: rgba(255, 255, 255, 0.8);
+  }
+`;
+
+export const EsqueceuSenha = styled.div`
+  font-size: 16px;
+  cursor: pointer;
+  color: #4f4f4fff;
+  margin: 0;
+  align-self: flex-end;
+
+  &:hover {
+    color: white;
   }
 `;

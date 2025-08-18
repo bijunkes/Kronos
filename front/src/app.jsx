@@ -4,6 +4,7 @@ import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import Padrao from './components/Padrao/Padrao.jsx';
 
 import Home from './containers/Home';
+import Usuario from './containers/Usuario';
 import Login from './containers/Login';
 import Cadastro from './containers/Cadastro';
 import Hoje from './containers/Hoje';
@@ -27,6 +28,7 @@ function App() {
 
                 <Route element={<Padrao />}> 
                     <Route path="/home" element={<Home />} />
+                    <Route path="/:username" element={<Usuario />} />
                     <Route path="/hoje" element={<Hoje />} />
                     <Route path="/semana" element={<Semana />} />
                     <Route path="/tarefas" element={<Tarefas />} />

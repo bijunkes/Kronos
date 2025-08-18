@@ -16,12 +16,16 @@ export const Usuario = styled.div`
 `;
 
 export const IconUsuario = styled.button`
-  width: 6vh;
-  height: 6vh;
-  border-radius: 100%;
-  margin-right: 1.5vh;
-  border: none;
+  width: 6.5vh;
+  height: 6.5vh;
+  border-radius: 50%;   
+  overflow: hidden;       
   cursor: pointer;
+  display: flex;          
+  justify-content: center;
+  align-items: center;
+  background-color: #ccc;
+  margin-right: 1.5vh;
 `;
 
 export const InfoUsuario = styled.div`

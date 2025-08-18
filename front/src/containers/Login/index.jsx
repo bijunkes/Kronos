@@ -14,6 +14,7 @@ import {
     Opaco2,
     Input,
     ButtonCadastrar,
+    EsqueceuSenha
 } from './styles.js'
 import axios from 'axios';
 
@@ -71,7 +72,7 @@ function Login() {
                         type="email"
                         placeholder="Email"
                         value={email}
-                        onChange={e => setEmail(e.target.value)}
+                        onChange={e => setEmail(e.target.value)} style={{marginBottom: '3vh'}}
                     />
                     <Input
                         type="password"
@@ -79,6 +80,9 @@ function Login() {
                         value={senha}
                         onChange={e => setSenha(e.target.value)}
                     />
+                    <EsqueceuSenha>
+                        Esqueceu a senha?
+                    </EsqueceuSenha>
                     <ButtonCadastrar type="submit">ENTRAR</ButtonCadastrar>
                     {error && <p style={{ color: 'red' }}>{error}</p>}
                 </Form>

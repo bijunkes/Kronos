@@ -18,6 +18,7 @@ import {
   OpcoesAbaixo,
   OpcoesAbaixo1
 } from './styles';
+import defaultUserImage from '../../assets/defaultUserImage.jpg';
 
 function Menu() {
   const navigate = useNavigate();
@@ -61,7 +62,13 @@ function Menu() {
   return (
     <MenuWrapper>
       <Usuario>
-        <IconUsuario />
+        <IconUsuario onClick={() => {
+          setSubmenuAberto('');
+          setSubmenuSelecionado({ pai: '', item: '' });
+          navigate(`/${usuario.username}`);
+        }}>
+          <img src={defaultUserImage} alt="Icon usuário" style={{width: '100%', height: '100%', objectFit: 'cover', display: 'block'}}/>
+        </IconUsuario>
         <InfoUsuario>
           <NomeUsuario>{usuario.nome}</NomeUsuario>
           <Username>@{usuario.username}</Username>
