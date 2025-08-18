@@ -78,7 +78,7 @@ function Menu() {
 
         <ItemMenor style={{ color: submenuAberto === 'semana' ? '#34C759' : '' }} onClick={() => handleClick('semana', true)}>
           <span className="material-symbols-outlined">
-            {submenuAberto === 'semana' ? 'calendar_today' : 'calendar_month'}
+            {submenuAberto === 'semana' ? 'calendar_month' : 'calendar_today'}
           </span>
           Semana
         </ItemMenor>
