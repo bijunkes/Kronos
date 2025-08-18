@@ -121,3 +121,23 @@ export const BotaoAdicionar = styled.button`
     color: #AF52DE;
   }
 `;
+
+export const OpcoesAbaixo = styled.div`
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  box-sizing: border-box;
+  padding: 1.6vh 3vh 3vh 3vh;
+  width: 100%;
+  margin-top: auto;
+
+  :hover{
+    cursor: pointer;
+  }
+`
+
+export const OpcoesAbaixo1 = styled.div`
+display: flex;
+  justify-content: space-between;
+  gap: 2vh;
+`
