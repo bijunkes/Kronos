@@ -12,4 +12,9 @@ api.interceptors.request.use(config => {
     return config
 })
 
+export const cadastrarUsuario = async (dados) => {
+    const response = await api.post("/cadastro", dados);
+    return response.data;
+}
+
 export default api;

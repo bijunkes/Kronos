@@ -8,6 +8,17 @@ export const cadastro = async (req, res) => {
     const dataCriacao = new Date();
 
     try {
+        const [usuariosExistentes] = await pool.query('SELECT username FROM usuarios WHERE username = ?', [username]);
+
+        if (usuariosExistentes.length > 0) {
+            return res.status(400).json({error: 'Username já cadastrado'});
+        }
+
+        const [emailsExistentes] = await pool.query('SELECT email FROM usuarios WHERE email = ?', [email]);
+        if (emailsExistentes.length > 0) {
+            return res.status(400).json({error: 'Email já cadastrado'});
+        }
+
         const iconString = JSON.stringify(icon);
         await pool.query(
             'INSERT INTO usuarios (username, nome, email, senha, dataCriacao, icon) VALUES (?, ?, ?, ?, ?, ?)', 

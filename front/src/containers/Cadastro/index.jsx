@@ -16,10 +16,11 @@ import {
     ButtonCadastrar,
 } from './styles.js'
 import { useNavigate } from "react-router-dom";
+import { cadastrarUsuario } from "../../services/API.js";
 
 function Cadastro() {
 
-    const navigate = useNavigate(); 
+    const navigate = useNavigate();
 
     const [form, setForm] = useState({
         username: '',
@@ -48,10 +49,11 @@ function Cadastro() {
 
         try {
             const response = await axios.post('http://localhost:3000/cadastro', form);
-            alert(response.data.message);
+            setError('');
+            navigate('/login');
         } catch (err) {
             console.error(err);
-            alert('Erro no cadastro');
+            alert(err.response?.data?.error || 'Erro no cadastro');
         }
     }
 
