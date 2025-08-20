@@ -1,7 +1,9 @@
 import axios from 'axios';
 
+const API_URL = 'http://localhost:3000';
+
 const api = axios.create({
-    baseURL: 'http://localhost:3000'
+    baseURL: API_URL
 })
 
 api.interceptors.request.use(config => {
@@ -17,13 +19,13 @@ export const cadastrarUsuario = async (dados) => {
     return response.data;
 }
 
-export const criarLista = async (nomeLista) => {
-    const response = await api.post('/listas', {nomeLista});
+export const criarLista = async (nome) => {
+    const response = await api.post(`/listas`, {nome});
     return response.data;
 }
 
 export const listarListas = async () => {
-    const response = await api.get('/listas');
+    const response = await api.get(`/listas`);
     return response.data;
 }
 

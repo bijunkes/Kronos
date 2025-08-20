@@ -84,8 +84,8 @@ function Menu() {
   const handleCriarLista = async (nome) => {
     try {
       await criarLista(nome);
-      setNovaLista('');
       atualizarListas();
+      fecharModal();
     } catch (err) {
       console.error("Erro ao criar lista:", err)
     }

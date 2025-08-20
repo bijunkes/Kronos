@@ -24,10 +24,43 @@ export const ModalContainer = styled.div`
 
 export const ModalHeader = styled.div`
     display: flex;
-    font-size: 10px;
+    font-size: 22px;
     font-weight: bold;
+    color: var(--cor-texto);
+    padding: 3vh;
+`;
 
-    h1 {
-       color: var(--cor-texto); 
+export const ModalInput = styled.input`
+    width: 80%;
+    font-size: 18px;
+    color: var(--cor-texto);
+    background-color: var(--fundo-campo);
+    height: 8vh;
+    border-radius: 20px;
+    margin-left: 3vh;
+    margin-right: 3vh;
+    padding: 0 3vh;
+
+    &::placeholder {
+        color: #999;
+        font-size: 18px;
     }
+`;
+
+export const ModalButton = styled.div`
+    display: flex;
+    flex-direction: row;
+    padding: 3vh;
+    gap: 1.5vh;
+    justify-content: flex-end;
+`;
+
+export const Button = styled.button`
+    font-size: 18px;
+    color: var(--cor-texto);
+    background-color: var(--fundo-campo);
+    border-radius: 20px;
+    height: 8vh;
+    padding: 0 3vh;
+    cursor: pointer;
 `;

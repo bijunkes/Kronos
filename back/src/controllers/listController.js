@@ -4,6 +4,8 @@ export const criarLista = async (req, res) => {
     const {nome} = req.body;
     const usuarioUsername = req.usuarioUsername; // vem pelo token
 
+    if (!nome) return res.status(400).json({ error: "Nome da lista é obrigatório" });
+
     try {
         await pool.query(
             "INSERT INTO listaatividades (nomeLista, Usuarios_username) VALUES (?, ?)", [nome, usuarioUsername]

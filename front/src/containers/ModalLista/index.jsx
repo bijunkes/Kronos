@@ -1,7 +1,12 @@
 import React, { useState } from 'react';
-import { Overlay,
+import {
+  Overlay,
   ModalContainer,
-  ModalHeader } from './style';
+  ModalHeader,
+  ModalInput,
+  ModalButton,
+  Button
+} from './style';
 
 function ModalLista({ isOpen, onClose, onCreate }) {
   const [nomeLista, setNomeLista] = useState('');
@@ -11,6 +16,7 @@ function ModalLista({ isOpen, onClose, onCreate }) {
 
     onCreate(nomeLista);
     setNomeLista('');
+    onClose();
   };
 
   if (!isOpen) return null;
@@ -19,11 +25,16 @@ function ModalLista({ isOpen, onClose, onCreate }) {
     <Overlay>
       <ModalContainer>
         <ModalHeader>
-          <h1>Criar nova lista</h1>
+          Criar nova lista
         </ModalHeader>
-        
+        <ModalInput placeholder="Nome da lista"
+        value={nomeLista}
+        onChange={(e) => setNomeLista(e.target.value)}/>
+        <ModalButton>
+          <Button onClick={onClose}>Cancelar</Button>
+          <Button onClick={handleCriar}>Criar</Button>
+        </ModalButton>
       </ModalContainer>
-
     </Overlay>
   );
 }
