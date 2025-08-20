@@ -55,8 +55,12 @@ function Menu() {
     }
   };
 
-  const handleSubmenuClick = (pai, item) => {
+  const handleSubmenuClick = (pai, item, idLista = null) => {
     setSubmenuSelecionado({ pai, item });
+    if (pai === 'listas') {
+      const listaSlug = encodeURIComponent(item);
+      navigate(`/listas/${listaSlug}`);
+    }
   };
 
   const abrirModal = () => setModalListaAberto(true);
