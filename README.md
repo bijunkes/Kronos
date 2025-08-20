@@ -1,4 +1,12 @@
-<img src="Logo Kronos.png" alt="Kronos"> 
+<style>
+        .imagem {
+            float: left;
+            margin-right: 15px;
+            margin-bottom: 10px;
+        }
+</style>
+
+<img src="Logo Kronos.png" alt="Kronos" class="imagem" width="300">
 
 O sistema Kronos tem como objetivo auxiliar jovens na gestão eficiente do tempo, por meio da aplicação de técnicas de gestão de tempo como Pomodoro, Kanban e a Matriz de Eisenhower. A plataforma também oferece recursos como cronômetro configurável, relatórios de produtividade e um perfil personalizado. Dessa forma, busca-se reduzir o estresse associado à constante sensação de falta de tempo, promovendo um equilíbrio efetivo na rotina acadêmica. 
 
