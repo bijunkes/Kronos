@@ -22,7 +22,7 @@ O sistema Kronos tem como objetivo auxiliar jovens na gestão eficiente do tempo
 * Insomnia 
 * Vite 
 ## Versão 
-<a id="Versão"></a> <p>Consulte o histórico de versões em: </p> <a href = "" > Versões do Kronos </a> 
+<a id="Versão"></a> <span>Consulte o histórico de versões em: </span> <a href = "" > Versões do Kronos </a> 
 ## Desenvolvedores 
 <a id="Desenvolvedores"></a> 
 * <a href = "https://github.com/bijunkes" > Bianca Junkes Rech </a> 
