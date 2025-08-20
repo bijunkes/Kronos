@@ -29,7 +29,6 @@ function Menu() {
   const [usuario, setUsuario] = useState({ nome: '', username: '' });
 
   const [modalListaAberto, setModalListaAberto] = useState(false);
-  const [novaLista, setNovaLista] = useState('');
   const [listas, setListas] = useState([]);
 
   const [submenuAberto, setSubmenuAberto] = useState('');
@@ -149,12 +148,15 @@ function Menu() {
           </ListasHeader>
         </ItemMaior>
         <Submenu style={{ display: submenuAberto === 'listas' ? 'block' : 'none' }}>
-          <SubmenuItem
-            onClick={() => handleSubmenuClick('listas', 'Lista 1')}
-            style={{ color: submenuSelecionado.item === 'Lista 1' ? '#AF52DE' : '' }}
-          >
-            Lista 1
-          </SubmenuItem>
+          {listas.map((lista) => (
+            <SubmenuItem
+              key={lista.idLista}
+              onClick={() => handleSubmenuClick('listas', lista.nomeLista)}
+              style={{ color: submenuSelecionado.item === lista.nomeLista ? '#AF52DE' : '' }}
+            >
+              {lista.nomeLista}
+            </SubmenuItem>
+          ))}
         </Submenu>
 
         <ItemMaior
