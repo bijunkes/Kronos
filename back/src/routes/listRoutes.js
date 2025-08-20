@@ -1,6 +1,6 @@
 import { Router } from "express";
-import { criarLista, listarListas, deletarLista } from "../controllers/listaController.js";
-import verificarToken from "../middleware/verificarToken.js";
+import { criarLista, listarListas, deletarLista } from "../controllers/listController.js"
+import verificarToken from "../middlewares/userMiddleware.js"
 
 const listRoutes = Router();
 

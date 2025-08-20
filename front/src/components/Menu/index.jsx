@@ -19,11 +19,19 @@ import {
   OpcoesAbaixo1
 } from './styles';
 import defaultUserImage from '../../assets/defaultUserImage.jpg';
+import { criarLista, listarListas, deletarLista } from '../../services/api.js';
+import ModalLista from '../../containers/ModalLista/index.jsx';
+
 
 function Menu() {
   const navigate = useNavigate();
 
   const [usuario, setUsuario] = useState({ nome: '', username: '' });
+
+  const [modalListaAberto, setModalListaAberto] = useState(false);
+  const [novaLista, setNovaLista] = useState('');
+  const [listas, setListas] = useState([]);
+
   const [submenuAberto, setSubmenuAberto] = useState('');
   const [submenuSelecionado, setSubmenuSelecionado] = useState({ pai: '', item: '' });
 
@@ -52,6 +60,36 @@ function Menu() {
     setSubmenuSelecionado({ pai, item });
   };
 
+  const abrirModal = () => setModalListaAberto(true);
+  const fecharModal = () => {
+    setNovaLista('');
+    setModalListaAberto(false);
+  };
+
+  const atualizarListas = async () => {
+    try {
+      const listas = await listarListas();
+      setListas(listas);
+    } catch (err) {
+      console.error("Erro ao buscar listas:", err)
+    }
+  }
+
+  useEffect(() => {
+    if (submenuAberto === 'listas') {
+      atualizarListas()
+    }
+  }, [submenuAberto])
+
+  const handleCriarLista = async (nome) => {
+    try {
+      await criarLista(nome);
+      setNovaLista('');
+      atualizarListas();
+    } catch (err) {
+      console.error("Erro ao criar lista:", err)
+    }
+  }
 
   const handleLogout = () => {
     localStorage.removeItem("token");
@@ -67,7 +105,7 @@ function Menu() {
           setSubmenuSelecionado({ pai: '', item: '' });
           navigate(`/${usuario.username}`);
         }}>
-          <img src={defaultUserImage} alt="Icon usuário" style={{width: '100%', height: '100%', objectFit: 'cover', display: 'block'}}/>
+          <img src={defaultUserImage} alt="Icon usuário" style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }} />
         </IconUsuario>
         <InfoUsuario>
           <NomeUsuario>{usuario.nome}</NomeUsuario>
@@ -106,7 +144,7 @@ function Menu() {
           <ListasHeader>
             Listas
             {submenuAberto === 'listas' && (
-              <BotaoAdicionar>+</BotaoAdicionar>
+              <BotaoAdicionar onClick={() => setModalListaAberto(true)}>+</BotaoAdicionar>
             )}
           </ListasHeader>
         </ItemMaior>
@@ -180,7 +218,13 @@ function Menu() {
           logout
         </span>
       </OpcoesAbaixo>
+      <ModalLista
+        isOpen={modalListaAberto}
+        onClose={() => setModalListaAberto(false)}
+        onCreate={handleCriarLista}
+      />
     </MenuWrapper>
+
   );
 }
 

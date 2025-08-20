@@ -16,7 +16,7 @@ import {
     ButtonCadastrar,
 } from './styles.js'
 import { useNavigate } from "react-router-dom";
-import { cadastrarUsuario } from "../../services/API.js";
+import { cadastrarUsuario } from "../../services/api.js";
 
 function Cadastro() {
 

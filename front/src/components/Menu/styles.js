@@ -16,8 +16,8 @@ export const Usuario = styled.div`
 `;
 
 export const IconUsuario = styled.button`
-  width: 6.5vh;
-  height: 6.5vh;
+  width: 6vh;
+  height: 6vh;
   border-radius: 50%;   
   overflow: hidden;       
   cursor: pointer;

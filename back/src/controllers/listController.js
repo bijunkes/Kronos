@@ -5,9 +5,8 @@ export const criarLista = async (req, res) => {
     const usuarioUsername = req.usuarioUsername; // vem pelo token
 
     try {
-        const dataCriacao = newDate();
         await pool.query(
-            "INSERT INTO listas (usuarioUsername, nome) VALUES (?, ?)", [usuarioUsername, nome]
+            "INSERT INTO listaatividades (nomeLista, Usuarios_username) VALUES (?, ?)", [nome, usuarioUsername]
         );
         res.status(200).json({message: "Lista criada"});
     } catch (err) {
@@ -21,7 +20,7 @@ export const listarListas = async (req, res) => {
 
     try{
         const [listas] = await pool.query(
-            "SELECT id, nome FROM listas WHERE usuarioUsername = ?", [usuarioUsername]
+            "SELECT idLista, nomeLista FROM listaatividades WHERE Usuarios_username = ?", [usuarioUsername]
         );
         res.json(listas);
     } catch (err) {
@@ -36,7 +35,7 @@ export const deletarLista = async (req, res) => {
 
     try {
         const [resultado] = await pool.query(
-            "DELETE FROM listas WHERE id = ? AND usuarioUsername = ?",
+            "DELETE FROM listaatividades WHERE idLista = ? AND Usuarios_username = ?",
             [id, usuarioUsername]
         );
 

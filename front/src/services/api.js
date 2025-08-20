@@ -17,4 +17,19 @@ export const cadastrarUsuario = async (dados) => {
     return response.data;
 }
 
+export const criarLista = async (nomeLista) => {
+    const response = await api.post('/listas', {nomeLista});
+    return response.data;
+}
+
+export const listarListas = async () => {
+    const response = await api.get('/listas');
+    return response.data;
+}
+
+export const deletarLista = async (idLista) => {
+    const response = await api.delete(`/listas/${idLista}`);
+    return response.data;
+}
+
 export default api;
