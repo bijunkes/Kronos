@@ -2,9 +2,11 @@ import pool from "../../db.js";
 import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
 
+const SALT_ROUND = 10;
+
 export const cadastro = async (req, res) => {
     const {username, nome, email, senha, icon} = req.body;
-    const senhaCriptografada = bcrypt.hashSync(senha, 8);
+    const senhaCriptografada = await bcrypt.hash(senha, SALT_ROUND);
     const dataCriacao = new Date();
 
     try {
