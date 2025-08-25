@@ -5,14 +5,15 @@ import MatrizEisenhower from '../../components/MatrizEisenhower';
 
 function Eisenhower() {
 
-    
-     <>
+    return(
+        <>
      <div><Menu></Menu></div>
      <div ><MatrizEisenhower></MatrizEisenhower></div>
         
         
-    </>
-    
+        </>
+
+    );
     
 }
 
