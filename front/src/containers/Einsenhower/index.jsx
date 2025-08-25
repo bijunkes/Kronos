@@ -1,18 +1,18 @@
 import React from 'react';
-import Menu from '../../components/Menu';
-import MatrizEisenhower from '../../components/MatrizEisenhower';
+import Menu from '../../components/Menu/index';
+import MatrizEisenhower from '../../components/MatrizEisenhower/index';
 
 
 function Eisenhower() {
 
-    
-     <>
-     <div><Menu></Menu></div>
-     <div ><MatrizEisenhower></MatrizEisenhower></div>
+    return(
+        <div clçassName="eisenhower-container">
+      
+        <MatrizEisenhower/>
         
-        
-    </>
-    
+        </div>
+
+    );
     
 }
 
