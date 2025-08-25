@@ -6,7 +6,7 @@ import MatrizEisenhower from '../../components/MatrizEisenhower/index';
 function Eisenhower() {
 
     return(
-        <div clçassName="eisenhower-container">
+        <div className="eisenhower-container">
       
         <MatrizEisenhower/>
         

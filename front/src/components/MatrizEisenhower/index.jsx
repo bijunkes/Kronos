@@ -3,7 +3,8 @@ import {NaoImportanteUrgente,
  NaoImportanteNaoUrgente,
  ImportanteNaoUrgente,
  ImportanteUrgente,
- Fundo
+ Fundo,
+ TextoVertical
 } from './style';
 
 function MatrizEisenhower(){
@@ -16,14 +17,16 @@ function MatrizEisenhower(){
     }
     return(
 
-        <Fundo>
+        <div>
 
+        <TextoVertical>Importante</TextoVertical>
         <ImportanteUrgente></ImportanteUrgente>
         <ImportanteNaoUrgente></ImportanteNaoUrgente>
+        <TextoVertical>Nâo Importante</TextoVertical>
         <NaoImportanteUrgente></NaoImportanteUrgente>
         <NaoImportanteNaoUrgente></NaoImportanteNaoUrgente>
         
-        </Fundo>
+        </div>
 
     );
 
