@@ -2,7 +2,8 @@ import React, { useState } from "react";
 import {NaoImportanteUrgente,
  NaoImportanteNaoUrgente,
  ImportanteNaoUrgente,
- ImportanteUrgente
+ ImportanteUrgente,
+ Fundo
 } from './style';
 
 function MatrizEisenhower(){
@@ -15,13 +16,14 @@ function MatrizEisenhower(){
     }
     return(
 
-        <div className="matrizeisenhower-component">
+        <Fundo>
+
         <ImportanteUrgente></ImportanteUrgente>
         <ImportanteNaoUrgente></ImportanteNaoUrgente>
         <NaoImportanteUrgente></NaoImportanteUrgente>
         <NaoImportanteNaoUrgente></NaoImportanteNaoUrgente>
         
-        </div>
+        </Fundo>
 
     );
 
