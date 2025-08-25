@@ -114,11 +114,12 @@ export const ListasHeader = styled.div`
 
 export const BotaoAdicionar = styled.button`
   all: unset;
-  padding: 0vh 1.5vh 0vh 1.5vh;
+  margin-right: 2vh;
   font-weight: bold;
   cursor: pointer;
   transition: background-color 0.3s ease;
   color: #FFFFFF;
+  font-size: 20.5px;
   
   &:hover {
     background-color: var(--fundo-menu-ativo);
