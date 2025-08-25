@@ -10,6 +10,7 @@ import Cadastro from './containers/Cadastro';
 import Hoje from './containers/Hoje';
 import Semana from './containers/Semana';
 import Tarefas from './containers/Tarefas';
+import Lista from "./containers/Lista/index";
 import Pomodoro from './containers/Pomodoro';
 import Kanban from './containers/Kanban';
 import Eisenhower from './containers/Einsenhower';
@@ -32,6 +33,9 @@ function App() {
                     <Route path="/hoje" element={<Hoje />} />
                     <Route path="/semana" element={<Semana />} />
                     <Route path="/tarefas" element={<Tarefas />} />
+
+                    <Route path="/listas/:nomeLista" element={<Lista />} />
+
                     <Route path="/pomodoro" element={<Pomodoro />} />
                     <Route path="/kanban" element={<Kanban />} />
                     <Route path="/eisenhower" element={<Eisenhower />} />

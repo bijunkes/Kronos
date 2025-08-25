@@ -230,7 +230,6 @@ function Menu() {
         onCreate={handleCriarLista}
       />
     </MenuWrapper>
-
   );
 }
 

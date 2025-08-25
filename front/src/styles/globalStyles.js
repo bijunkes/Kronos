@@ -2,6 +2,7 @@ import styled, { createGlobalStyle } from 'styled-components'
 
 const MyGlobalStyles = createGlobalStyle`
     :root {
+        --fundo: #1b1b1b;
         --fundo-menu: #212121;
         --fundo-menu-ativo: #282828;
         --cor-texto: #ffffff;
