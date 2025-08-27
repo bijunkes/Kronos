@@ -22,7 +22,7 @@ function App() {
     return (
         <BrowserRouter>
             <Routes>
-                <Route path="/" element={<Navigate to="/eisenhower" replace />}/>
+                <Route path="/" element={<Navigate to="/cadastro" replace />}/>
                 <Route path="/login" element={<Login />} />
                 <Route path="/cadastro" element={<Cadastro />} />
                 <Route path="*" element={<NotFound />} />

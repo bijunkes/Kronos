@@ -1,15 +1,15 @@
 import React from 'react';
 import { Outlet } from 'react-router-dom';
 import Menu from '../Menu';
-import Main from '../Main';
+import { Background } from './styles';
 
 function Padrao() {
   return (
-    <div style={{display: 'flex'}}>
+    <div style={{display: 'flex', height: '100vh'}}>
       <Menu />
-      <Main>
+      <Background>
         <Outlet />
-      </Main>
+      </Background>
     </div>
   );
 }

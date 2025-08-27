@@ -3,7 +3,6 @@ import {NaoImportanteUrgente,
  NaoImportanteNaoUrgente,
  ImportanteNaoUrgente,
  ImportanteUrgente,
- Fundo,
  TextoVertical
 } from './style';
 
