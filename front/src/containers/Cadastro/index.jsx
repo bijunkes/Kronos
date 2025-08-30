@@ -49,7 +49,7 @@ function Cadastro() {
         }
 
         try {
-            const response = await axios.post('http://localhost:3000/cadastro', form);
+            await cadastrarUsuario(form);
             setError('');
             navigate('/login');
         } catch (err) {

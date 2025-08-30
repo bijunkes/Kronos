@@ -19,6 +19,11 @@ export const cadastrarUsuario = async (dados) => {
     return response.data;
 }
 
+export const loginUsuario = async(dados) => {
+    const response = await api.post("login", dados);
+    return response.data;
+}
+
 export const criarLista = async (nome) => {
     const response = await api.post(`/listas`, {nome});
     return response.data;

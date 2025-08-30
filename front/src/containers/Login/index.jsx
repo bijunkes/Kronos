@@ -18,6 +18,7 @@ import {
 } from './styles.js'
 import LogoKronos from '../../assets/LogoKronos.png';
 import axios from 'axios';
+import { loginUsuario } from '../../services/api.js';
 
 function Login() {
     const navigate = useNavigate()
@@ -36,10 +37,10 @@ function Login() {
         }
 
         try {
-            const response = await axios.post('http://localhost:3000/login', { email, senha });
+            const data = await loginUsuario({email, senha});
 
-            if (response.data.auth) {
-                localStorage.setItem('token', response.data.token);
+            if (data.auth) {
+                localStorage.setItem('token', data.token);
                 navigate('/home');
             } else {
                 alert('Falha ao autenticar');
