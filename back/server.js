@@ -2,6 +2,7 @@ import express from 'express';
 import dotenv from 'dotenv';
 import userRoutes from './src/routes/userRoutes.js';
 import listRoutes from './src/routes/listRoutes.js';
+import atividadeRoutes from "./src/routes/atividadeRoutes.js";
 import cors from 'cors';
 
 dotenv.config();
@@ -16,6 +17,7 @@ app.use(express.json());
 
 app.use('/', userRoutes);
 app.use('/listas', listRoutes);
+app.use('/atividades', atividadeRoutes);
 
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
