@@ -5,36 +5,57 @@ import jwt from 'jsonwebtoken';
 const SALT_ROUND = 10;
 
 export const cadastro = async (req, res) => {
-    const {username, nome, email, senha, icon} = req.body;
+    const { username, nome, email, senha, icon } = req.body;
+
+    if (!username || username.length < 5) {
+        return res.status(400).json({ error: 'O username deve ter no mínimo 5 caracteres.' });
+    }
+
+    const regexEspecial = /[!@#$%^&*(),.?":{}|<>_\-+=\[\]\\;'/`~]/;
+    if (!senha || !regexEspecial.test(senha)) {
+        return res.status(400).json({ error: 'A senha deve conter pelo menos um caractere especial.' });
+    }
+
     const senhaCriptografada = await bcrypt.hash(senha, SALT_ROUND);
     const dataCriacao = new Date();
 
     try {
-        const [usuariosExistentes] = await pool.query('SELECT username FROM usuarios WHERE username = ?', [username]);
-
+        const [usuariosExistentes] = await pool.query(
+            'SELECT username FROM usuarios WHERE username = ?', 
+            [username]
+        );
         if (usuariosExistentes.length > 0) {
-            return res.status(400).json({error: 'Username já cadastrado'});
+            return res.status(400).json({ error: 'Username já cadastrado' });
         }
 
-        const [emailsExistentes] = await pool.query('SELECT email FROM usuarios WHERE email = ?', [email]);
+        const [emailsExistentes] = await pool.query(
+            'SELECT email FROM usuarios WHERE email = ?', 
+            [email]
+        );
         if (emailsExistentes.length > 0) {
-            return res.status(400).json({error: 'Email já cadastrado'});
+            return res.status(400).json({ error: 'Email já cadastrado' });
         }
 
         const iconString = JSON.stringify(icon);
+
         await pool.query(
             'INSERT INTO usuarios (username, nome, email, senha, dataCriacao, icon) VALUES (?, ?, ?, ?, ?, ?)', 
             [username, nome, email, senhaCriptografada, dataCriacao, iconString]
         );
+
         await pool.query(
-            'INSERT INTO ListaAtividades (nomeLista, Usuarios_username) VALUES (?, ?)', ['Atividades', username]
+            'INSERT INTO ListaAtividades (nomeLista, Usuarios_username) VALUES (?, ?)', 
+            ['Atividades', username]
         );
-        res.status(200).json({message: 'Usuário cadastrado'});
+
+        res.status(200).json({ message: 'Usuário cadastrado com sucesso' });
+
     } catch (err) {
         console.error('Erro ao cadastrar usuário:', err);
-        res.status(400).json({error: 'Erro ao cadastrar usuário'});
+        res.status(400).json({ error: 'Erro ao cadastrar usuário' });
     }
 };
+
 
 export const login = async (req, res) => {
     const{email, senha} = req.body;
