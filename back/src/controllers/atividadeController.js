@@ -12,7 +12,7 @@ export const criarAtividade = async (req, res) => {
         let listaAtual = listaId;
         if (!listaAtual) {
             const [listas] = await pool.query(
-                "SELECT idLista FROM ListaAtividades WHERE Usuarios_username = ? AND nomeLisya = ?", [usuario, "Atividades"]
+                "SELECT idLista FROM ListaAtividades WHERE Usuarios_username = ? AND nomeLista = ?", [usuario, "Atividades"]
             );
             // Lista default
             if (listas.length === 0) {
@@ -25,23 +25,19 @@ export const criarAtividade = async (req, res) => {
             }
         }
 
-        const dataCriacao = newDate();
+        const dataCriacao = new Date();
 
         const [resultado] = await pool.query(
             `INSERT INTO Atividades
-            (idAtividade, 
-            nomeAtividade, 
+            (nomeAtividade, 
             statusAtividade, 
             descricaoAtividade, 
             prazoAtividade, 
             dataCriacao, 
             ListaAtividades_idLista, 
-            ListaAtividades_Usuarios_username, 
-            Pomodoro_idStatus, 
-            Kanban_idAtividadeKanban, 
-            Eisenhower_idAtividadeEisenhower, 
+            ListaAtividades_Usuarios_username,
             Usuarios_username)
-            VALUES (NULL, ?, ?, ?, ?, ?, ?, ?, NULL, NULL, NULL, ?)`,
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?)`,
             [nomeAtividade, statusAtividade, descricaoAtividade, prazoAtividade, dataCriacao, listaAtual, usuario, usuario]
         );
         res.status(201).json({ message: "Atividade criada", idAtividade: resultado.insertId });
@@ -73,16 +69,16 @@ export const listarAtividadesPorLista = async (req, res) => {
             `SELECT * FROM Atividades WHERE Usuarios_username = ? AND ListaAtividades_idLista = ? ORDER BY dataCriacao DESC`, [usuario, listaId]
         );
         res.json(atividades);
-    } catch(err) {
+    } catch (err) {
         console.error(err);
-        res.status(500).json({error: "Erro ao listar atividades da lista"});
+        res.status(500).json({ error: "Erro ao listar atividades da lista" });
     }
 }
 
 export const atualizarAtividade = async (req, res) => {
     const usuario = req.usuarioUsername;
     const idAtividade = req.params.id;
-    const {nomeAtividade, descricaoAtividade, prazoAtividade, statusAtividade} = req.body;
+    const { nomeAtividade, descricaoAtividade, prazoAtividade, statusAtividade } = req.body;
 
     try {
         await pool.query(
@@ -94,10 +90,25 @@ export const atualizarAtividade = async (req, res) => {
             WHERE idAtividade = ? AND Usuarios_username = ?`,
             [nomeAtividade, descricaoAtividade, prazoAtividade, statusAtividade, idAtividade, usuario]
         );
-        res.json({message: "Atividade atualizada"});
+        res.json({ message: "Atividade atualizada" });
     } catch (err) {
         console.error(err);
-        res.status(500).json({error: "Erro ao atualizar atividade"});
+        res.status(500).json({ error: "Erro ao atualizar atividade" });
+    }
+}
+
+export const deletarAtividade = async (req, res) => {
+    const usuario = req.usuarioUsername;
+    const idAtividade = req.params.id;
+
+    try {
+        await pool.query(
+            "DELETE FROM Atividades WHERE idAtividade = ? AND Usuarios_username = ?", [idAtividade, usuario]
+        );
+        res.json({message: "Atividade deletada"});
+    } catch (err) {
+        console.error(err);
+        res.status(500).json({error: "Erro ao deletar atividade"});
     }
 }
 
