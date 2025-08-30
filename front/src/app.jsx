@@ -9,7 +9,7 @@ import Login from './containers/Login';
 import Cadastro from './containers/Cadastro';
 import Hoje from './containers/Hoje';
 import Semana from './containers/Semana';
-import Tarefas from './containers/Tarefas';
+import Atividades from './containers/Atividades';
 import Lista from "./containers/Lista/index";
 import Pomodoro from './containers/Pomodoro';
 import Kanban from './containers/Kanban';
@@ -32,7 +32,7 @@ function App() {
                     <Route path="/:username" element={<Usuario />} />
                     <Route path="/hoje" element={<Hoje />} />
                     <Route path="/semana" element={<Semana />} />
-                    <Route path="/tarefas" element={<Tarefas />} />
+                    <Route path="/atividades" element={<Atividades />} />
 
                     <Route path="/listas/:nomeLista" element={<Lista />} />
 

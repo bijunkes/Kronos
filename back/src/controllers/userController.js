@@ -26,6 +26,9 @@ export const cadastro = async (req, res) => {
             'INSERT INTO usuarios (username, nome, email, senha, dataCriacao, icon) VALUES (?, ?, ?, ?, ?, ?)', 
             [username, nome, email, senhaCriptografada, dataCriacao, iconString]
         );
+        await pool.query(
+            'INSERT INTO ListaAtividades (nomeLista, Usuarios_username) VALUES (?, ?)', ['Atividades', username]
+        );
         res.status(200).json({message: 'Usuário cadastrado'});
     } catch (err) {
         console.error('Erro ao cadastrar usuário:', err);

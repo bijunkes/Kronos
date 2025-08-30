@@ -141,11 +141,11 @@ function Menu() {
           Semana
         </ItemMenor>
 
-        <ItemMenor style={{ color: submenuAberto === 'tarefas' ? '#007AFF' : '' }} onClick={() => handleClick('tarefas', true)}>
+        <ItemMenor style={{ color: submenuAberto === 'atividades' ? '#007AFF' : '' }} onClick={() => handleClick('atividades', true)}>
           <span className="material-symbols-outlined">
-            {submenuAberto === 'tarefas' ? 'folder_open' : 'folder'}
+            {submenuAberto === 'atividades' ? 'folder_open' : 'folder'}
           </span>
-          Tarefas
+          Atividades
         </ItemMenor>
       </Lista>
 
