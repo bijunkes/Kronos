@@ -16,6 +16,7 @@ import {
     ButtonCadastrar,
     EsqueceuSenha
 } from './styles.js'
+import LogoKronos from '../../assets/LogoKronos.png';
 import axios from 'axios';
 
 function Login() {
@@ -56,7 +57,7 @@ function Login() {
     return (
         <Container>
             <Parte1>
-                <Logo>KRONOS</Logo>
+                <img src={LogoKronos} alt="" style={{width: "100%"}}/>
                 <LeftAlign>
                     <Negrito>Não possui<br />um cadastro?</Negrito>
                     <Opaco>Cadastre-se clicando logo abaixo.</Opaco>

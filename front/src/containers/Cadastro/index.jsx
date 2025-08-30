@@ -15,6 +15,7 @@ import {
     Input,
     ButtonCadastrar,
 } from './styles.js'
+import LogoKronos from '../../assets/LogoKronos.png';
 import { useNavigate } from "react-router-dom";
 import { cadastrarUsuario } from "../../services/api.js";
 
@@ -64,7 +65,7 @@ function Cadastro() {
     return (
         <Container>
             <Parte1>
-                <Logo>KRONOS</Logo>
+                <img src={LogoKronos} alt="" style={{width: "100%"}}/>
                 <LeftAlign>
                     <Negrito>Bem-vindo <br />de volta!</Negrito>
                     <Opaco>Acesse sua conta agora mesmo.</Opaco>
