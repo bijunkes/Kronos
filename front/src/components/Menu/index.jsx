@@ -56,7 +56,13 @@ function Menu() {
   };
 
   const handleSubmenuClick = (pai, item, idLista = null) => {
-    setSubmenuSelecionado({ pai, item });
+    if (submenuSelecionado.pai === pai && submenuSelecionado.item === item) {
+      setSubmenuSelecionado({pai: '', item: ''});
+      setSubmenuAberto('listas');
+      navigate('/listas');
+      return;
+    }
+    setSubmenuSelecionado({pai, item});
     if (pai === 'listas') {
       const listaSlug = encodeURIComponent(item);
       navigate(`/listas/${listaSlug}`);

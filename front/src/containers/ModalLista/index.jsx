@@ -31,8 +31,8 @@ function ModalLista({ isOpen, onClose, onCreate }) {
         value={nomeLista}
         onChange={(e) => setNomeLista(e.target.value)}/>
         <ModalButton>
-          <Button onClick={onClose}>Cancelar</Button>
-          <Button onClick={handleCriar}>Criar</Button>
+          <Button onClick={onClose} id="cancelar">Cancelar</Button>
+          <Button onClick={handleCriar} id='criar'>Criar</Button>
         </ModalButton>
       </ModalContainer>
     </Overlay>

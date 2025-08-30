@@ -14,7 +14,7 @@ export const Overlay = styled.div`
 `;
 
 export const ModalContainer = styled.div`
-  height: 32vh;
+  height: 30vh;
   width: 60vh;
   color: var(--fundo-menu);
   box-shadow: 0 0 20px rgba(0, 0, 0, 0.3);
@@ -35,7 +35,7 @@ export const ModalInput = styled.input`
     font-size: 18px;
     color: var(--cor-texto);
     background-color: var(--fundo-campo);
-    height: 8vh;
+    height: 7vh;
     border-radius: 20px;
     margin-left: 3vh;
     margin-right: 3vh;
@@ -60,7 +60,14 @@ export const Button = styled.button`
     color: var(--cor-texto);
     background-color: var(--fundo-campo);
     border-radius: 20px;
-    height: 8vh;
+    height: 7vh;
     padding: 0 3vh;
     cursor: pointer;
+
+    &#cancelar:hover {
+        background-color: var(--Importante-Urgente);
+    }
+    &#criar:hover {
+        background-color: var(--fundo-parte2);
+    }
 `;
