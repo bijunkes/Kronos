@@ -91,6 +91,10 @@ function Menu() {
   }, [submenuAberto])
 
   const handleCriarLista = async (nome) => {
+    if (listas.some(lista => lista.nomeLista.toLowerCase() === nome.toLowerCase())){
+      alert("Lista existe. Tente outro nome.");
+      return;
+    }
     try {
       await criarLista(nome);
       atualizarListas();
