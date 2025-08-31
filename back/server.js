@@ -5,6 +5,9 @@ import cors from 'cors';
 
 import userRoutes from './src/routes/userRoutes.js';
 import listRoutes from './src/routes/listRoutes.js';
+//<<<<<<< HEAD>>>>>>> 26cefd12a68bba35a0078c3a95b0aa0f05379265
+//=======
+import atividadeRoutes from "./src/routes/atividadeRoutes.js";
 
 dotenv.config();
 
@@ -31,6 +34,7 @@ app.get('/status', (req, res) => res.json({ ok: true }));
 
 app.use('/', userRoutes);
 app.use('/listas', listRoutes);
+app.use('/atividades', atividadeRoutes);
 
 app.use((req, res) => {
   res.status(404).json({ error: 'Rota não encontrada' });
