@@ -1,11 +1,28 @@
 import express from 'express';
 import verificarToken from '../middlewares/userMiddleware.js';
-import {cadastro, login, perfil} from '../controllers/userController.js';
+import {
+  cadastroVerificacaoEmail,
+  login,
+  perfil,
+  verificarEmail,
+  usuarioExiste,
+  solicitarResetSenha,
+  resetConfirmar,
+  redefinirSenha,
+} from '../controllers/userController.js';
 
 const userRoutes = express.Router();
 
-userRoutes.post('/cadastro', cadastro);
+userRoutes.get('/usuario-existe', usuarioExiste);
+userRoutes.post('/cadastro', cadastroVerificacaoEmail);
 userRoutes.post('/login', login);
+
+userRoutes.get('/verificar-email', verificarEmail);
+
+userRoutes.post('/senha/reset-solicitar', solicitarResetSenha); // envia e-mail com link
+userRoutes.get('/senha/reset-confirmar', resetConfirmar);       // redireciona para o front com ?token=...
+userRoutes.post('/senha/reset', redefinirSenha);                 // troca a senha usando token
+
 userRoutes.get('/perfil', verificarToken, perfil);
 
 export default userRoutes;

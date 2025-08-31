@@ -103,14 +103,17 @@ export const ButtonCadastrar = styled.button`
   }
 `;
 
-export const EsqueceuSenha = styled.div`
+export const EsqueceuSenha = styled.button`
+  background: transparent;
+  border: 0;
   font-size: 16px;
+  color: #4f4f4f;
   cursor: pointer;
-  color: #4f4f4fff;
   margin: 0;
   align-self: flex-end;
+  padding: 0;
+  z-index: 1;
+  pointer-events: auto;
 
-  &:hover {
-    color: white;
-  }
+  &:hover { color: #fff; }
 `;

@@ -1,8 +1,9 @@
-import pool from "../../db.js";
+import pool from '../db.js';
+
 
 export const criarLista = async (req, res) => {
     const {nome} = req.body;
-    const usuarioUsername = req.usuarioUsername; // vem pelo token
+    const usuarioUsername = req.usuarioUsername; 
 
     if (!nome) return res.status(400).json({ error: "Nome da lista é obrigatório" });
 

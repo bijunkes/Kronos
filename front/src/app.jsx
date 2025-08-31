@@ -1,6 +1,6 @@
 import React from "react";
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
-
+import ResetarSenha from "./containers/ResetarSenha/index.jsx";
 import Padrao from './components/Padrao/Padrao.jsx';
 
 import Home from './containers/Home';
@@ -25,6 +25,7 @@ function App() {
                 <Route path="/" element={<Navigate to="/cadastro" replace />}/>
                 <Route path="/login" element={<Login />} />
                 <Route path="/cadastro" element={<Cadastro />} />
+                <Route path="/resetar-senha" element={<ResetarSenha />} />
                 <Route path="*" element={<NotFound />} />
 
                 <Route element={<Padrao />}> 

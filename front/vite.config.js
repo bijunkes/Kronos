@@ -7,4 +7,8 @@ export default defineConfig({
     react(),
     svgr(),
   ],
+  server: {
+    port: 5173,       // força sempre a porta 5173
+    strictPort: true, // se a 5173 estiver ocupada, o Vite não muda sozinho, ele dá erro
+  },
 });
