@@ -1,15 +1,14 @@
 
-import express from 'express';
 import dotenv from 'dotenv';
+dotenv.config();
+
+import express from 'express';
 import cors from 'cors';
 
 import userRoutes from './src/routes/userRoutes.js';
 import listRoutes from './src/routes/listRoutes.js';
-//<<<<<<< HEAD>>>>>>> 26cefd12a68bba35a0078c3a95b0aa0f05379265
-//=======
 import atividadeRoutes from "./src/routes/atividadeRoutes.js";
 
-dotenv.config();
 
 const app = express();
 

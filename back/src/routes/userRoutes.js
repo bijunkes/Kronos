@@ -2,13 +2,13 @@ import express from 'express';
 import verificarToken from '../middlewares/userMiddleware.js';
 import {
   cadastroVerificacaoEmail,
+  verificarEmail,
   login,
   perfil,
-  verificarEmail,
-  usuarioExiste,
   solicitarResetSenha,
-  resetConfirmar,
   redefinirSenha,
+  resetConfirmar,
+  usuarioExiste
 } from '../controllers/userController.js';
 
 const userRoutes = express.Router();
