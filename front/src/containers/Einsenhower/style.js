@@ -1,10 +1,95 @@
-import style from 'styled-components';
+import styled from "styled-components";
 
-export const Teste = styled.div`
 
-    flex: 1;
-  background-color: var(--fundo-parte2);
+export const Container = styled.div`
+  display: grid;
+  left: 6rem;
+  grid-template-columns: 1fr 1fr; 
+  grid-template-rows: 1fr 1fr;     
+  gap: 0.5rem;                       
+  height: 100vh; 
+  width: 72vw;
+  padding: 6rem;
+  box-sizing: border-box;
+  position: relative;
+`;
+
+export const Quadrante = styled.div`
   display: flex;
   justify-content: center;
+  align-items: center;
+  border-radius: 1rem;
+  font-weight: bold;
+  color: white;
+  font-size: 1.2rem;
+  height: 34.92vh; 
+  width: 27.6vw;
+`;
 
-    `;
+export const ImportanteUrgente = styled(Quadrante)`
+  background-color: #B3261E;
+`;
+
+export const ImportanteNaoUrgente = styled(Quadrante)`
+  background-color: #FFCC00;
+  color: black;
+`;
+
+export const NaoImportanteUrgente = styled(Quadrante)`
+  background-color: #007AFF;
+`;
+
+export const NaoImportanteNaoUrgente = styled(Quadrante)`
+  background-color: #34C759;
+
+`;
+
+export const LabelVertical = styled.h2`
+  position: absolute;
+  transform: rotate(270deg) translateY(-50%);
+  transform-origin: center;
+  font-size: 2rem;
+  font-weight: bold;
+  color: #FFFFFF;
+  padding: 0.3rem 0.6rem;
+  border-radius: 0.5rem;
+  z-index: 10;
+`;
+
+export const LabelImportante = styled(LabelVertical)`
+  top: 28%;
+
+`;
+
+export const LabelNaoImportante = styled(LabelVertical)`
+  top: 65%;
+  left: -2rem; 
+`;
+
+
+export const LabelHorizontal = styled.h2`
+  position: absolute;
+  top: 1rem;
+  font-size: 2rem;
+  font-weight: bold;
+  color: #FFFFFF;
+  padding: 0.3rem 0.6rem;
+  border-radius: 0.5rem;
+  z-index: 10;
+`;
+
+
+export const LabelUrgente = styled(LabelHorizontal)`
+  left: 22%;
+  top: 3rem;
+  
+`;
+
+export const LabelNaoUrgente = styled(LabelHorizontal)`
+  left: 60%;
+  top: 3rem;
+  
+`;
+
+
+
