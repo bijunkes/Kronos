@@ -51,10 +51,37 @@ export const solicitarResetSenha = async (email) => {
   return res.data;
 };
 
+<<<<<<< HEAD
 export const redefinirSenha = async ({ token, novaSenha }) => {
   const res = await api.post('/senha/reset', { token, novaSenha });
   return res.data;
 };
+=======
+export const loginUsuario = async(dados) => {
+    const response = await api.post("/login", dados);
+    return response.data;
+}
+
+export const criarAtividade = async (dados) => {
+    const response = await api.post("/atividades", dados);
+    return response.data;
+}
+
+export const listarAtividades = async () => {
+    const response = await api.get("/atividades");
+    return response.data;
+}
+
+export const atualizarAtividade = async (id, dados) => {
+    const response = await api.put(`/atividades/${id}`, dados);
+    return response.data;
+}
+
+export const deletarAtividade = async (id) => {
+    const response = await api.delete(`/atividades/${id}`)
+    return response.data;
+}
+>>>>>>> 58d32ac (Parte 1 página Atividades)
 
 export default api;
 

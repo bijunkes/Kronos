@@ -83,6 +83,7 @@ export const cadastroVerificacaoEmail = async (req, res) => {
       `,
     });
 
+<<<<<<< HEAD
     return res.status(200).json({
       message: 'Enviamos um link de confirmação para seu e-mail. Conclua por lá para ativar sua conta.',
     });
@@ -90,6 +91,30 @@ export const cadastroVerificacaoEmail = async (req, res) => {
     console.error('Erro ao iniciar verificação por e-mail:', err);
     return res.status(500).json({ error: 'Não foi possível enviar o e-mail de verificação.' });
   }
+=======
+        await pool.query(
+            'INSERT INTO usuarios (username, nome, email, senha, dataCriacao, icon) VALUES (?, ?, ?, ?, ?, ?)', 
+            [username, nome, email, senhaCriptografada, dataCriacao, iconString]
+        );
+
+        const [listas] = await pool.query(
+            'SELECT idLista FROM ListaAtividades WHERE Usuarios_username = ? AND nomeLista = ?',
+            [username, 'Atividades']
+        );
+
+        if (listas.length === 0) {
+            await pool.query(
+                "INSERT INTO ListaAtividades (nomeLista, Usuarios_username) VALUES (?, ?)", ["Atividades", username]
+            )
+        }
+
+        res.status(200).json({ message: 'Usuário cadastrado com sucesso' });
+
+    } catch (err) {
+        console.error('Erro ao cadastrar usuário:', err);
+        res.status(400).json({ error: 'Erro ao cadastrar usuário' });
+    }
+>>>>>>> 58d32ac (Parte 1 página Atividades)
 };
 
 export const verificarEmail = async (req, res) => {

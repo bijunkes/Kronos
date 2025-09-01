@@ -1,44 +1,53 @@
+<<<<<<< HEAD
 import pool from '../db.js';
+=======
+import pool from "../../db.js";
+import { garantirListaAtividades } from "./listController.js";
+>>>>>>> 58d32ac (Parte 1 página Atividades)
 
 export const criarAtividade = async (req, res) => {
-    const { nomeAtividade, prazoAtividade, descricaoAtividade = '', statusAtividade = 0, listaId } = req.body;
+    const {
+        nomeAtividade, 
+        prazoAtividade, 
+        descricaoAtividade = '', statusAtividade = 0, 
+        listaId 
+    } = req.body;
+
     const usuario = req.usuarioUsername;
 
-    if (!nomeAtividade || !prazoAtividade) {
-        return res.status(400).json({ error: "Nome e prazo da atividade obrigatórios" });
+    if (!nomeAtividade || !prazoAtividade || !usuario) {
+        return res.status(400).json({ error: "Nome, prazo e usuário são obrigatórios" });
     }
 
     try {
         let listaAtual = listaId;
         if (!listaAtual) {
-            const [listas] = await pool.query(
-                "SELECT idLista FROM ListaAtividades WHERE Usuarios_username = ? AND nomeLista = ?", [usuario, "Atividades"]
-            );
-            // Lista default
-            if (listas.length === 0) {
-                const [resultado] = await pool.query(
-                    "INSERT INTO ListaAtividades (nomeLista, Usuarios_username) VALUES (?, ?)", ["Atividades", usuario]
-                );
-                listaAtual = resultado.insertId;
-            } else {
-                listaAtual = listas[0].idLista;
-            }
+            const listaPadrao = await garantirListaAtividades(usuario);
+            listaAtual = listaPadrao.idLista;
         }
 
         const dataCriacao = new Date();
 
         const [resultado] = await pool.query(
-            `INSERT INTO Atividades
-            (nomeAtividade, 
-            statusAtividade, 
-            descricaoAtividade, 
-            prazoAtividade, 
-            dataCriacao, 
-            ListaAtividades_idLista, 
-            ListaAtividades_Usuarios_username,
-            Usuarios_username)
-            VALUES (?, ?, ?, ?, ?, ?, ?, ?)`,
-            [nomeAtividade, statusAtividade, descricaoAtividade, prazoAtividade, dataCriacao, listaAtual, usuario, usuario]
+            `INSERT INTO atividades
+                (nomeAtividade, 
+                statusAtividade, 
+                descricaoAtividade, 
+                prazoAtividade, 
+                dataCriacao, 
+                ListaAtividades_idLista, 
+                ListaAtividades_Usuarios_username,
+                Usuarios_username)
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?)`,
+            [
+                nomeAtividade, 
+                statusAtividade, descricaoAtividade, 
+                prazoAtividade, 
+                dataCriacao, 
+                listaAtual, 
+                usuario, 
+                usuario
+            ]
         );
         res.status(201).json({ message: "Atividade criada", idAtividade: resultado.insertId });
     } catch (err) {
@@ -51,7 +60,7 @@ export const listarAtividades = async (req, res) => {
     const usuario = req.usuarioUsername;
     try {
         const [atividades] = await pool.query(
-            `SELECT * FROM Atividades WHERE Usuarios_username = ? ORDER BY dataCriacao DESC`, [usuario]
+            `SELECT * FROM atividades WHERE Usuarios_username = ? ORDER BY dataCriacao ASC`, [usuario]
         );
         res.json(atividades);
     } catch (err) {
@@ -66,7 +75,7 @@ export const listarAtividadesPorLista = async (req, res) => {
 
     try {
         const [atividades] = await pool.query(
-            `SELECT * FROM Atividades WHERE Usuarios_username = ? AND ListaAtividades_idLista = ? ORDER BY dataCriacao DESC`, [usuario, listaId]
+            `SELECT * FROM atividades WHERE Usuarios_username = ? AND ListaAtividades_idLista = ? ORDER BY dataCriacao ASC`, [usuario, listaId]
         );
         res.json(atividades);
     } catch (err) {
@@ -82,7 +91,7 @@ export const atualizarAtividade = async (req, res) => {
 
     try {
         await pool.query(
-            `UPDATE Atividades SET
+            `UPDATE atividades SET
             nomeAtividade = ?,
             descricaoAtividade = ?,
             prazoAtividade = ?,
@@ -103,7 +112,7 @@ export const deletarAtividade = async (req, res) => {
 
     try {
         await pool.query(
-            "DELETE FROM Atividades WHERE idAtividade = ? AND Usuarios_username = ?", [idAtividade, usuario]
+            "DELETE FROM atividades WHERE idAtividade = ? AND Usuarios_username = ?", [idAtividade, usuario]
         );
         res.json({message: "Atividade deletada"});
     } catch (err) {

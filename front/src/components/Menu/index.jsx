@@ -22,7 +22,6 @@ import defaultUserImage from '../../assets/defaultUserImage.jpg';
 import { criarLista, listarListas, deletarLista } from '../../services/api.js';
 import ModalLista from '../../containers/ModalLista/index.jsx';
 
-
 function Menu() {
   const navigate = useNavigate();
 

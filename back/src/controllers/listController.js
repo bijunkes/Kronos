@@ -8,10 +8,24 @@ export const criarLista = async (req, res) => {
     if (!nome) return res.status(400).json({ error: "Nome da lista é obrigatório" });
 
     try {
-        await pool.query(
+        const [listasExistentes] = await pool.query(
+            'SELECT idLista FROM ListaAtividades WHERE Usuarios_username = ? AND nomeLista = ?',
+            [usuarioUsername, nome]
+        )
+
+        if (listasExistentes.length > 0) {
+            return res.status(400).json({ error: 'Lista existente'});
+        }
+
+        const [resultado] = await pool.query(
             "INSERT INTO listaatividades (nomeLista, Usuarios_username) VALUES (?, ?)", [nome, usuarioUsername]
         );
-        res.status(200).json({message: "Lista criada"});
+        
+        res.status(200).json({ 
+            message: "Lista criada",
+            idLista: resultado.insertId,
+            nomeLista: nome
+        });
     } catch (err) {
         console.log("Erro ao criar lista", err);
         res.status(400).json({error: "Erro ao criar lista"});
@@ -23,7 +37,10 @@ export const listarListas = async (req, res) => {
 
     try{
         const [listas] = await pool.query(
-            "SELECT idLista, nomeLista FROM listaatividades WHERE Usuarios_username = ?", [usuarioUsername]
+            `SELECT * FROM ListaAtividades 
+             WHERE Usuarios_username = ? 
+             AND nomeLista <> 'Atividades'
+             ORDER BY idLista DESC`, [usuarioUsername]
         );
         res.json(listas);
     } catch (err) {
@@ -51,4 +68,17 @@ export const deletarLista = async (req, res) => {
         console.log("Erro ao deletar lista:", err);
         res.status(500).json({error: "Erro ao deletar lista"});
     }
+}
+
+export const garantirListaAtividades = async (usuarioUsername) => {
+    const [listas] = await pool.query(
+        "SELECT * FROM listaatividades WHERE nomeLista = ? AND Usuarios_username = ?", ["Atividades", usuarioUsername]
+    );
+    
+    if(listas.length > 0) return listas[0];
+
+    const [result] = await pool.query(
+        "INSERT INTO listaatividades (nomeLista, Usuarios_username) VALUES (?, ?)", ["Atividades", usuarioUsername]
+    );
+    return {idLista: result.insertId, nomeLista: "Atividades", Usuarios_username: usuarioUsername};
 }
