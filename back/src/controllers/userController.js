@@ -55,6 +55,24 @@ export const cadastroVerificacaoEmail = async (req, res) => {
 
     const senhaCriptografada = await bcrypt.hash(senha, SALT_ROUND);
 
+    const dataCriacao = new Date();
+    await pool.query(
+      'INSERT INTO usuarios (username, nome, email, senha, dataCriacao, icon) VALUES (?, ?, ?, ?, ?, ?)', 
+      [username, nome, email, senhaCriptografada, dataCriacao, icon ?? null]
+    );
+
+    const [listas] = await pool.query(
+      'SELECT idLista FROM ListaAtividades WHERE Usuarios_username = ? AND nomeLista = ?',
+      [username, 'Atividades']
+    );
+
+    if (listas.length === 0) {
+      await pool.query(
+        "INSERT INTO ListaAtividades (nomeLista, Usuarios_username) VALUES (?, ?)", 
+        ["Atividades", username]
+      );
+    }
+
     const token = assinarTokenVerificacao({
       username,
       nome,
@@ -63,7 +81,6 @@ export const cadastroVerificacaoEmail = async (req, res) => {
       icon: icon ?? null,
       iat_ms: Date.now(),
     });
-
     const verifyUrl = `${API_BASE}/verificar-email?token=${encodeURIComponent(token)}`;
 
     await mailer.sendMail({
@@ -83,39 +100,16 @@ export const cadastroVerificacaoEmail = async (req, res) => {
       `,
     });
 
-<<<<<<< HEAD
-    return res.status(200).json({
-      message: 'Enviamos um link de confirmação para seu e-mail. Conclua por lá para ativar sua conta.',
+    res.status(200).json({
+      message: 'Usuário cadastrado com sucesso! Enviamos um link de confirmação para seu e-mail. Conclua por lá para ativar sua conta.',
     });
+
   } catch (err) {
-    console.error('Erro ao iniciar verificação por e-mail:', err);
-    return res.status(500).json({ error: 'Não foi possível enviar o e-mail de verificação.' });
+    console.error('Erro ao cadastrar usuário ou enviar e-mail de verificação:', err);
+    res.status(500).json({ error: 'Não foi possível cadastrar o usuário ou enviar o e-mail de verificação.' });
   }
-=======
-        await pool.query(
-            'INSERT INTO usuarios (username, nome, email, senha, dataCriacao, icon) VALUES (?, ?, ?, ?, ?, ?)', 
-            [username, nome, email, senhaCriptografada, dataCriacao, iconString]
-        );
-
-        const [listas] = await pool.query(
-            'SELECT idLista FROM ListaAtividades WHERE Usuarios_username = ? AND nomeLista = ?',
-            [username, 'Atividades']
-        );
-
-        if (listas.length === 0) {
-            await pool.query(
-                "INSERT INTO ListaAtividades (nomeLista, Usuarios_username) VALUES (?, ?)", ["Atividades", username]
-            )
-        }
-
-        res.status(200).json({ message: 'Usuário cadastrado com sucesso' });
-
-    } catch (err) {
-        console.error('Erro ao cadastrar usuário:', err);
-        res.status(400).json({ error: 'Erro ao cadastrar usuário' });
-    }
->>>>>>> 58d32ac (Parte 1 página Atividades)
 };
+
 
 export const verificarEmail = async (req, res) => {
   const { token } = req.query;
