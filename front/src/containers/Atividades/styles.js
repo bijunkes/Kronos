@@ -9,8 +9,8 @@ export const Background = styled.div`
 `;
 
 export const ContainerLista = styled.div`
-  margin: 5vh;
-  height: 90vh;
+  margin: 4vh;
+  height: 92vh;
   width: 50vh;
   border-radius: 20px;
   background-color: var(--fundo-menu);

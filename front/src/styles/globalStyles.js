@@ -9,6 +9,7 @@ const MyGlobalStyles = createGlobalStyle`
         --fundo-parte1: #242424;
         --fundo-parte2: #2A2A2A;
         --fundo-campo: #313131;
+        --cinza-claro: #353535;
         --cor-texto: #ffffff;
         --Importante-Urgente: #B3261E;
         --botao-Importante-Urgente:
