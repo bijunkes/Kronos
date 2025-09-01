@@ -1,9 +1,5 @@
-<<<<<<< HEAD
-import pool from '../db.js';
-=======
 import pool from "../../db.js";
 import { garantirListaAtividades } from "./listController.js";
->>>>>>> 58d32ac (Parte 1 página Atividades)
 
 export const criarAtividade = async (req, res) => {
     const {
