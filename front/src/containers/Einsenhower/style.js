@@ -16,8 +16,9 @@ export const Container = styled.div`
 
 export const Quadrante = styled.div`
   display: flex;
-  justify-content: center;
-  align-items: center;
+  flex-direction: column;
+  justify-content: left;
+  align-items: flex-start;
   border-radius: 1rem;
   font-weight: bold;
   color: white;
@@ -57,7 +58,7 @@ export const LabelVertical = styled.h2`
 `;
 
 export const LabelImportante = styled(LabelVertical)`
-  top: 28%;
+  top: 26%;
 
 `;
 
@@ -80,15 +81,88 @@ export const LabelHorizontal = styled.h2`
 
 
 export const LabelUrgente = styled(LabelHorizontal)`
-  left: 22%;
+  left: 20%;
   top: 3rem;
   
 `;
 
 export const LabelNaoUrgente = styled(LabelHorizontal)`
-  left: 60%;
+  left: 62%;
   top: 3rem;
   
+`;
+export const Lista = styled.ul`
+
+  display: block;
+  padding: 0;
+  margin-top: 0.3rem;
+  align-items: flex-start;
+  justify-content: flex-start;
+  overflow-y: scroll;
+  height: 25vh; 
+  width: 27.3vw;
+  scroll-behavior: smooth;
+
+  &::-webkit-scrollbar-track{
+  
+   background-color: rgba(27, 27, 27, 0.2);
+  
+  }
+  &::-webkit-scrollbar-thumb{
+  
+    background-color: rgba(255, 255, 255, 1);
+    border-radius: 50%;
+  
+  }
+  &::-webkit-scrollbar{
+  
+    width: 6px;
+  
+  }
+
+`;
+export const Atividade = styled.li`
+
+  background: rgba(27, 27, 27, 0.2);
+  display: flex;
+  align-items: flex-start;
+  margin-top: 0.3rem;
+  margin-left: 1rem;
+  padding-left: 1rem;
+  padding-top: 1rem;
+  color: #FFFFFF;
+  height: 6vh;
+  width: 25.5vw;
+  border-radius: 1rem;
+  flex-shrink: 0;
+  overflow: hidden;
+  
+`;
+export const AdicionarTarefa = styled.button`
+
+  background: rgba(27, 27, 27, 0.2);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-left: 1rem;
+  margin-top: 1rem;
+  padding-left: 1rem;
+  padding-bottom: 0.3rem;
+  color: #FFFFFF;
+  height: 6vh;
+  width: 25.5vw;
+  border-radius: 1rem;
+  text-align: center;
+  overflow: hidden;
+
+  &:hover{
+  
+  color: #c0c0c0;
+  font-size: 27px;
+  
+  
+  }
+
 `;
 
 

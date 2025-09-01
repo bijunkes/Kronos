@@ -8,18 +8,22 @@ import {Container,
  LabelImportante,
  LabelNaoImportante,
  LabelUrgente,
- LabelNaoUrgente
+ LabelNaoUrgente,
+ Atividade,
+ Lista,
+ AdicionarTarefa
 } from "./style.js"
 
 
 function Eisenhower() {
 
+    const frutas = ["Laranja", "Maçã", "Morango", "Mirtilo", "Manga", "Maracujá", "Kiwi", "Pitaya","Pitanga", "Guaraná", "Tangerina"];
     const matriz = () => {
 
         return(
         <Container>
     
-            <ImportanteUrgente/>
+            <ImportanteUrgente><Lista>{frutas.map((fruta) => <Atividade>{ fruta }</Atividade>)}</Lista> <AdicionarTarefa>Adicionar Tarefa</AdicionarTarefa></ImportanteUrgente>
             <ImportanteNaoUrgente/>
         
             <NaoImportanteUrgente/>
