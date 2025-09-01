@@ -4,6 +4,7 @@ export const Background = styled.div`
   width: 100%;
   height: 100%;
   display: flex;
+  flex-direction: row;
   color: var(--cor-texto);
 `;
 
@@ -65,4 +66,13 @@ export const Atividade = styled.div`
 export const Prazo = styled.div`
   font-size: 16px;
   margin-left: auto;
-`
+`;
+
+export const Parte2 = styled.div`
+  background-color: var(--fundo-menu);
+  margin: 5vh;
+  margin-left: 0;
+  height: 90vh;
+  width: 111.5vh;
+  border-radius: 20px;
+`;

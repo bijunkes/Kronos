@@ -9,12 +9,14 @@ import {
     Botoes,
     AreaAtividades,
     Atividade,
-    Prazo
+    Prazo,
+    Parte2
 } from './styles.js'
 import { listarAtividades, listarListas, criarLista } from '../../services/api.js';
 
 function Atividades() {
     const [atividades, setAtividades] = useState([]);
+    const [mostrarParte2, setMostrarParte2] = useState(false);
 
     const fetchAtividades = async () => {
         try {
@@ -45,7 +47,7 @@ function Atividades() {
                         </NomeLista>
                         <Botoes>
                             <span className="material-symbols-outlined"
-                                id="add">
+                                id="add" onClick={() => setMostrarParte2(!mostrarParte2)}>
                                 add
                             </span>
                         </Botoes>
@@ -72,6 +74,11 @@ function Atividades() {
                     </AreaAtividades>
                 </Conteudo>
             </ContainerLista>
+            {mostrarParte2 && (
+                <Parte2>
+
+                </Parte2>
+            )}
         </Background>
     );
 }
