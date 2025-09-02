@@ -76,7 +76,7 @@ export const cadastroVerificacaoEmail = async (req, res) => {
     });
 
     return res.status(200).json({
-      message: 'Usuário registrado com sucesso! Verifique seu e-mail para ativar a conta.',
+      message: 'Verifique seu e-mail para ativar a conta.',
     });
   } catch (err) {
     console.error('Erro ao cadastrar usuário ou enviar e-mail de verificação:', err);

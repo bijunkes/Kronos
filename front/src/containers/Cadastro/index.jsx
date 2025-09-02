@@ -41,20 +41,7 @@ function Cadastro() {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    // --- Validações do cliente ---
-    if (!form.nome || !form.username || !form.email || !form.senha) {
-      showOkToast('Preencha todos os campos.', 'error');
-      return;
-    }
-    if (form.username.length < 5) {
-      showOkToast('O username deve ter no mínimo 5 caracteres.', 'error');
-      return;
-    }
-    const regexEspecial = /[!@#$%^&*(),.?":{}|<>_\-+=\[\]\\;'`~\/]/;
-    if (!regexEspecial.test(form.senha)) {
-      showOkToast('A senha deve conter pelo menos um caractere especial.', 'error');
-      return;
-    }
+//sem toasts no front
 
     try {
       setLoading(true);
