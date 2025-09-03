@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { criarAtividade } from "../../services/api";
 
-function ModalCriarAtividade({onAtividadeCriada}) {
+function ModalCriarAtividade({ onAtividadeCriada }) {
     const [aberto, setAberto] = useState(false);
     const [nome, setNome] = useState("");
     const [prazo, setPrazo] = useState("");
@@ -19,7 +19,7 @@ function ModalCriarAtividade({onAtividadeCriada}) {
                 descricaoAtividade: descricao,
             });
 
-            if(onAtividadeCriada) {
+            if (onAtividadeCriada) {
                 onAtividadeCriada(novaAtividade);
             }
 
@@ -27,10 +27,16 @@ function ModalCriarAtividade({onAtividadeCriada}) {
             setPrazo("");
             setDescricao("");
             fecharModal();
-        } catch(err) {
+        } catch (err) {
             console.error("Erro ao criar atividade: ", err);
         }
-    }
-} 
+    };
 
-export default ModalCriarAtividade();
+    return (
+        <div>
+            
+        </div>
+    );
+}
+
+export default ModalCriarAtividade;
