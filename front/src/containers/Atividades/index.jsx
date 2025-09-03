@@ -13,10 +13,11 @@ import {
     Parte2
 } from './styles.js'
 import { listarAtividades, listarListas, criarLista } from '../../services/api.js';
+import ModalCriarAtividade from '../ModalCriarAtividade/index.jsx';
 
 function Atividades() {
     const [atividades, setAtividades] = useState([]);
-    const [mostrarParte2, setMostrarParte2] = useState(false);
+    const [mostrarModal, setMostrarModal] = useState(false);
 
     const fetchAtividades = async () => {
         try {
@@ -47,7 +48,8 @@ function Atividades() {
                         </NomeLista>
                         <Botoes>
                             <span className="material-symbols-outlined"
-                                id="add" onClick={() => setMostrarParte2(!mostrarParte2)}>
+                                id="add"
+                                onClick={() => setMostrarModal(true)}>
                                 add
                             </span>
                         </Botoes>
@@ -74,10 +76,11 @@ function Atividades() {
                     </AreaAtividades>
                 </Conteudo>
             </ContainerLista>
-            {mostrarParte2 && (
-                <Parte2>
-
-                </Parte2>
+            {mostrarModal && (
+                <ModalCriarAtividade
+                    onClose={() => setMostrarModal(false)}
+                    onAtividadeCriada={fetchAtividades}
+                />
             )}
         </Background>
     );
