@@ -7,13 +7,14 @@ const api = axios.create({ baseURL: API_URL });
 if (!globalThis.__API_INTERCEPTORS__) {
   globalThis.__API_INTERCEPTORS__ = { req: null, res: null };
 }
+
+//se já existe um receptor registrado, ele é removido antes de criar outro
 if (globalThis.__API_INTERCEPTORS__.req !== null) {
   api.interceptors.request.eject(globalThis.__API_INTERCEPTORS__.req);
 }
 if (globalThis.__API_INTERCEPTORS__.res !== null) {
   api.interceptors.response.eject(globalThis.__API_INTERCEPTORS__.res);
 }
-
 
 globalThis.__API_INTERCEPTORS__.req = api.interceptors.request.use((config) => {
   const token = localStorage.getItem('token');

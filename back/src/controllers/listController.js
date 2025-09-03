@@ -22,7 +22,7 @@ export const criarLista = async (req, res) => {
         );
         
         res.status(200).json({ 
-            message: "Lista criada",
+            message: "Lista Criada",
             idLista: resultado.insertId,
             nomeLista: nome
         });

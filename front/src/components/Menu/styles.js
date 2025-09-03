@@ -138,6 +138,7 @@ export const OpcoesAbaixo = styled.div`
 
   :hover{
     cursor: pointer;
+    color: var(--cinza-mais-claro-ainda);
   }
 `
 

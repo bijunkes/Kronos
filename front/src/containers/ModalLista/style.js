@@ -68,6 +68,6 @@ export const Button = styled.button`
         background-color: var(--Importante-Urgente);
     }
     &#criar:hover {
-        background-color: var(--fundo-parte2);
+        background-color: var(--NaoImportante-NaoUrgente);
     }
 `;

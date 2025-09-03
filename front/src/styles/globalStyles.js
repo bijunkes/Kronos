@@ -10,15 +10,13 @@ const MyGlobalStyles = createGlobalStyle`
         --fundo-parte2: #2A2A2A;
         --fundo-campo: #313131;
         --cinza-claro: #353535;
+        --cinza-mais-claro-ainda:  #7d786bff;
         --cor-texto: #ffffff;
         --Importante-Urgente: #B3261E;
-        --botao-Importante-Urgente:
         --NaoImportante-Urgente: #007AFF;
-        --botao-NaoImportante-Urgente:
         --Importante-NaoUrgente: #FFCC00;
-        --botao-Importante-NaoUrgente:
         --NaoImportante-NaoUrgente: #34C759;
-        --botao-NaoImportante-NaoUrgente:
+        
     }
 
     * {

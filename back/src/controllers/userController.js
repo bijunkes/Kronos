@@ -233,6 +233,7 @@ export const resetConfirmar = async (req, res) => {
     <p>Redirecionando para <a href="${url}">redefinição</a>…</p>
   `);
 };
+
 // VERIFICA SE USUÁRIO EXISTE 
 export const usuarioExiste = async (req, res) => {
   const { email } = req.query;
