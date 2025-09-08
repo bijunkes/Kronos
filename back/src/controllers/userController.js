@@ -30,34 +30,51 @@ function verificarTokenVerificacao(token) {
 
 // CADASTRO COM VERIFICAÇÃO POR EMAIL 
 export const cadastroVerificacaoEmail = async (req, res) => {
-  const { username, nome, email, senha, icon } = req.body;
-
-  if (!username || username.length < 4) return res.status(400).json({ error: 'O username deve ter no mínimo 4 caracteres.' });
-
-  if (nome.length > 15) return res.status(400).json({ error: 'O nome deve ter no máximo 15 carcteres' });
-
-  const regexEspecial = /[!@#$%^&*(),.?":{}|<>_\-+=\[\]\\;'/~]/;
-  if (!senha || !regexEspecial.test(senha)) return res.status(400).json({ error: 'A senha deve conter pelo menos um caractere especial.' });
-
-  if (!senha || senha.length < 5 || senha.length > 20) {
-    return res.status(400).json({
-      error: 'A senha deve ter entre 5 e 20 caracteres.'
-    });
-  }
-
   try {
-    const [uRows] = await pool.query('SELECT 1 FROM usuarios WHERE username = ? LIMIT 1', [username]);
+    const { username, nome, email, senha, icon } = req.body ?? {};
+
+    const usernameStr = typeof username === 'string' ? username.trim() : '';
+    const nomeStr     = typeof nome     === 'string' ? nome.trim()     : '';
+    const emailStr    = typeof email    === 'string' ? email.trim()    : '';
+    const senhaStr    = String(senha ?? '').trim(); // <- garante string
+
+    if (!usernameStr || usernameStr.length < 4) {
+      return res.status(400).json({ error: 'O username deve ter no mínimo 4 caracteres.' });
+    }
+
+    if (!nomeStr) {
+      return res.status(400).json({ error: 'Informe o nome.' });
+    }
+
+    if (nomeStr.length > 15) {
+      return res.status(400).json({ error: 'O nome deve ter no máximo 15 carcteres' });
+    }
+
+    if (!emailStr) {
+      return res.status(400).json({ error: 'Informe o e-mail.' });
+    }
+
+    if (senhaStr.length < 5 || senhaStr.length > 20) {
+      return res.status(400).json({ error: 'A senha deve ter entre 5 e 20 caracteres.' });
+    }
+
+    const regexEspecial = /[!@#$%^&*(),.?":{}|<>_\-+=\[\]\\;'"\/~]/;
+    if (!regexEspecial.test(senhaStr)) {
+      return res.status(400).json({ error: 'A senha deve conter pelo menos um caractere especial.' });
+    }
+
+    const [uRows] = await pool.query('SELECT 1 FROM usuarios WHERE username = ? LIMIT 1', [usernameStr]);
     if (uRows.length) return res.status(400).json({ error: 'Username já cadastrado' });
 
-    const [eRows] = await pool.query('SELECT 1 FROM usuarios WHERE email = ? LIMIT 1', [email]);
+    const [eRows] = await pool.query('SELECT 1 FROM usuarios WHERE email = ? LIMIT 1', [emailStr]);
     if (eRows.length) return res.status(400).json({ error: 'Email já cadastrado' });
 
-    const senhaCriptografada = await bcrypt.hash(senha, SALT_ROUND);
+    const senhaCriptografada = await bcrypt.hash(senhaStr, SALT_ROUND);
 
     const token = assinarTokenVerificacao({
-      username,
-      nome,
-      email,
+      username: usernameStr,
+      nome: nomeStr,
+      email: emailStr,
       senhaHash: senhaCriptografada,
       icon: icon ?? null,
       iat_ms: Date.now(),
@@ -67,10 +84,10 @@ export const cadastroVerificacaoEmail = async (req, res) => {
 
     await mailer.sendMail({
       from: `"Kronos" <${process.env.MAIL_USER}>`,
-      to: email,
+      to: emailStr,
       subject: 'Confirme seu cadastro - Kronos',
       html: `
-        <h2>Olá, ${nome || username}!</h2>
+        <h2>Olá, ${nomeStr || usernameStr}!</h2>
         <p>Para concluir seu cadastro no <b>Kronos</b>, confirme seu e-mail clicando no botão abaixo:</p>
         <p>
           <a href="${verifyUrl}" style="padding:10px 20px;background:#4CAF50;color:#fff;text-decoration:none;border-radius:6px;display:inline-block">
@@ -81,14 +98,13 @@ export const cadastroVerificacaoEmail = async (req, res) => {
       `,
     });
 
-    return res.status(200).json({
-      message: 'Verifique seu e-mail para ativar a conta.',
-    });
+    return res.status(200).json({ message: 'Verifique seu e-mail para ativar a conta.' });
   } catch (err) {
     console.error('Erro ao cadastrar usuário ou enviar e-mail de verificação:', err);
     return res.status(500).json({ error: 'Não foi possível processar a solicitação.' });
   }
 };
+
 
 // VERIFICAÇÃO DE EMAIL
 export const verificarEmail = async (req, res) => {
@@ -206,6 +222,12 @@ export const redefinirSenha = async (req, res) => {
 
   const regexEspecial = /[!@#$%^&*(),.?":{}|<>_\-+=\[\]\\;'/~]/;
   if (!regexEspecial.test(novaSenha)) return res.status(400).json({ error: 'A senha deve conter pelo menos um caractere especial.' });
+
+  if (!senha || senha.length < 5 || senha.length > 20) {
+    return res.status(400).json({
+      error: 'A senha deve ter entre 5 e 20 caracteres.'
+    });
+  }
 
   try {
     const payload = jwt.verify(token, process.env.RESET_SECRET);
