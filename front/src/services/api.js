@@ -87,6 +87,11 @@ export const listarAtividades = async () => {
   return response.data;
 };
 
+export const listarAtividadesPorLista = async (nomeLista) => {
+  const response = await api.get(`/listas/${nomeLista}/atividades`);
+  return response.data;
+};
+
 export const atualizarAtividade = async (id, dados) => {
   const response = await api.put(`/atividades/${id}`, dados);
   return response.data;
@@ -101,6 +106,6 @@ export default api;
 
 
 export const cadastrarUsuario = async (dados) => (await api.post('/cadastro', dados)).data;
-export const criarLista        = async (nome)  => (await api.post('/listas', { nome })).data;
-export const listarListas      = async ()      => (await api.get('/listas')).data;
-export const deletarLista      = async (id)    => (await api.delete(`/listas/${id}`)).data;
+export const criarLista = async (nome) => (await api.post('/listas', { nome })).data;
+export const listarListas = async () => (await api.get('/listas')).data;
+export const deletarLista = async (id) => (await api.delete(`/listas/${id}`)).data;
