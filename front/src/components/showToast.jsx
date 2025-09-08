@@ -65,6 +65,6 @@ export function showOkToast(message, type = 'success') {
         </div>
       </div>
     ),
-    { duration: Infinity, position: 'top-center' }
+    { duration: 20000, position: 'top-center' }
   );
 }

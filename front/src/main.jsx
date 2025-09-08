@@ -10,7 +10,7 @@ ReactDOM.createRoot(document.getElementById('root')).render(
   <React.StrictMode>
     <MyGlobalStyles />
     <App />
-    <Toaster
+    <Toaster 
       position="top-center"
       containerStyle={{ marginTop: '20px', zIndex: 2147483647 }}
       toastOptions={{
