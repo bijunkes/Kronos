@@ -34,10 +34,16 @@ export const cadastroVerificacaoEmail = async (req, res) => {
 
   if (!username || username.length < 4) return res.status(400).json({ error: 'O username deve ter no mínimo 4 caracteres.' });
 
-  if (nome.length > 15) return res.status(400).json({error: 'O nome deve ter no máximo 15 carcteres'});
+  if (nome.length > 15) return res.status(400).json({ error: 'O nome deve ter no máximo 15 carcteres' });
 
   const regexEspecial = /[!@#$%^&*(),.?":{}|<>_\-+=\[\]\\;'/~]/;
   if (!senha || !regexEspecial.test(senha)) return res.status(400).json({ error: 'A senha deve conter pelo menos um caractere especial.' });
+
+  if (!senha || senha.length < 5 || senha.length > 20) {
+    return res.status(400).json({
+      error: 'A senha deve ter entre 5 e 20 caracteres.'
+    });
+  }
 
   try {
     const [uRows] = await pool.query('SELECT 1 FROM usuarios WHERE username = ? LIMIT 1', [username]);

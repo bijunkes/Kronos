@@ -136,9 +136,11 @@ export const OpcoesAbaixo = styled.div`
   width: 100%;
   margin-top: auto;
 
-  :hover{
+  #notificacao, #sino, #logout {
     cursor: pointer;
-    color: var(--cinza-mais-claro-ainda);
+    &:hover{
+      color: rgba(255, 255, 255, 0.4);
+    }
   }
 `
 

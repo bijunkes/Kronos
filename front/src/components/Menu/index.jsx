@@ -57,8 +57,19 @@ function Menu() {
   const handleSubmenuClick = (pai, item, idLista = null) => {
     if (submenuSelecionado.pai === pai && submenuSelecionado.item === item) {
       setSubmenuSelecionado({pai: '', item: ''});
-      setSubmenuAberto('listas');
-      navigate('/listas');
+
+      if (pai == "listas") {
+        setSubmenuAberto('listas');
+        navigate('/listas');
+      }
+      else if (pai == "tecnicas") {
+        setSubmenuAberto('tecnicas');
+        navigate('/tecnicas');
+      }
+      else if (pai == "relatorios") {
+        setSubmenuAberto('relatorios');
+        navigate('/relatorios');
+      }
       return;
     }
     setSubmenuSelecionado({pai, item});
@@ -222,14 +233,14 @@ function Menu() {
       </Lista>
       <OpcoesAbaixo>
         <OpcoesAbaixo1>
-          <span class="material-symbols-outlined">
+          <span class="material-symbols-outlined" id='sino'>
             schedule
           </span>
-          <span class="material-symbols-outlined">
+          <span class="material-symbols-outlined" id='notificacao'>
             notifications
           </span>
         </OpcoesAbaixo1>
-        <span class="material-symbols-outlined" onClick={handleLogout}>
+        <span class="material-symbols-outlined" id='logout' onClick={handleLogout}>
           logout
         </span>
       </OpcoesAbaixo>
