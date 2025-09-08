@@ -1,6 +1,6 @@
 import { useParams } from 'react-router-dom';
 import React, { useEffect, useState } from 'react';
-import { deletarLista } from '../../services/api.js';
+import { deletarLista, listarAtividadesPorLista, listarListas } from '../../services/api.js';
 import axios from 'axios';
 import {
     Background,
@@ -12,34 +12,40 @@ import {
     AreaAtividades,
     Atividade
 } from './styles.js'
+import ModalCriarAtividade from '../ModalCriarAtividade/index.jsx';
 
 function Lista() {
     const { nomeLista } = useParams();
     const [idLista, setIdLista] = useState(null);
     const [atividade, setAtividade] = useState([]);
-    const [concluido, setConcluido] = useState(false);
+
+    const [mostrarModal, setMostrarModal] = useState(false);
 
     useEffect(() => {
-        const token = localStorage.getItem("token");
-        if (!token) return;
-
-        axios.get(`http://localhost:3000/listas/${nomeLista}`, {
-            headers: { Authorization: `Bearer ${token}` },
-        })
-            .then((res) => {
-                const atividadeComEstado = res.data.map(t => ({
-                    ...t,
-                    concluido: false
-                }));
-                setAtividade(atividadeComEstado);
-                if (res.data.length > 0) {
-                    setIdLista(res.data[0].idLista);
-                }
-            })
-            .catch((err) => console.error("Erro ao buscar tarefas da lista", err));
+        carregarIdLista();
     }, [nomeLista]);
 
-    async function handleExcluir() {
+    const carregarIdLista = async () => {
+        try {
+            const listas = await listarListas();
+            const lista = listas.find(l => l.nome === nomeLista);
+            if (lista) setIdLista(lista.idLista);
+        } catch (err) {
+            console.error("Erro ao buscar lista pelo nome", err);
+        }
+    };
+
+    const atualizarLista = async () => {
+        if (!idLista) return;
+        try {
+            const atividades = await listarAtividadesPorLista(idLista);
+            setAtividade(atividades);
+        } catch (err) {
+            console.error("Erro ao buscar atividades da lista", err);
+        }
+    }
+
+    const handleExcluir = async () => {
         if (!idLista) return;
 
         try {
@@ -49,9 +55,9 @@ function Lista() {
             console.error('Erro ao deletar lista', err);
             alert('Não foi possível deletar a lista');
         }
-    }
+    };
 
-    function toggleConcluido() {
+    function toggleConcluido(index) {
         const novasAtividade = [...atividade];
         novasAtividade[index].concluido = !novasAtividade[index].concluido;
         setAtividade(novasAtividade);
@@ -66,36 +72,47 @@ function Lista() {
                             {nomeLista}
                         </NomeLista>
                         <Botoes>
-                            <span class="material-symbols-outlined"
-                            id="delete">
+                            <span className="material-symbols-outlined"
+                                id="delete"
+                                onClick={handleExcluir}>
                                 delete
                             </span>
-                            <span class="material-symbols-outlined"
-                            id="add">
+                            <span className="material-symbols-outlined"
+                                id="add"
+                                onClick={() => setMostrarModal(true)}>
                                 add
                             </span>
                         </Botoes>
                     </Header>
                     <AreaAtividades>
                         {atividade.map((a, index) => (
-                            <Atividade key={atividade.idAtividade || index}>
+                            <Atividade key={a.idAtividade || index}>
                                 <span
-                                    class="material-symbols-outlined"
+                                    className="material-symbols-outlined"
                                     style={{ fontSize: "20px", cursor: "pointer" }}
-                                    onClick={toggleConcluido(index)}
+                                    onClick={() => toggleConcluido(index)}
                                 >
-                                    {atividade.concluido
+                                    {a.concluido
                                         ? "radio_button_checked"
                                         : "radio_button_unchecked"}
 
                                 </span>
-                                {atividade.nomeAtividade}
+                                {a.nomeAtividade}
                             </Atividade>
                         ))}
                     </AreaAtividades>
                 </Conteudo>
             </ContainerLista>
+            <ModalCriarAtividade
+                isOpen={mostrarModal}
+                onClose={() => setMostrarModal(false)}
+                listaId={idLista}
+                onAtividadeCriada={() => {
+                    atualizarLista();
+                }}
+            />
         </Background>
+
     );
 }
 
