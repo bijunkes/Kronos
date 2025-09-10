@@ -35,3 +35,10 @@ export const ModalHeader = styled.div`
     color: var(--cor-texto);
     padding: 3vh;
 `;
+export const ModalButton = styled.div`
+    display: flex;
+    flex-direction: row;
+    padding: 3vh;
+    gap: 1.5vh;
+    justify-content: flex-end;
+`;
