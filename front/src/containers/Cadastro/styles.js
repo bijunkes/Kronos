@@ -65,7 +65,7 @@ export const Form = styled.form`
   flex-direction: column;
   align-items: center;
   gap: 3vh;
-  width: 70vh
+  width: 80vh
 `;
 
 export const Negrito2 = styled.p`
@@ -81,45 +81,27 @@ export const Opaco2 = styled.p`
   margin-bottom: 5vh;
 `;
 
-export const Wrapper = styled.div`
-  position: relative;
-  width: 100%;
-`;
-
-export const Input2 = styled.input`
-  background-color: var(--fundo-campo);
-  padding: 2.5vh 6vh;
-  border-radius: 40px;
-  width: 100%;
-  cursor: pointer;
-
-  /* espaço extra à direita pro ícone não ficar em cima do texto */
-  padding-right: 7.5vh;
-  border: none;
-  outline: none;
-  font-size: 14px;
-`;
-
 export const ToggleEye = styled.img`
-  position: absolute;
-  right: 20px;
+  right: 12px; 
   top: 50%;
-  transform: translateY(-50%);
   width: 24px;
   height: 24px;
-  cursor: pointer;
+  cursor: text;
   opacity: 0.75;
   user-select: none;
 
-  &:hover { opacity: 1; }
+  &:hover { opacity: 1; 
+  cursor: pointer}
 `;
+
 
 export const Input = styled.input`
   background-color: var(--fundo-campo);
-  padding: 2.5vh 6vh;
+  padding: 2.5vh 0vh 2.5vh 0vh;
   border-radius: 40px;
   width: 100%;
-  cursor: pointer;
+  cursor: text;
+  text-indent: 4vh;
 `;
 
 export const ButtonCadastrar = styled.button`
