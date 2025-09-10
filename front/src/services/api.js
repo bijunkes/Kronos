@@ -87,8 +87,8 @@ export const listarAtividades = async () => {
   return response.data;
 };
 
-export const listarAtividadesPorLista = async (nomeLista) => {
-  const response = await api.get(`/listas/${nomeLista}/atividades`);
+export const listarAtividadesPorLista = async (idLista) => {
+  const response = await api.get(`/atividades/lista/${idLista}`);
   return response.data;
 };
 

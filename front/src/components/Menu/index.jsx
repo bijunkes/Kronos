@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect} from 'react';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import {
@@ -56,7 +56,7 @@ function Menu() {
 
   const handleSubmenuClick = (pai, item, idLista = null) => {
     if (submenuSelecionado.pai === pai && submenuSelecionado.item === item) {
-      setSubmenuSelecionado({pai: '', item: ''});
+      setSubmenuSelecionado({ pai: '', item: '' });
 
       if (pai == "listas") {
         setSubmenuAberto('listas');
@@ -72,7 +72,7 @@ function Menu() {
       }
       return;
     }
-    setSubmenuSelecionado({pai, item});
+    setSubmenuSelecionado({ pai, item });
     if (pai === 'listas') {
       const listaSlug = encodeURIComponent(item);
       navigate(`/listas/${listaSlug}`);
@@ -81,7 +81,6 @@ function Menu() {
 
   const abrirModal = () => setModalListaAberto(true);
   const fecharModal = () => {
-    setNovaLista('');
     setModalListaAberto(false);
   };
 
@@ -89,10 +88,11 @@ function Menu() {
     try {
       const listas = await listarListas();
       setListas(listas);
+      localStorage.setItem('atualizarListas', Date.now());
     } catch (err) {
       console.error("Erro ao buscar listas:", err)
     }
-  }
+  };
 
   useEffect(() => {
     if (submenuAberto === 'listas') {
@@ -100,15 +100,29 @@ function Menu() {
     }
   }, [submenuAberto])
 
+  useEffect(() => {
+    const handleListasAtualizadas = () => atualizarListas();
+
+    window.addEventListener('listasAtualizadas', handleListasAtualizadas);
+
+    return () => {
+      window.removeEventListener('listasAtualizadas', handleListasAtualizadas);
+    };
+  }, []);
+
+
   const handleCriarLista = async (nome) => {
-    if (listas.some(lista => lista.nomeLista.toLowerCase() === nome.toLowerCase())){
+    if (listas.some(lista => lista.nomeLista.toLowerCase() === nome.toLowerCase())) {
       alert("Lista existe. Tente outro nome.");
       return;
     }
     try {
+      const novaLista = await criarLista(nome);
+      fecharModal();
       await criarLista(nome);
       atualizarListas();
-      fecharModal();
+      window.dispatchEvent(new Event('listasAtualizadas'));
+      navigate(`/listas/${encodeURIComponent(novaLista.nomeLista)}`);
     } catch (err) {
       console.error("Erro ao criar lista:", err)
     }
@@ -161,8 +175,9 @@ function Menu() {
 
       <Lista>
         <ItemMaior
-          style={{ color: submenuAberto === 'listas' && submenuSelecionado.pai !== 'listas' ? '#AF52DE' : '' }}
-          onClick={() => handleClick('listas', false)}
+          style={{ color: submenuAberto === 'listas' ? '#AF52DE' : '' }}
+          onClick={() => {handleClick('listas', false);
+          }}
         >
           <ListasHeader>
             Listas
