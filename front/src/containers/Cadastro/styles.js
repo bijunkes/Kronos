@@ -81,6 +81,39 @@ export const Opaco2 = styled.p`
   margin-bottom: 5vh;
 `;
 
+export const Wrapper = styled.div`
+  position: relative;
+  width: 100%;
+`;
+
+export const Input2 = styled.input`
+  background-color: var(--fundo-campo);
+  padding: 2.5vh 6vh;
+  border-radius: 40px;
+  width: 100%;
+  cursor: pointer;
+
+  /* espaço extra à direita pro ícone não ficar em cima do texto */
+  padding-right: 7.5vh;
+  border: none;
+  outline: none;
+  font-size: 14px;
+`;
+
+export const ToggleEye = styled.img`
+  position: absolute;
+  right: 20px;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 24px;
+  height: 24px;
+  cursor: pointer;
+  opacity: 0.75;
+  user-select: none;
+
+  &:hover { opacity: 1; }
+`;
+
 export const Input = styled.input`
   background-color: var(--fundo-campo);
   padding: 2.5vh 6vh;

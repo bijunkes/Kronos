@@ -1,12 +1,18 @@
 import React, { useState, useRef, useEffect } from "react";
-import { 
+import {
   Container, Parte1, LeftAlign, Negrito, Opaco, ButtonEntrar,
-  Parte2, Form, Negrito2, Opaco2, Input, ButtonCadastrar
-} from './styles.js';
-import LogoKronos from '../../assets/LogoKronos.png';
+  Parte2, Form, Negrito2, Opaco2, Input, ButtonCadastrar,
+  Input2, Wrapper, ToggleEye
+} from "./styles.js";
+
+import olhoFechado from "../../assets/olhoFechado.png";
+import olhoAberto from "../../assets/olhoAberto.png";
+import LogoKronos from "../../assets/LogoKronos.png";
+
 import { useNavigate } from "react-router-dom";
 import { cadastrarUsuario, usuarioExiste } from "../../services/api.js";
-import { showOkToast } from '../../components/showToast.jsx';
+import { showOkToast } from "../../components/showToast.jsx";
+
 
 function Cadastro() {
   const navigate = useNavigate();
@@ -125,7 +131,7 @@ function Cadastro() {
             onChange={handleChange}
           />
 
-          <Input
+          <Input2
             type="password"
             name="senha"
             placeholder="Senha"
