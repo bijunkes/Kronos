@@ -1,40 +1,49 @@
-import { useParams } from 'react-router-dom';
+
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
+import { listarAtividades, listarListas, criarLista } from '../../services/api.js';
+import {Overlay, AtividadeCard,ModalContainer, ModalHeader} from './style.js'
 
 function ModalEisenhower(){
 
-    const { nomeAtividade } = useParams();
+   
     const[atividades, setAtividades] = useState([]);
-    const[error,setError] = useState(null);
-    const[idAtividade,setIdAtividade] = useState(null);
+    const[error, setError] = useState(null);
+    
+    const fetchAtividades = async () => {
+            try {
+                const atividades = await listarAtividades();
+                setAtividades(atividades);
+            } catch (error) {
+                console.error("Erro ao buscar atividades", error);
+                setError("Erro ao buscar atividades");
+            }
+        }
 
     useEffect(() => {
 
-         const token = localStorage.getItem("token");
-        if (!token) return;
-            axios.get("http://localhost:3000/eisenhower-atividades/", {
-            headers: { Authorization: `Bearer ${token}` },
-        })
-            .then((res) => {
-                const atividadeComEstado = res.data.map(t => ({
-                    ...t,
-                    concluido: false
-                }));
-                setAtividades(atividadeComEstado);
-                if (res.data.length > 0) {
-                    setIdAtividade(res.data[0].idAtividade);
-                }
-            })
-            .catch((err) => console.error("Erro ao buscar tarefas", err));
-    }, [nomeAtividade])
+         fetchAtividades();
+    }, [])
             
 
     return(
-        <div>{nomeAtividade}</div>
+        
+        <Overlay>
+            <ModalContainer>
+                <ModalHeader>Atividades</ModalHeader>
+                {error && <p style={{ color: 'red' }}>{error}</p>}
+                {atividades.map((atividade, index) => (
+                    <AtividadeCard key={atividade.idAtividade || index}>
+                        <p>  <strong>{atividade.nome || "Sem nome"}</strong></p>
+              
+                    </AtividadeCard>
+                ))}
+            </ModalContainer>
+            
+        </Overlay>
     )
        
     }
     
 
-export default ModalEisenhower
+export default ModalEisenhower;
