@@ -64,3 +64,8 @@ export const Atividade = styled.div`
   align-items: center;
   gap: 1vh;
 `;
+
+export const Prazo = styled.div`
+  font-size: 16px;
+  margin-left: auto;
+`;

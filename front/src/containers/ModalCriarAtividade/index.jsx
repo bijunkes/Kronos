@@ -1,22 +1,43 @@
-import { useState } from "react";
-import { criarAtividade } from "../../services/api";
+import { useState, useEffect } from "react";
+import { criarAtividade, listarListas } from "../../services/api";
 import { ModalContainer, ModalHeader, ModalInput, Overlay, ModalButton, Button } from "./styles";
 
-function ModalCriarAtividade({ isOpen, onClose, onAtividadeCriada }) {
-  const [idLista, setIdLista] = useState(null);
+function ModalCriarAtividade({ isOpen, onClose, onAtividadeCriada, listaId }) {
   const [nome, setNome] = useState("");
   const [prazo, setPrazo] = useState("");
   const [descricao, setDescricao] = useState("");
+  const [idPadrao, setIdPadrao] = useState(null);
+
+  useEffect(() => {
+    const carregarListaPadrao = async () => {
+      try {
+        const listas = await listarListas();
+        const listaPadrao = listas.find(l => l.nome === "Atividades");
+        if (listaPadrao) setIdPadrao(listaPadrao.idLista);
+      } catch (err) {
+        console.error("Erro ao buscar lista padrão: ", err);
+      }
+    };
+    carregarListaPadrao();
+  }, []);
+
+  if (!isOpen) return null;
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+
+    const destinoListaId = listaId || idPadrao;
+    if (!destinoListaId) {
+      console.error("Nenhum id de lista disponível");
+      return;
+    }
 
     try {
       const novaAtividade = await criarAtividade({
         nomeAtividade: nome,
         prazoAtividade: prazo,
         descricaoAtividade: descricao,
-        idLista: idLista
+        listaId: destinoListaId
       });
 
       if (onAtividadeCriada) {
@@ -31,8 +52,6 @@ function ModalCriarAtividade({ isOpen, onClose, onAtividadeCriada }) {
       console.error("Erro ao criar atividade: ", err);
     }
   };
-
-  if (!isOpen) return null;
 
   return (
     <Overlay>

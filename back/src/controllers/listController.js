@@ -50,25 +50,30 @@ export const listarListas = async (req, res) => {
 }
 
 export const deletarLista = async (req, res) => {
-    const {id} = req.params;
+    const { id } = req.params;
     const usuarioUsername = req.usuarioUsername;
 
     try {
+        await pool.query(
+            "DELETE FROM atividades WHERE ListaAtividades_idLista = ? AND Usuarios_username = ?",
+            [id, usuarioUsername]
+        );
         const [resultado] = await pool.query(
             "DELETE FROM listaatividades WHERE idLista = ? AND Usuarios_username = ?",
             [id, usuarioUsername]
         );
 
-        if(resultado.affectedRows === 0) {
-            return res.status(404).json({error: "Lista não encontrada"});
+        if (resultado.affectedRows === 0) {
+            return res.status(404).json({ error: "Lista não encontrada" });
         }
 
-        res.json({message: "Lista deletada com sucesso"});
+        res.json({ message: "Lista e atividades deletadas com sucesso" });
     } catch (err) {
         console.log("Erro ao deletar lista:", err);
-        res.status(500).json({error: "Erro ao deletar lista"});
+        res.status(500).json({ error: "Erro ao deletar lista" });
     }
-}
+};
+
 
 export const garantirListaAtividades = async (usuarioUsername) => {
     const [listas] = await pool.query(

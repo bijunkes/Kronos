@@ -1,4 +1,4 @@
-import { useParams } from 'react-router-dom';
+import { useParams, useNavigate } from 'react-router-dom';
 import React, { useEffect, useState } from 'react';
 import { deletarLista, listarAtividadesPorLista, listarListas } from '../../services/api.js';
 import axios from 'axios';
@@ -10,57 +10,61 @@ import {
     NomeLista,
     Botoes,
     AreaAtividades,
-    Atividade
+    Atividade,
+    Prazo
 } from './styles.js'
 import ModalCriarAtividade from '../ModalCriarAtividade/index.jsx';
 
 function Lista() {
+    const navigate = useNavigate();
     const { nomeLista } = useParams();
-    const [idLista, setIdLista] = useState(null);
-    const [atividade, setAtividade] = useState([]);
 
+    const [idLista, setIdLista] = useState(null);
+    const [atividades, setAtividades] = useState([]);
     const [mostrarModal, setMostrarModal] = useState(false);
 
     useEffect(() => {
-        carregarIdLista();
+        const carregarLista = async () => {
+            try {
+                const listas = await listarListas();
+                const lista = listas.find(l => l.nomeLista === nomeLista);
+                if (lista) {
+                    setIdLista(lista.idLista);
+                    atualizarAtividades(lista.idLista);
+                }
+            } catch (err) {
+                console.error("Erro ao buscar lista pelo nome", err);
+            }
+        };
+        carregarLista();
     }, [nomeLista]);
 
-    const carregarIdLista = async () => {
+    const atualizarAtividades = async (id) => {
+        if (!id) return;
         try {
-            const listas = await listarListas();
-            const lista = listas.find(l => l.nome === nomeLista);
-            if (lista) setIdLista(lista.idLista);
-        } catch (err) {
-            console.error("Erro ao buscar lista pelo nome", err);
-        }
-    };
-
-    const atualizarLista = async () => {
-        if (!idLista) return;
-        try {
-            const atividades = await listarAtividadesPorLista(idLista);
-            setAtividade(atividades);
+            const dados = await listarAtividadesPorLista(id);
+            setAtividades(dados);
         } catch (err) {
             console.error("Erro ao buscar atividades da lista", err);
         }
-    }
+    };
 
     const handleExcluir = async () => {
         if (!idLista) return;
-
         try {
             await deletarLista(idLista);
-            alert('Lista deletada com sucesso');
+            window.dispatchEvent(new Event('listasAtualizadas'));
+            navigate('/home');
         } catch (err) {
             console.error('Erro ao deletar lista', err);
             alert('Não foi possível deletar a lista');
         }
     };
 
-    function toggleConcluido(index) {
-        const novasAtividade = [...atividade];
-        novasAtividade[index].concluido = !novasAtividade[index].concluido;
-        setAtividade(novasAtividade);
+    const toggleConcluido = (index) => {
+        const novasAtividades = [...atividades];
+        novasAtividades[index].concluido = !novasAtividades[index].concluido;
+        setAtividades(novasAtividades);
     }
 
     return (
@@ -85,7 +89,7 @@ function Lista() {
                         </Botoes>
                     </Header>
                     <AreaAtividades>
-                        {atividade.map((a, index) => (
+                        {atividades.map((a, index) => (
                             <Atividade key={a.idAtividade || index}>
                                 <span
                                     className="material-symbols-outlined"
@@ -98,6 +102,11 @@ function Lista() {
 
                                 </span>
                                 {a.nomeAtividade}
+                                <Prazo>
+                                    {a.prazoAtividade
+                                        ? new Date(a.prazoAtividade.replace(" ", "T")).toLocaleDateString()
+                                        : "Sem prazo"}
+                                </Prazo>
                             </Atividade>
                         ))}
                     </AreaAtividades>
@@ -107,8 +116,8 @@ function Lista() {
                 isOpen={mostrarModal}
                 onClose={() => setMostrarModal(false)}
                 listaId={idLista}
-                onAtividadeCriada={() => {
-                    atualizarLista();
+                onAtividadeCriada={(novaAtividades) => {
+                    setAtividades([...atividades, { ...novaAtividades, concluido: false }]);
                 }}
             />
         </Background>
