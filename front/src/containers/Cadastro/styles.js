@@ -84,8 +84,8 @@ export const Opaco2 = styled.p`
 export const ToggleEye = styled.img`
   right: 12px; 
   top: 50%;
-  width: 24px;
-  height: 24px;
+  width: 20px;
+  height: 20px;
   cursor: text;
   opacity: 0.75;
   user-select: none;
