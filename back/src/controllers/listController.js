@@ -74,7 +74,6 @@ export const deletarLista = async (req, res) => {
     }
 };
 
-
 export const garantirListaAtividades = async (usuarioUsername) => {
     const [listas] = await pool.query(
         "SELECT * FROM listaatividades WHERE nomeLista = ? AND Usuarios_username = ?", ["Atividades", usuarioUsername]
