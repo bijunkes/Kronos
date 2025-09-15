@@ -1,5 +1,5 @@
 import { Router } from 'express';
-import { criarLista, listarListas, deletarLista, garantirListaAtividades } from '../controllers/listController.js';
+import { criarLista, listarListas, deletarLista, garantirListaAtividades, listarTodasAtividades } from '../controllers/listController.js';
 import verificarToken from '../middlewares/userMiddleware.js';
 
 const listRoutes = Router();
@@ -7,6 +7,8 @@ const listRoutes = Router();
 listRoutes.post('/', verificarToken, criarLista);
 listRoutes.get('/', verificarToken, listarListas);
 listRoutes.delete('/:id', verificarToken, deletarLista);
+listRoutes.get('/atividades', verificarToken, listarTodasAtividades);
+
 
 listRoutes.get('/atividades', verificarToken, async (req, res) => {
     try {

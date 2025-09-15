@@ -12,7 +12,7 @@ import {
     Prazo,
     Parte2
 } from './styles.js'
-import { listarAtividades, listarListas, criarLista, listarAtividadesPorLista, garantirListaAtividades } from '../../services/api.js';
+import { listarAtividades, listarListas, criarLista, listarTodasAtividades } from '../../services/api.js';
 import ModalCriarAtividade from '../ModalCriarAtividade/index.jsx';
 
 function Atividades() {
@@ -30,19 +30,16 @@ function Atividades() {
     }
 
     useEffect(() => {
-    const carregarListaAtividades = async () => {
+    const carregarTodasAtividades = async () => {
         try {
-            const listaAtividades = await garantirListaAtividades();
-            setIdLista(listaAtividades.idLista);
-
-            const atividadesDaLista = await listarAtividadesPorLista(listaAtividades.idLista);
-            setAtividades(atividadesDaLista);
+            const todasAtividades = await listarTodasAtividades();
+            setAtividades(todasAtividades);
         } catch (err) {
-            console.error('Erro ao carregar lista "Atividades"', err);
+            console.error('Erro ao carregar todas as atividades', err);
         }
     };
 
-    carregarListaAtividades();
+    carregarTodasAtividades();
 }, []);
 
 

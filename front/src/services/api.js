@@ -117,3 +117,9 @@ export const listarListas = async () => {
   return listas.filter(lista => lista.nome !== "Atividades");
 };
 export const deletarLista = async (id) => (await api.delete(`/listas/${id}`)).data;
+
+export const listarTodasAtividades = async () => {
+    const response = await api.get('/listas/atividades');
+    return response.data;
+};
+
