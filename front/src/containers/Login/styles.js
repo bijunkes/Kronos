@@ -64,7 +64,7 @@ export const Form = styled.form`
   display: flex;
   flex-direction: column;
   align-items: center;
-  width: 70vh
+  width: 80vh
 `;
 
 export const Negrito2 = styled.p`
@@ -82,11 +82,24 @@ export const Opaco2 = styled.p`
 
 export const Input = styled.input`
   background-color: var(--fundo-campo);
-  padding: 2.5vh 6vh;
+  padding: 2.5vh 0vh 2.5vh 0vh;
   border-radius: 40px;
   width: 100%;
-  cursor: pointer;
-  margin-bottom: 1vh;
+  cursor: text;
+  text-indent: 4vh;
+`;
+
+export const ToggleEye = styled.img`
+  right: 12px; 
+  top: 50%;
+  width: 20px;
+  height: 20px;
+  cursor: text;
+  opacity: 0.75;
+  user-select: none;
+
+  &:hover { opacity: 1; 
+  cursor: pointer}
 `;
 
 export const ButtonCadastrar = styled.button`

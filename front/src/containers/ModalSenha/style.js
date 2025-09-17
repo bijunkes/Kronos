@@ -17,6 +17,19 @@ export const Parte1 = styled.div`
   gap: 16vh;
 `;
 
+export const ToggleEye = styled.img`
+  right: 12px; 
+  top: 50%;
+  width: 20px;
+  height: 20px;
+  cursor: text;
+  opacity: 0.75;
+  user-select: none;
+
+  &:hover { opacity: 1; 
+  cursor: pointer}
+`;
+
 export const Logo = styled.p`
   font-size: 56px;
 `;
