@@ -136,6 +136,7 @@ export const Atividade = styled.li`
   border-radius: 1rem;
   flex-shrink: 0;
   overflow: hidden;
+  flex-direction: row;
   
 `;
 export const AdicionarTarefa = styled.button`
@@ -162,6 +163,12 @@ export const AdicionarTarefa = styled.button`
   
   
   }
+
+`;
+export const Icones = styled.button`
+    position: relative;
+    left: 21rem;
+    color: rgba(255, 255, 255, 1);
 
 `;
 
