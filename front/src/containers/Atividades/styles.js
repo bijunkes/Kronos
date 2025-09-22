@@ -61,6 +61,7 @@ export const Atividade = styled.div`
   align-items: center;
   border-radius: 20px;
   gap: 1vh;
+  cursor: pointer;
 `;
 
 export const Prazo = styled.div`
@@ -69,10 +70,4 @@ export const Prazo = styled.div`
 `;
 
 export const Parte2 = styled.div`
-  background-color: var(--fundo-menu);
-  margin: 5vh;
-  margin-left: 0;
-  height: 90vh;
-  width: 111.5vh;
-  border-radius: 20px;
 `;

@@ -4,6 +4,7 @@ export const Background = styled.div`
   width: 100%;
   height: 100%;
   display: flex;
+  flex-direction: row;
   color: var(--cor-texto);
 `;
 
@@ -35,37 +36,44 @@ export const Botoes = styled.div`
   gap: 1.5vh;
   margin-left: auto;
 
+#add {
+    cursor: pointer;
+    &:hover{
+      color: rgba(255, 255, 255, 0.4);
+    }
+  }
   #delete {
     cursor: pointer;
     &:hover{
       color: var(--Importante-Urgente);
     }
   }
-
-  #add {
-    cursor: pointer;
-    &:hover{
-      color: rgba(255, 255, 255, 0.4);
-    }
-  }
 `;
 
 export const AreaAtividades = styled.div`
-  padding: 0 2vh 0 2vh;
   font-size: 18px;
-  background-color: var(--fundo-menu-ativo);
-  border-radius: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 1.5vh;
 `;
 
 export const Atividade = styled.div`
+  padding: 0 2vh 0 2vh;
+  width: 100%;
+  background-color: var(--fundo-menu-ativo);
   font-size: 18px;
-  height: 6vh;
+  height: 7vh;
   display: flex;
   align-items: center;
+  border-radius: 20px;
   gap: 1vh;
+  cursor: pointer;
 `;
 
 export const Prazo = styled.div`
   font-size: 16px;
   margin-left: auto;
+`;
+
+export const Parte2 = styled.div`
 `;

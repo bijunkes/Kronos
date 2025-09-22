@@ -11,9 +11,11 @@ import {
     Botoes,
     AreaAtividades,
     Atividade,
-    Prazo
+    Prazo,
+    Parte2
 } from './styles.js'
 import ModalCriarAtividade from '../ModalCriarAtividade/index.jsx';
+import AtividadeSelecionada from '../AtividadeSelecionada/index.jsx';
 
 function Lista() {
     const navigate = useNavigate();
@@ -21,6 +23,7 @@ function Lista() {
 
     const [idLista, setIdLista] = useState(null);
     const [atividades, setAtividades] = useState([]);
+    const [atividadeSelecionada, setAtividadeSelecionada] = useState(null);
     const [mostrarModal, setMostrarModal] = useState(false);
 
     useEffect(() => {
@@ -89,26 +92,41 @@ function Lista() {
                         </Botoes>
                     </Header>
                     <AreaAtividades>
-                        {atividades.map((a, index) => (
-                            <Atividade key={a.idAtividade || index}>
-                                <span
-                                    className="material-symbols-outlined"
-                                    style={{ fontSize: "20px", cursor: "pointer" }}
-                                    onClick={() => toggleConcluido(index)}
-                                >
-                                    {a.concluido
-                                        ? "radio_button_checked"
-                                        : "radio_button_unchecked"}
+                        {atividades.map((a, index) => {
+                            const isSelecionada = atividadeSelecionada?.idAtividade === a.idAtividade;
 
-                                </span>
-                                {a.nomeAtividade}
-                                <Prazo>
-                                    {a.prazoAtividade
-                                        ? new Date(a.prazoAtividade.replace(" ", "T")).toLocaleDateString()
-                                        : "Sem prazo"}
-                                </Prazo>
-                            </Atividade>
-                        ))}
+                            return (
+                                <Atividade
+                                    key={a.idAtividade || index}
+                                    onClick={() => {
+                                        if (isSelecionada) {
+                                            setAtividadeSelecionada(null);
+                                        } else {
+                                            setAtividadeSelecionada(a);
+                                        }
+                                    }}
+                                    style={{
+                                        backgroundColor: isSelecionada ? 'var(--cinza-claro)' : 'var(--fundo-menu-ativo)'
+                                    }}
+                                >
+                                    <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                                        <span
+                                            className="material-symbols-outlined"
+                                            style={{ fontSize: "20px", cursor: "pointer" }}
+                                            onClick={(e) => toggleConcluido(index, e)}
+                                        >
+                                            {a.concluido
+                                                ? "radio_button_checked"
+                                                : "radio_button_unchecked"}
+                                        </span>
+                                        {a.nomeAtividade}
+                                    </div>
+                                    <Prazo>
+                                        {new Date(a.prazoAtividade.replace(" ", "T")).toLocaleDateString()}
+                                    </Prazo>
+                                </Atividade>
+                            );
+                        })}
                     </AreaAtividades>
                 </Conteudo>
             </ContainerLista>
@@ -120,6 +138,9 @@ function Lista() {
                     setAtividades([...atividades, { ...novaAtividades, concluido: false }]);
                 }}
             />
+            <Parte2>
+                <AtividadeSelecionada atividade={atividadeSelecionada} onClose={() => setAtividadeSelecionada(null)} />
+            </Parte2>
         </Background>
 
     );
