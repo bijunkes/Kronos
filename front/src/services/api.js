@@ -1,14 +1,15 @@
 import axios from 'axios';
 import { showOkToast } from '../components/showToast.jsx';
 
-const API_URL = 'http://localhost:3000';
+const API_URL =
+  (typeof import.meta !== 'undefined' && import.meta.env?.VITE_API_URL) ||
+  'http://localhost:3000';
+
 const api = axios.create({ baseURL: API_URL });
 
 if (!globalThis.__API_INTERCEPTORS__) {
   globalThis.__API_INTERCEPTORS__ = { req: null, res: null };
 }
-
-//se já existe um receptor registrado, ele é removido antes de criar outro
 if (globalThis.__API_INTERCEPTORS__.req !== null) {
   api.interceptors.request.eject(globalThis.__API_INTERCEPTORS__.req);
 }
@@ -24,15 +25,14 @@ globalThis.__API_INTERCEPTORS__.req = api.interceptors.request.use((config) => {
 
 globalThis.__API_INTERCEPTORS__.res = api.interceptors.response.use(
   (response) => {
-    // Mostra toast de sucesso só quando o backend retornar { message }
-    if (response?.data?.message) {
-      // id estável por rota evita duplicação
-      showOkToast(response.data.message, 'success', { id: `s:${response.config?.url}` });
+    if (!response.config?.__successSilent && response?.data?.message) {
+      showOkToast(response.data.message, 'success', {
+        id: `s:${response.config?.url}`,
+      });
     }
     return response;
   },
   (error) => {
-    // Permite que chamadas específicas suprimam o toast do interceptor
     if (error.config?.__silent) return Promise.reject(error);
 
     const msg =
@@ -41,7 +41,6 @@ globalThis.__API_INTERCEPTORS__.res = api.interceptors.response.use(
       error.message ||
       'Ocorreu um erro.';
 
-    // id estável por status+rota evita toasts repetidos
     const status = error.response?.status || 'x';
     const url = error.config?.url || 'unknown';
     showOkToast(msg, 'error', { id: `e:${status}:${url}` });
@@ -52,74 +51,65 @@ globalThis.__API_INTERCEPTORS__.res = api.interceptors.response.use(
 
 
 export const usuarioExiste = async (email) => {
-  const response = await api.get('/usuario-existe', { params: { email } });
-  return response.data; // { existe: true/false }
+  const { data } = await api.get('/usuario-existe', {
+    params: { email },
+    __successSilent: true,
+  });
+  const exists = data?.exists ?? data?.existe ?? false;
+  return { exists };
 };
 
 export const solicitarResetSenha = async (email) => {
   const res = await api.post('/senha/reset-solicitar', { email });
-  return res.data;
+  return res.data; 
 };
 
 export const redefinirSenha = async ({ token, novaSenha }) => {
   const res = await api.post('/senha/reset', { token, novaSenha });
-  return res.data;
+  return res.data; 
 };
 
 export const login = async (dados) => {
-  const response = await api.post('/login', dados);
-  return response.data;
+  const { data } = await api.post('/login', dados);
+  return data; 
 };
-
 
 export const loginUsuario = async (dados) => {
-  const response = await api.post('/login', dados, { __silent: true });
-  return response.data;
+  const { data } = await api.post('/login', dados, { __silent: true });
+  return data;
 };
 
-export const criarAtividade = async (dados) => {
-  const response = await api.post('/atividades', dados);
-  return response.data;
+export const criarAtividade = async (dados) => (await api.post('/atividades', dados)).data;
+
+export const listarAtividades = async () => (await api.get('/atividades', { __successSilent: true })).data;
+
+export const garantirListaAtividades = async () =>
+  (await api.get('/listas/atividades', { __successSilent: true })).data;
+
+export const listarAtividadesPorLista = async (idLista) =>
+  (await api.get(`/atividades/lista/${idLista}`, { __successSilent: true })).data;
+
+export const atualizarAtividade = async (id, dados) =>
+  (await api.put(`/atividades/${id}`, dados)).data;
+
+export const deletarAtividade = async (id) =>
+  (await api.delete(`/atividades/${id}`)).data;
+
+export const cadastrarUsuario = async (dados) =>
+  (await api.post('/cadastro', dados)).data;
+
+export const criarLista = async (nome) =>
+  (await api.post('/listas', { nome })).data;
+
+export const listarListas = async () => {
+  const listas = (await api.get('/listas', { __successSilent: true })).data;
+  return listas.filter((lista) => lista.nome !== 'Atividades');
 };
 
-export const listarAtividades = async () => {
-  const response = await api.get('/atividades');
-  return response.data;
-};
+export const deletarLista = async (id) =>
+  (await api.delete(`/listas/${id}`)).data;
 
-export const garantirListaAtividades = async () => {
-    const response = await api.get('/listas/atividades');
-    return response.data;
-};
-
-export const listarAtividadesPorLista = async (idLista) => {
-  const response = await api.get(`/atividades/lista/${idLista}`);
-  return response.data;
-};
-
-export const atualizarAtividade = async (id, dados) => {
-  const response = await api.put(`/atividades/${id}`, dados);
-  return response.data;
-};
-
-export const deletarAtividade = async (id) => {
-  const response = await api.delete(`/atividades/${id}`);
-  return response.data;
-};
+export const listarTodasAtividades = async () =>
+  (await api.get('/listas/atividades', { __successSilent: true })).data;
 
 export default api;
-
-
-export const cadastrarUsuario = async (dados) => (await api.post('/cadastro', dados)).data;
-export const criarLista = async (nome) => (await api.post('/listas', { nome })).data;
-export const listarListas = async () => {
-  const listas = (await api.get('/listas')).data;
-  return listas.filter(lista => lista.nome !== "Atividades");
-};
-export const deletarLista = async (id) => (await api.delete(`/listas/${id}`)).data;
-
-export const listarTodasAtividades = async () => {
-    const response = await api.get('/listas/atividades');
-    return response.data;
-};
-

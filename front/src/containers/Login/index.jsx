@@ -51,7 +51,6 @@ function Login() {
     const tid = toast.loading('Enviando link de redefinição...', { position: 'top-center' });
     try {
       await solicitarResetSenha(emailParaReset);
-      showOkToast('Se o e-mail existir, enviaremos o link de redefinição.', 'success');
     } catch (err) {
       showOkToast(err?.response?.data?.error || 'Não foi possível enviar o link.', 'error');
     } finally {

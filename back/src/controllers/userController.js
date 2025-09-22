@@ -4,7 +4,7 @@ import jwt from 'jsonwebtoken';
 import nodemailer from 'nodemailer';
 import pool from '../db.js';
 
-const SALT_ROUND = 10;
+const SALT_ROUND = Number(process.env.SALT_ROUNDS || 10);
 const EMAIL_VERIFY_EXP_MIN = Number(process.env.EMAIL_VERIFY_EXP_MIN || 60);
 const RESET_EXP_MIN = Number(process.env.RESET_EXP_MIN || 30);
 const API_BASE = process.env.API_BASE_URL || 'http://localhost:3000';
@@ -181,19 +181,32 @@ export const perfil = async (req, res) => {
   }
 };
 
-// RESET DE SENHA 
+// RESET DE SENHA
 export const solicitarResetSenha = async (req, res) => {
-  const { email } = req.body;
+  const email = (req.body?.email || '').trim().toLowerCase();
   if (!email) return res.status(400).json({ error: 'Informe o e-mail.' });
 
   try {
-    const [rows] = await pool.query('SELECT username, email FROM usuarios WHERE email = ? LIMIT 1', [email]);
-    if (!rows.length) return res.json({ message: 'Se o e-mail existir, enviaremos um link de redefinição.' });
+    const [rows] = await pool.query(
+      'SELECT username, email FROM usuarios WHERE email = ? LIMIT 1',
+      [email]
+    );
 
-    const user = rows[0];
-    const token = jwt.sign({ email: user.email, username: user.username }, process.env.RESET_SECRET, { expiresIn: `${RESET_EXP_MIN}m` });
+    // resposta genérica para não vazar existência de conta
+    if (!rows.length) {
+      return res.json({ message: 'Se o e-mail existir, enviaremos um link de redefinição.' });
+    }
 
+    const user  = rows[0];
+    const token = jwt.sign(
+      { email: user.email, username: user.username },
+      process.env.RESET_SECRET,
+      { expiresIn: `${RESET_EXP_MIN}m` }
+    );
+
+    // o link bate na API e redireciona para a página do front
     const link = `${API_BASE}/senha/reset-confirmar?token=${encodeURIComponent(token)}`;
+
     await mailer.sendMail({
       from: `"Kronos" <${process.env.MAIL_USER}>`,
       to: user.email,
@@ -206,6 +219,7 @@ export const solicitarResetSenha = async (req, res) => {
             Redefinir minha senha
           </a>
         </p>
+        <p style="color:#666">Se o botão não funcionar, copie e cole este link no navegador:<br>${link}</p>
       `,
     });
 
@@ -217,40 +231,51 @@ export const solicitarResetSenha = async (req, res) => {
 };
 
 export const redefinirSenha = async (req, res) => {
-  const { token, novaSenha } = req.body;
-  if (!token || !novaSenha) return res.status(400).json({ error: 'Dados incompletos.' });
+  const { token, novaSenha } = req.body || {};
+  const senha = String(novaSenha ?? '').trim();
 
-  const regexEspecial = /[!@#$%^&*(),.?":{}|<>_\-+=\[\]\\;'/~]/;
-  if (!regexEspecial.test(novaSenha)) return res.status(400).json({ error: 'A senha deve conter pelo menos um caractere especial.' });
+  if (!token || !senha) {
+    return res.status(400).json({ error: 'Dados incompletos.' });
+  }
 
-  if (!senha || senha.length < 5 || senha.length > 20) {
-    return res.status(400).json({
-      error: 'A senha deve ter entre 5 e 20 caracteres.'
-    });
+  // regras de senha
+  if (senha.length < 5 || senha.length > 20) {
+    return res.status(400).json({ error: 'A senha deve ter entre 5 e 20 caracteres.' });
+  }
+  const regexEspecial = /[!@#$%^&*(),.?":{}|<>_\-+=\[\]\\;'"\/~]/;
+  if (!regexEspecial.test(senha)) {
+    return res.status(400).json({ error: 'A senha deve conter pelo menos um caractere especial.' });
   }
 
   try {
-    const payload = jwt.verify(token, process.env.RESET_SECRET);
-    const senhaHash = await bcrypt.hash(novaSenha, SALT_ROUND);
+    const payload   = jwt.verify(token, process.env.RESET_SECRET); // { email, username }
+    const senhaHash = await bcrypt.hash(senha, SALT_ROUND);
 
-    const [result] = await pool.query('UPDATE usuarios SET senha = ? WHERE email = ? LIMIT 1', [senhaHash, payload.email]);
-    if (result.affectedRows === 0) return res.status(400).json({ error: 'Usuário não encontrado.' });
+    const [result] = await pool.query(
+      'UPDATE usuarios SET senha = ? WHERE email = ? LIMIT 1',
+      [senhaHash, payload.email]
+    );
+
+    if (result.affectedRows === 0) {
+      return res.status(400).json({ error: 'Usuário não encontrado.' });
+    }
 
     return res.json({ message: 'Senha redefinida com sucesso. Agora você já pode fazer login.' });
   } catch (err) {
     console.error('Erro em redefinirSenha:', err);
-    if (err.name === 'TokenExpiredError') return res.status(400).json({ error: 'Token expirado. Solicite uma nova redefinição.' });
+    if (err.name === 'TokenExpiredError') {
+      return res.status(400).json({ error: 'Token expirado. Solicite uma nova redefinição.' });
+    }
     return res.status(400).json({ error: 'Token inválido.' });
   }
 };
 
-// CONFIRMAÇÃO DE RESET (redireciona para front) 
+// CONFIRMAÇÃO DE RESET (redireciona para o front)
 export const resetConfirmar = async (req, res) => {
   const { token } = req.query;
   if (!token) return res.status(400).send('Token ausente.');
 
   const url = `${APP_BASE}/resetar-senha?token=${encodeURIComponent(token)}`;
-
   res.status(303).location(url);
   return res.send(`
     <!doctype html>
@@ -261,6 +286,7 @@ export const resetConfirmar = async (req, res) => {
     <p>Redirecionando para <a href="${url}">redefinição</a>…</p>
   `);
 };
+
 
 // VERIFICA SE USUÁRIO EXISTE 
 export const usuarioExiste = async (req, res) => {

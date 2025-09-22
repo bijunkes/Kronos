@@ -8,7 +8,7 @@ import {
   Input,
   ButtonRow,
   Button,
-  ToggleEye,          // ⬅️ certifique-se de exportar no style.js (ver snippet abaixo)
+  ToggleEye,        
 } from "./style.js";
 
 import olhoFechado from "../../assets/olhoFechado.png";
