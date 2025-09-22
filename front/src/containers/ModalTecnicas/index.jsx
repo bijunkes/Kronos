@@ -1,10 +1,9 @@
 
 import React, { useEffect, useState } from 'react';
-import axios from 'axios';
-import { listarAtividades, listarListas, criarLista } from '../../services/api.js';
-import {Overlay, AtividadeCard,ModalContainer, ModalHeader} from './style.js'
+import { listarAtividades } from '../../services/api.js';
+import {Overlay, AtividadeCard,ModalContainer, ModalHeader, Icones, ModalBody} from './style.js'
 
-function ModalEisenhower(){
+function ModalTecnicas({onClose}){
 
    
     const[atividades, setAtividades] = useState([]);
@@ -30,14 +29,21 @@ function ModalEisenhower(){
         
         <Overlay>
             <ModalContainer>
-                <ModalHeader>Atividades</ModalHeader>
-                {error && <p style={{ color: 'red' }}>{error}</p>}
-                {atividades.map((atividade, index) => (
+                <ModalHeader>Atividades
+                    <Icones onClick={onClose} className="material-symbols-outlined">
+                                close
+                            </Icones>
+                </ModalHeader>
+                <ModalBody>
+                    {error && <p style={{ color: 'red' }}>{error}</p>}
+                    {atividades.map((atividade, index) => (
                     <AtividadeCard key={atividade.idAtividade || index}>
                         <p>  <strong>{atividade.nome || "Sem nome"}</strong></p>
               
                     </AtividadeCard>
                 ))}
+                </ModalBody>
+                
             </ModalContainer>
             
         </Overlay>
@@ -46,4 +52,4 @@ function ModalEisenhower(){
     }
     
 
-export default ModalEisenhower;
+export default ModalTecnicas;

@@ -1,12 +1,21 @@
 import {React, useState} from 'react';
 import {Container,Painel, BoxTitulo, BoxTarefas, NomeTarefa, Icones, BoxAdicionar} from './style.js';
+import ModalTecnicas from "../ModalTecnicas/index.jsx";
 
 
 function Kanban() {
      
+    const [mostrarModal, setMostrarModal] = useState(false)
     const [tarefas, setTarefas] = useState([
         {id: 'tarefa1', nome: 'Tarefa 1', status: 1, icons: 'icones1'}
     ])
+
+    const handleClick = () => {
+        setMostrarModal(true);
+    }
+    const handleFecharModal = () => {
+        setMostrarModal(false);
+    }
     
                     
     const deletar = (tarefaId) => {
@@ -74,16 +83,6 @@ function Kanban() {
         }
         return null;
     };
-    const adicionarTarefa = (campo) => {
-        const novaTarefa = {
-            id: `tarefa${tarefas.length + 1}`,
-            nome: `Tarefa ${tarefas.length + 1}`,
-            status: campo.parentNode.id, 
-            icons: 'icones' + campo.parentNode.id
-        };
-        console.log("Adicionando nova tarefa:", novaTarefa);
-        setTarefas([...tarefas, novaTarefa]);
-    };
 
     return(
         <>
@@ -96,7 +95,7 @@ function Kanban() {
                             {renderIcons(tarefa.icons, tarefa.id)}
                         </BoxTarefas>
                     ))}
-                    <BoxAdicionar onClick={(e) => {adicionarTarefa(e.target)}}>Adicionar Tarefa</BoxAdicionar></Painel>
+                    <BoxAdicionar onClick={handleClick} id="Adicionar">Adicionar Tarefa</BoxAdicionar></Painel>
                 <Painel id='2'><BoxTitulo>Fazendo</BoxTitulo>
                 {tarefas.filter(tarefa => tarefa.status == 2).map(tarefa => (
                         <BoxTarefas key={tarefa.id} id={tarefa.id}>
@@ -104,7 +103,7 @@ function Kanban() {
                             {renderIcons(tarefa.icons, tarefa.id)}
                         </BoxTarefas>
                     ))}
-                    <BoxAdicionar onClick={(e) => {adicionarTarefa(e.target)}}>Adicionar Tarefa</BoxAdicionar>
+                    <BoxAdicionar onClick={handleClick} id="Adicionar">Adicionar Tarefa</BoxAdicionar>
                 </Painel>
                 <Painel id='3'><BoxTitulo>Feito</BoxTitulo>
                 {tarefas.filter(tarefa => tarefa.status == 3).map(tarefa => (
@@ -113,9 +112,10 @@ function Kanban() {
                             {renderIcons(tarefa.icons, tarefa.id)}
                         </BoxTarefas>
                     ))}
-                    <BoxAdicionar onClick={(e) => {adicionarTarefa(e.target)}}>Adicionar Tarefa</BoxAdicionar>
+                    <BoxAdicionar onClick={handleClick} id="Adicionar">Adicionar Tarefa</BoxAdicionar>
                 </Painel>
             </Container>
+            {mostrarModal && <ModalTecnicas onClose={handleFecharModal}/>}
             
         </>
     )
