@@ -124,13 +124,12 @@ export const CodigoBox = styled.input`
   border: none;
   outline: none;
 
-  /* remove setas em inputs numéricos (webkit) */
   &::-webkit-outer-spin-button,
   &::-webkit-inner-spin-button {
     -webkit-appearance: none;
     margin: 0;
   }
-  /* remove setas em inputs numéricos (firefox) */
+  
   &[type=number] {
     -moz-appearance: textfield;
   }

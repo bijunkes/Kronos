@@ -12,10 +12,11 @@ import {
     Prazo,
     Parte2
 } from './styles.js'
-import { listarAtividades, listarListas, criarLista } from '../../services/api.js';
+import { listarAtividades, listarListas, criarLista, listarTodasAtividades } from '../../services/api.js';
 import ModalCriarAtividade from '../ModalCriarAtividade/index.jsx';
 
 function Atividades() {
+    const [idLista, setIdLista] = useState(null);
     const [atividades, setAtividades] = useState([]);
     const [mostrarModal, setMostrarModal] = useState(false);
 
@@ -29,8 +30,20 @@ function Atividades() {
     }
 
     useEffect(() => {
-        fetchAtividades();
-    }, []);
+    const carregarTodasAtividades = async () => {
+        try {
+            const todasAtividades = await listarTodasAtividades();
+            setAtividades(todasAtividades);
+        } catch (err) {
+            console.error('Erro ao carregar todas as atividades', err);
+        }
+    };
+
+    carregarTodasAtividades();
+}, []);
+
+
+
 
     function toggleConcluido(index) {
         const novasAtividade = [...atividades];
@@ -76,12 +89,15 @@ function Atividades() {
                     </AreaAtividades>
                 </Conteudo>
             </ContainerLista>
-            {mostrarModal && (
-                <ModalCriarAtividade
-                    onClose={() => setMostrarModal(false)}
-                    onAtividadeCriada={fetchAtividades}
-                />
-            )}
+            <ModalCriarAtividade
+                isOpen={mostrarModal}
+                onClose={() => setMostrarModal(false)}
+                listaId={idLista}
+                onAtividadeCriada={(novaAtividade) => {
+                    setAtividades([...atividades, { ...novaAtividade, concluido: false }]);
+                }}
+            />
+
         </Background>
     );
 }

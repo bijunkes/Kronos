@@ -1,7 +1,5 @@
 import React from "react";
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
-import AppWrapper from "./appWrapper";
-
 import ResetarSenha from "./containers/ResetarSenha/index.jsx";
 import Padrao from './components/Padrao/Padrao.jsx';
 
@@ -18,39 +16,36 @@ import Kanban from './containers/Kanban';
 import Eisenhower from './containers/Einsenhower';
 import RelatorioDiario from './containers/RelatorioDiario';
 import RelatorioSemanal from './containers/RelatorioSemanal';
-import NotFound from './containers/NotFound';
+import NotFound from './containers/NotFound'
 
-export default function App() {
-  return (
-    <BrowserRouter>
-      <AppWrapper>
-        <Routes>
-          {/* Primeiro acesso sempre leva a /cadastro; o reload com token é tratado no AppWrapper */}
-          <Route path="/" element={<Navigate to="/cadastro" replace />} />
+function App() {
+    return (
+        <BrowserRouter>
+            <Routes>
+                <Route path="/" element={<Navigate to="/kanban" replace />}/>
+                <Route path="/login" element={<Login />} />
+                <Route path="/cadastro" element={<Cadastro />} />
+                <Route path="/resetar-senha" element={<ResetarSenha />} />
+                <Route path="*" element={<NotFound />} />
 
-          {/* públicas */}
-          <Route path="/login" element={<Login />} />
-          <Route path="/cadastro" element={<Cadastro />} />
-          <Route path="/resetar-senha" element={<ResetarSenha />} />
+                <Route element={<Padrao />}> 
+                    <Route path="/home" element={<Home />} />
+                    <Route path="/:username" element={<Usuario />} />
+                    <Route path="/hoje" element={<Hoje />} />
+                    <Route path="/semana" element={<Semana />} />
+                    <Route path="/atividades" element={<Atividades />} />
 
-          {/* privadas (com layout) */}
-          <Route element={<Padrao />}>
-            <Route path="/home" element={<Home />} />
-            <Route path="/:username" element={<Usuario />} />
-            <Route path="/hoje" element={<Hoje />} />
-            <Route path="/semana" element={<Semana />} />
-            <Route path="/atividades" element={<Atividades />} />
-            <Route path="/listas/:nomeLista" element={<Lista />} />
-            <Route path="/pomodoro" element={<Pomodoro />} />
-            <Route path="/kanban" element={<Kanban />} />
-            <Route path="/eisenhower" element={<Eisenhower />} />
-            <Route path="/relatoriodiario" element={<RelatorioDiario />} />
-            <Route path="/relatoriosemanal" element={<RelatorioSemanal />} />
-          </Route>
+                    <Route path="/listas/:nomeLista" element={<Lista />} />
 
-          <Route path="*" element={<NotFound />} />
-        </Routes>
-      </AppWrapper>
-    </BrowserRouter>
-  );
+                    <Route path="/pomodoro" element={<Pomodoro />} />
+                    <Route path="/kanban" element={<Kanban />} />
+                    <Route path="/eisenhower" element={<Eisenhower />} />
+                    <Route path="/relatoriodiario" element={<RelatorioDiario />} />
+                    <Route path="/relatoriosemanal" element={<RelatorioSemanal />} />
+                </Route>
+            </Routes>
+        </BrowserRouter>
+    )
 }
+
+export default App

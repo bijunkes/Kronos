@@ -9,9 +9,45 @@
       href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined"
       rel="stylesheet"
     />
+    <script>
+      (function () {
+        try {
+          var token = localStorage.getItem('token');
+
+          // Detecta tipo de navegação (API moderna + fallback)
+          var navType = 'navigate';
+          if (performance && performance.getEntriesByType) {
+            var navEntries = performance.getEntriesByType('navigation');
+            if (navEntries && navEntries[0] && navEntries[0].type) {
+              navType = navEntries[0].type; // 'reload' | 'navigate' | 'back_forward' | 'prerender'
+            }
+          } else if (performance && performance.navigation) {
+            navType =
+              performance.navigation.type === performance.navigation.TYPE_RELOAD
+                ? 'reload'
+                : 'navigate';
+          }
+
+          var isReload = navType === 'reload';
+          var publicRoutes = ['/', '/login', '/cadastro', '/resetar-senha'];
+          var path = window.location.pathname;
+
+          if (token && isReload && publicRoutes.indexOf(path) >= 0) {
+            // Se o app estiver hospedado em subpasta, ajuste:
+            // var base = '/meu-app';
+            // window.location.replace(base + '/home');
+            window.location.replace('/home');
+          }
+        } catch (e) {
+          /* silencioso */
+        }
+      })();
+    </script>
   </head>
+
   <body>
     <div id="root"></div>
     <script type="module" src="/src/main.jsx"></script>
   </body>
+  
 </html>
