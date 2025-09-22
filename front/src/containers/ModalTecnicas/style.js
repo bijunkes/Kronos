@@ -14,10 +14,13 @@ export const Overlay = styled.div`
 `;
 export const AtividadeCard = styled.div`
   padding: 12px;
+  display: flex;
   margin-bottom: 10px;
   border: 1px solid #ccc;
   border-radius: 8px;
   background-color: #f4f4f4;
+  width: 100%;
+  justify-content: center;
 `;
 export const ModalContainer = styled.div`
   height: 50vh;

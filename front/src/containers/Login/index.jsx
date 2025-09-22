@@ -5,7 +5,7 @@ import {
   Parte2, Form, Negrito2, Opaco2, Input, ButtonCadastrar, EsqueceuSenha
 } from './styles.js';
 import LogoKronos from '../../assets/LogoKronos.png';
-import { loginUsuario, solicitarResetSenha } from '../../services/api.js';
+import { loginUsuario} from '../../services/api.js';
 import { showOkToast } from '../../components/showToast.jsx';
 import toast from 'react-hot-toast';
 
@@ -37,18 +37,7 @@ function Login() {
     }
   }
 
-  const handleEsqueceuSenha = async () => {
-    const emailParaReset = email.trim() || window.prompt('Digite o e-mail cadastrado:');
-    if (!emailParaReset) return;
-
-    const tid = toast.loading('Enviando link de redefinição...', { position: 'top-center' });
-    try {
-      await solicitarResetSenha(emailParaReset);
-    } catch (err) {
-    } finally {
-      toast.dismiss(tid); 
-    }
-  };
+  
 
   function handleVoltar() {
     navigate('/cadastro');
@@ -85,7 +74,7 @@ function Login() {
             onChange={e => setSenha(e.target.value)}
           />
 
-          <EsqueceuSenha as="button" type="button" onClick={handleEsqueceuSenha}>
+          <EsqueceuSenha as="button" type="button" >
             Esqueceu a senha?
           </EsqueceuSenha>
 

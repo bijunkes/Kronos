@@ -50,20 +50,9 @@ globalThis.__API_INTERCEPTORS__.res = api.interceptors.response.use(
   }
 );
 
-
 export const usuarioExiste = async (email) => {
   const response = await api.get('/usuario-existe', { params: { email } });
   return response.data; // { existe: true/false }
-};
-
-export const solicitarResetSenha = async (email) => {
-  const res = await api.post('/senha/reset-solicitar', { email });
-  return res.data;
-};
-
-export const redefinirSenha = async ({ token, novaSenha }) => {
-  const res = await api.post('/senha/reset', { token, novaSenha });
-  return res.data;
 };
 
 export const login = async (dados) => {
