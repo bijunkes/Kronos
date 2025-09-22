@@ -14,10 +14,12 @@ import {
 } from './styles.js'
 import { listarAtividades, listarListas, criarLista, listarTodasAtividades } from '../../services/api.js';
 import ModalCriarAtividade from '../ModalCriarAtividade/index.jsx';
+import AtividadeSelecionada from '../AtividadeSelecionada/index.jsx';
 
 function Atividades() {
     const [idLista, setIdLista] = useState(null);
     const [atividades, setAtividades] = useState([]);
+    const [atividadeSelecionada, setAtividadeSelecionada] = useState(null);
     const [mostrarModal, setMostrarModal] = useState(false);
 
     const fetchAtividades = async () => {
@@ -30,17 +32,17 @@ function Atividades() {
     }
 
     useEffect(() => {
-    const carregarTodasAtividades = async () => {
-        try {
-            const todasAtividades = await listarTodasAtividades();
-            setAtividades(todasAtividades);
-        } catch (err) {
-            console.error('Erro ao carregar todas as atividades', err);
-        }
-    };
+        const carregarTodasAtividades = async () => {
+            try {
+                const todasAtividades = await listarTodasAtividades();
+                setAtividades(todasAtividades);
+            } catch (err) {
+                console.error('Erro ao carregar todas as atividades', err);
+            }
+        };
 
-    carregarTodasAtividades();
-}, []);
+        carregarTodasAtividades();
+    }, []);
 
 
 
@@ -68,25 +70,43 @@ function Atividades() {
                         </Botoes>
                     </Header>
                     <AreaAtividades>
-                        {atividades.map((a, index) => (
-                            <Atividade key={a.idAtividade || index}>
-                                <span
-                                    class="material-symbols-outlined"
-                                    style={{ fontSize: "20px", cursor: "pointer" }}
-                                    onClick={() => toggleConcluido(index)}
-                                >
-                                    {a.concluido
-                                        ? "radio_button_checked"
-                                        : "radio_button_unchecked"}
+                        {atividades.map((a, index) => {
+                            const isSelecionada = atividadeSelecionada?.idAtividade === a.idAtividade;
 
-                                </span>
-                                {a.nomeAtividade}
-                                <Prazo>
-                                    {new Date(a.prazoAtividade.replace(" ", "T")).toLocaleDateString()}
-                                </Prazo>
-                            </Atividade>
-                        ))}
+                            return (
+                                <Atividade
+                                    key={a.idAtividade || index}
+                                    onClick={() => {
+                                        if (isSelecionada) {
+                                            setAtividadeSelecionada(null);
+                                        } else {
+                                            setAtividadeSelecionada(a);
+                                        }
+                                    }}
+                                    style={{
+                                        backgroundColor: isSelecionada ? 'var(--cinza-claro)' : 'var(--fundo-menu-ativo)'
+                                    }}
+                                >
+                                    <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                                        <span
+                                            className="material-symbols-outlined"
+                                            style={{ fontSize: "20px", cursor: "pointer" }}
+                                            onClick={(e) => toggleConcluido(index, e)}
+                                        >
+                                            {a.concluido
+                                                ? "radio_button_checked"
+                                                : "radio_button_unchecked"}
+                                        </span>
+                                        {a.nomeAtividade}
+                                    </div>
+                                    <Prazo>
+                                        {new Date(a.prazoAtividade.replace(" ", "T")).toLocaleDateString()}
+                                    </Prazo>
+                                </Atividade>
+                            );
+                        })}
                     </AreaAtividades>
+
                 </Conteudo>
             </ContainerLista>
             <ModalCriarAtividade
@@ -97,6 +117,9 @@ function Atividades() {
                     setAtividades([...atividades, { ...novaAtividade, concluido: false }]);
                 }}
             />
+            <Parte2>
+                <AtividadeSelecionada atividade={atividadeSelecionada} onClose={() => setAtividadeSelecionada(null)} />
+            </Parte2>
 
         </Background>
     );
