@@ -74,6 +74,7 @@ export const deletarLista = async (req, res) => {
     }
 };
 
+
 export const garantirListaAtividades = async (usuarioUsername) => {
     const [listas] = await pool.query(
         "SELECT * FROM listaatividades WHERE nomeLista = ? AND Usuarios_username = ?", ["Atividades", usuarioUsername]
@@ -86,23 +87,3 @@ export const garantirListaAtividades = async (usuarioUsername) => {
     );
     return {idLista: result.insertId, nomeLista: "Atividades", Usuarios_username: usuarioUsername};
 }
-
-export const listarTodasAtividades = async (req, res) => {
-    const usuarioUsername = req.usuarioUsername;
-
-    try {
-        const [atividades] = await pool.query(
-            `SELECT a.*, l.nomeLista 
-             FROM atividades a
-             JOIN listaatividades l ON a.ListaAtividades_idLista = l.idLista
-             WHERE a.Usuarios_username = ?
-             ORDER BY a.prazoAtividade ASC`,
-            [usuarioUsername]
-        );
-        res.json(atividades);
-    } catch (err) {
-        console.error("Erro ao listar todas atividades:", err);
-        res.status(500).json({ error: "Erro ao listar todas atividades" });
-    }
-};
-
