@@ -46,6 +46,7 @@ export const BoxTarefas = styled.div`
     display: flex;
     top: 3rem;
     left: 1rem;
+    margin-bottom: 1rem;
 `;
 export const NomeTarefa = styled.h2`
     position: relative;
@@ -53,10 +54,26 @@ export const NomeTarefa = styled.h2`
     left: 1rem;
     color: rgba(255, 255, 255, 1);
 `;
-export const Icones = styled.span`
+export const Icones = styled.button`
     position: relative;
     align-self: center;
-    left: 20rem;
+    left: 18rem;
     color: rgba(255, 255, 255, 1);
 
+`;
+export const BoxAdicionar= styled.button`
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    align-self: center;
+    height: 5.29vh;
+    width: 24vw;
+    font-size: 24px;
+    background-color: rgba(255, 255, 255, 0.1);
+    border-radius: 1rem;
+    margin-top: auto;
+    bottom: 1rem;
+    font-weight: bold;
+    color: rgba(255, 255, 255, 1);
 `;

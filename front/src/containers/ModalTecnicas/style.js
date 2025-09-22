@@ -21,11 +21,21 @@ export const AtividadeCard = styled.div`
 `;
 export const ModalContainer = styled.div`
   height: 50vh;
+  display: flex;
   width: 60vh;
   color: var(--fundo-menu);
   box-shadow: 0 0 20px rgba(0, 0, 0, 0.3);
   border-radius: 20px;
   background-color: var(--fundo-menu);
+  padding: 2vh;
+  flex-direction: column;
+`;
+export const ModalBody = styled.div`
+  display: flex;
+  width: 90%;
+  align-self: center;
+  height: auto;
+  margin-top: 1rem;  
 `;
 
 export const ModalHeader = styled.div`
@@ -33,7 +43,8 @@ export const ModalHeader = styled.div`
     font-size: 22px;
     font-weight: bold;
     color: var(--cor-texto);
-    padding: 3vh;
+    align-items: flex-start;
+    justify-content: flex-start;
 `;
 export const ModalButton = styled.div`
     display: flex;
@@ -41,4 +52,10 @@ export const ModalButton = styled.div`
     padding: 3vh;
     gap: 1.5vh;
     justify-content: flex-end;
+`;
+export const Icones = styled.button`
+    position: relative;
+    left: 23.1rem;
+    color: rgba(255, 255, 255, 1);
+
 `;

@@ -17,6 +17,19 @@ export const Parte1 = styled.div`
   gap: 16vh;
 `;
 
+export const ToggleEye = styled.img`
+  right: 12px; 
+  top: 50%;
+  width: 20px;
+  height: 20px;
+  cursor: text;
+  opacity: 0.75;
+  user-select: none;
+
+  &:hover { opacity: 1; 
+  cursor: pointer}
+`;
+
 export const Logo = styled.p`
   font-size: 56px;
 `;
@@ -111,13 +124,12 @@ export const CodigoBox = styled.input`
   border: none;
   outline: none;
 
-  /* remove setas em inputs numéricos (webkit) */
   &::-webkit-outer-spin-button,
   &::-webkit-inner-spin-button {
     -webkit-appearance: none;
     margin: 0;
   }
-  /* remove setas em inputs numéricos (firefox) */
+  
   &[type=number] {
     -moz-appearance: textfield;
   }
