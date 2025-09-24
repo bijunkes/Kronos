@@ -14,6 +14,7 @@ ReactDOM.createRoot(document.getElementById('root')).render(
       position="top-center"
       containerStyle={{ marginTop: '20px', zIndex: 2147483647 }}
       toastOptions={{
+        duration: 10000,
         style: {
           fontSize: '14px',
           borderRadius: '10px',
