@@ -1,4 +1,4 @@
-import React, { useState, useEffect} from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import {
@@ -176,7 +176,8 @@ function Menu() {
       <Lista>
         <ItemMaior
           style={{ color: submenuAberto === 'listas' ? '#AF52DE' : '' }}
-          onClick={() => {handleClick('listas', false);
+          onClick={() => {
+            handleClick('listas', false);
           }}
         >
           <ListasHeader>
@@ -187,15 +188,20 @@ function Menu() {
           </ListasHeader>
         </ItemMaior>
         <Submenu style={{ display: submenuAberto === 'listas' ? 'block' : 'none' }}>
-          {listas.map((lista) => (
-            <SubmenuItem
-              key={lista.idLista}
-              onClick={() => handleSubmenuClick('listas', lista.nomeLista)}
-              style={{ color: submenuSelecionado.item === lista.nomeLista ? '#AF52DE' : '' }}
-            >
-              {lista.nomeLista}
-            </SubmenuItem>
-          ))}
+          <Submenu style={{ display: submenuAberto === 'listas' ? 'block' : 'none' }}>
+            {listas
+              .filter(lista => lista.nomeLista !== "Atividades") 
+              .map((lista) => (
+                <SubmenuItem
+                  key={lista.idLista}
+                  onClick={() => handleSubmenuClick('listas', lista.nomeLista)}
+                  style={{ color: submenuSelecionado.item === lista.nomeLista ? '#AF52DE' : '' }}
+                >
+                  {lista.nomeLista}
+                </SubmenuItem>
+              ))}
+          </Submenu>
+
         </Submenu>
 
         <ItemMaior

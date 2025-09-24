@@ -1,7 +1,5 @@
 import { useParams, useNavigate } from 'react-router-dom';
 import React, { useEffect, useState } from 'react';
-import { deletarLista, listarAtividadesPorLista, listarListas } from '../../services/api.js';
-import axios from 'axios';
 import {
     Background,
     ContainerLista,
@@ -13,7 +11,8 @@ import {
     Atividade,
     Prazo,
     Parte2
-} from './styles.js'
+} from './styles.js';
+import { deletarLista, listarAtividadesPorLista, listarListas } from '../../services/api.js';
 import ModalCriarAtividade from '../ModalCriarAtividade/index.jsx';
 import AtividadeSelecionada from '../AtividadeSelecionada/index.jsx';
 
@@ -26,6 +25,7 @@ function Lista() {
     const [atividadeSelecionada, setAtividadeSelecionada] = useState(null);
     const [mostrarModal, setMostrarModal] = useState(false);
 
+    // Carrega o ID da lista e as atividades
     useEffect(() => {
         const carregarLista = async () => {
             try {
@@ -33,7 +33,7 @@ function Lista() {
                 const lista = listas.find(l => l.nomeLista === nomeLista);
                 if (lista) {
                     setIdLista(lista.idLista);
-                    atualizarAtividades(lista.idLista);
+                    await atualizarAtividades(lista.idLista);
                 }
             } catch (err) {
                 console.error("Erro ao buscar lista pelo nome", err);
@@ -46,9 +46,10 @@ function Lista() {
         if (!id) return;
         try {
             const dados = await listarAtividadesPorLista(id);
-            setAtividades(dados);
+            setAtividades(Array.isArray(dados) ? dados : []);
         } catch (err) {
             console.error("Erro ao buscar atividades da lista", err);
+            setAtividades([]);
         }
     };
 
@@ -68,25 +69,38 @@ function Lista() {
         const novasAtividades = [...atividades];
         novasAtividades[index].concluido = !novasAtividades[index].concluido;
         setAtividades(novasAtividades);
-    }
+    };
+
+    // Criação de atividade com fetch do backend
+    const handleAtividadeCriada = async (dadosAtividade) => {
+        if (!idLista) return;
+        try {
+            // Chama a função do Modal que cria no backend
+            await atualizarAtividades(idLista); // Recarrega após criação
+        } catch (err) {
+            console.error("Erro ao atualizar atividades:", err);
+        }
+    };
 
     return (
         <Background>
             <ContainerLista>
                 <Conteudo>
                     <Header>
-                        <NomeLista>
-                            {nomeLista}
-                        </NomeLista>
+                        <NomeLista>{nomeLista}</NomeLista>
                         <Botoes>
-                            <span className="material-symbols-outlined"
+                            <span
+                                className="material-symbols-outlined"
                                 id="delete"
-                                onClick={handleExcluir}>
+                                onClick={handleExcluir}
+                            >
                                 delete
                             </span>
-                            <span className="material-symbols-outlined"
+                            <span
+                                className="material-symbols-outlined"
                                 id="add"
-                                onClick={() => setMostrarModal(true)}>
+                                onClick={() => setMostrarModal(true)}
+                            >
                                 add
                             </span>
                         </Botoes>
@@ -106,14 +120,16 @@ function Lista() {
                                         }
                                     }}
                                     style={{
-                                        backgroundColor: isSelecionada ? 'var(--cinza-claro)' : 'var(--fundo-menu-ativo)'
+                                        backgroundColor: isSelecionada
+                                            ? 'var(--cinza-claro)'
+                                            : 'var(--fundo-menu-ativo)'
                                     }}
                                 >
                                     <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
                                         <span
                                             className="material-symbols-outlined"
                                             style={{ fontSize: "20px", cursor: "pointer" }}
-                                            onClick={(e) => toggleConcluido(index, e)}
+                                            onClick={() => toggleConcluido(index)}
                                         >
                                             {a.concluido
                                                 ? "radio_button_checked"
@@ -122,7 +138,9 @@ function Lista() {
                                         {a.nomeAtividade}
                                     </div>
                                     <Prazo>
-                                        {new Date(a.prazoAtividade.replace(" ", "T")).toLocaleDateString()}
+                                        {a.prazoAtividade
+                                            ? new Date(a.prazoAtividade.replace(" ", "T")).toLocaleDateString()
+                                            : "Sem prazo"}
                                     </Prazo>
                                 </Atividade>
                             );
@@ -130,19 +148,21 @@ function Lista() {
                     </AreaAtividades>
                 </Conteudo>
             </ContainerLista>
+
             <ModalCriarAtividade
                 isOpen={mostrarModal}
                 onClose={() => setMostrarModal(false)}
                 listaId={idLista}
-                onAtividadeCriada={(novaAtividades) => {
-                    setAtividades([...atividades, { ...novaAtividades, concluido: false }]);
-                }}
+                onAtividadeCriada={handleAtividadeCriada}
             />
+
             <Parte2>
-                <AtividadeSelecionada atividade={atividadeSelecionada} onClose={() => setAtividadeSelecionada(null)} />
+                <AtividadeSelecionada
+                    atividade={atividadeSelecionada}
+                    onClose={() => setAtividadeSelecionada(null)}
+                />
             </Parte2>
         </Background>
-
     );
 }
 

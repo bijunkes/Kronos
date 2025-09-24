@@ -110,6 +110,6 @@ export const deletarLista = async (id) =>
   (await api.delete(`/listas/${id}`)).data;
 
 export const listarTodasAtividades = async () =>
-  (await api.get('/listas/atividades', { __successSilent: true })).data;
+  (await api.get('/atividades', { __successSilent: true })).data;
 
 export default api;

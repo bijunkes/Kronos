@@ -3,10 +3,10 @@ import { garantirListaAtividades } from "./listController.js";
 
 export const criarAtividade = async (req, res) => {
     const {
-        nomeAtividade, 
-        prazoAtividade, 
-        descricaoAtividade = '', statusAtividade = 0, 
-        listaId 
+        nomeAtividade,
+        prazoAtividade,
+        descricaoAtividade = '', statusAtividade = 0,
+        listaId
     } = req.body;
 
     const usuario = req.usuarioUsername;
@@ -36,12 +36,12 @@ export const criarAtividade = async (req, res) => {
                 Usuarios_username)
                 VALUES (?, ?, ?, ?, ?, ?, ?, ?)`,
             [
-                nomeAtividade, 
-                statusAtividade, descricaoAtividade, 
-                prazoAtividade, 
-                dataCriacao, 
-                listaAtual, 
-                usuario, 
+                nomeAtividade,
+                statusAtividade, descricaoAtividade,
+                prazoAtividade,
+                dataCriacao,
+                listaAtual,
+                usuario,
                 usuario
             ]
         );
@@ -51,6 +51,68 @@ export const criarAtividade = async (req, res) => {
         res.status(500).json({ error: "Erro ao criar atividade" });
     }
 }
+
+export const criarAtividadeAtividades = async (req, res) => {
+    const {
+        nomeAtividade,
+        prazoAtividade,
+        descricaoAtividade = '',
+        statusAtividade = 0
+    } = req.body;
+
+    const usuario = req.usuarioUsername;
+
+    if (!nomeAtividade?.trim() || !prazoAtividade || !usuario) {
+        return res.status(400).json({ error: "Nome, prazo e usuário são obrigatórios" });
+    }
+
+    try {
+        // garante que a lista 'Atividades' existe para esse usuário
+        const listaPadrao = await garantirListaAtividades(usuario);
+
+        const dataCriacao = new Date();
+
+        const [resultado] = await pool.query(
+            `INSERT INTO atividades
+                (nomeAtividade, 
+                statusAtividade, 
+                descricaoAtividade, 
+                prazoAtividade, 
+                dataCriacao, 
+                ListaAtividades_idLista, 
+                ListaAtividades_Usuarios_username,
+                Usuarios_username)
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?)`,
+            [
+                nomeAtividade,
+                statusAtividade,
+                descricaoAtividade,
+                prazoAtividade,
+                dataCriacao,
+                listaPadrao.idLista,  // sempre vai pra lista "Atividades"
+                usuario,
+                usuario
+            ]
+        );
+
+        res.status(201).json({
+            message: "Atividade criada na lista 'Atividades'",
+            atividade: {
+                idAtividade: resultado.insertId,
+                nomeAtividade,
+                descricaoAtividade,
+                prazoAtividade,
+                statusAtividade,
+                listaId: listaPadrao.idLista,
+                usuario
+            }
+        });
+    } catch (err) {
+        console.error("Erro ao criar atividade em 'Atividades':", err);
+        res.status(500).json({ error: "Erro ao criar atividade" });
+    }
+};
+
 
 export const listarAtividades = async (req, res) => {
     const usuario = req.usuarioUsername;
@@ -110,10 +172,28 @@ export const deletarAtividade = async (req, res) => {
         await pool.query(
             "DELETE FROM atividades WHERE idAtividade = ? AND Usuarios_username = ?", [idAtividade, usuario]
         );
-        res.json({message: "Atividade deletada"});
+        res.json({ message: "Atividade deletada" });
     } catch (err) {
         console.error(err);
-        res.status(500).json({error: "Erro ao deletar atividade"});
+        res.status(500).json({ error: "Erro ao deletar atividade" });
     }
 }
 
+export const listarTodasAtividades = async (req, res) => {
+    const usuarioUsername = req.usuarioUsername;
+
+    try {
+        const [atividades] = await pool.query(
+            `SELECT a.*, l.nomeLista 
+             FROM atividades a
+             JOIN listaatividades l ON a.ListaAtividades_idLista = l.idLista
+             WHERE a.Usuarios_username = ?
+             ORDER BY a.prazoAtividade ASC`,
+            [usuarioUsername]
+        );
+        res.json(atividades);
+    } catch (err) {
+        console.error("Erro ao listar todas atividades:", err);
+        res.status(500).json({ error: "Erro ao listar todas atividades" });
+    }
+};

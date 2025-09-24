@@ -1,5 +1,4 @@
 import React, { useEffect, useState } from 'react';
-import axios from 'axios';
 import {
     Background,
     ContainerLista,
@@ -11,8 +10,8 @@ import {
     Atividade,
     Prazo,
     Parte2
-} from './styles.js'
-import { listarAtividades, listarListas, criarLista, listarTodasAtividades } from '../../services/api.js';
+} from './styles.js';
+import { listarAtividadesPorLista, listarListas, listarAtividades } from '../../services/api.js';
 import ModalCriarAtividade from '../ModalCriarAtividade/index.jsx';
 import AtividadeSelecionada from '../AtividadeSelecionada/index.jsx';
 
@@ -22,49 +21,49 @@ function Atividades() {
     const [atividadeSelecionada, setAtividadeSelecionada] = useState(null);
     const [mostrarModal, setMostrarModal] = useState(false);
 
-    const fetchAtividades = async () => {
+    const atualizarAtividades = async (id) => {
+        if (!id) return;
         try {
-            const atividades = await listarAtividades();
-            setAtividades(atividades);
+            const dados = await listarAtividadesPorLista(id);
+            setAtividades(dados);
         } catch (err) {
             console.error("Erro ao buscar atividades", err);
         }
-    }
+    };
 
     useEffect(() => {
-        const carregarTodasAtividades = async () => {
-            try {
-                const todasAtividades = await listarTodasAtividades();
-                setAtividades(todasAtividades);
-            } catch (err) {
-                console.error('Erro ao carregar todas as atividades', err);
-            }
-        };
-
-        carregarTodasAtividades();
-    }, []);
-
-
+    const fetchTodasAtividades = async () => {
+        try {
+            const todas = await listarAtividades(); // Buscar todas as atividades do usuário
+            setAtividades(Array.isArray(todas) ? todas : []);
+        } catch (err) {
+            console.error("Erro ao buscar todas as atividades", err);
+            setAtividades([]);
+        }
+    };
+    fetchTodasAtividades();
+}, []);
 
 
-    function toggleConcluido(index) {
-        const novasAtividade = [...atividades];
-        novasAtividade[index].concluido = !novasAtividade[index].concluido;
-        setAtividades(novasAtividade);
-    }
+    // 2️⃣ Toggle concluído
+    const toggleConcluido = (index) => {
+        const novasAtividades = [...atividades];
+        novasAtividades[index].concluido = !novasAtividades[index].concluido;
+        setAtividades(novasAtividades);
+    };
 
     return (
         <Background>
             <ContainerLista>
                 <Conteudo>
                     <Header>
-                        <NomeLista>
-                            Atividades
-                        </NomeLista>
+                        <NomeLista>Atividades</NomeLista>
                         <Botoes>
-                            <span className="material-symbols-outlined"
+                            <span
+                                className="material-symbols-outlined"
                                 id="add"
-                                onClick={() => setMostrarModal(true)}>
+                                onClick={() => idLista && setMostrarModal(true)}
+                            >
                                 add
                             </span>
                         </Botoes>
@@ -72,55 +71,57 @@ function Atividades() {
                     <AreaAtividades>
                         {atividades.map((a, index) => {
                             const isSelecionada = atividadeSelecionada?.idAtividade === a.idAtividade;
-
                             return (
                                 <Atividade
                                     key={a.idAtividade || index}
-                                    onClick={() => {
-                                        if (isSelecionada) {
-                                            setAtividadeSelecionada(null);
-                                        } else {
-                                            setAtividadeSelecionada(a);
-                                        }
-                                    }}
+                                    onClick={() =>
+                                        setAtividadeSelecionada(isSelecionada ? null : a)
+                                    }
                                     style={{
-                                        backgroundColor: isSelecionada ? 'var(--cinza-claro)' : 'var(--fundo-menu-ativo)'
+                                        backgroundColor: isSelecionada
+                                            ? 'var(--cinza-claro)'
+                                            : 'var(--fundo-menu-ativo)',
                                     }}
                                 >
                                     <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
                                         <span
                                             className="material-symbols-outlined"
-                                            style={{ fontSize: "20px", cursor: "pointer" }}
+                                            style={{ fontSize: '20px', cursor: 'pointer' }}
                                             onClick={(e) => toggleConcluido(index, e)}
                                         >
-                                            {a.concluido
-                                                ? "radio_button_checked"
-                                                : "radio_button_unchecked"}
+                                            {a.concluido ? 'radio_button_checked' : 'radio_button_unchecked'}
                                         </span>
                                         {a.nomeAtividade}
                                     </div>
                                     <Prazo>
-                                        {new Date(a.prazoAtividade.replace(" ", "T")).toLocaleDateString()}
+                                        {a.prazoAtividade
+                                            ? new Date(a.prazoAtividade.replace(' ', 'T')).toLocaleDateString()
+                                            : 'Sem prazo'}
                                     </Prazo>
                                 </Atividade>
                             );
                         })}
                     </AreaAtividades>
-
                 </Conteudo>
             </ContainerLista>
-            <ModalCriarAtividade
-                isOpen={mostrarModal}
-                onClose={() => setMostrarModal(false)}
-                listaId={idLista}
-                onAtividadeCriada={(novaAtividade) => {
-                    setAtividades([...atividades, { ...novaAtividade, concluido: false }]);
-                }}
-            />
-            <Parte2>
-                <AtividadeSelecionada atividade={atividadeSelecionada} onClose={() => setAtividadeSelecionada(null)} />
-            </Parte2>
 
+            {idLista && (
+                <ModalCriarAtividade
+                    isOpen={mostrarModal}
+                    onClose={() => setMostrarModal(false)}
+                    listaId={idLista}
+                    onAtividadeCriada={() => {
+                        atualizarAtividades(idLista);
+                    }}
+                />
+            )}
+
+            <Parte2>
+                <AtividadeSelecionada
+                    atividade={atividadeSelecionada}
+                    onClose={() => setAtividadeSelecionada(null)}
+                />
+            </Parte2>
         </Background>
     );
 }
