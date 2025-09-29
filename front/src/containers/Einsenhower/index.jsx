@@ -34,33 +34,82 @@ function Eisenhower() {
     const handleFecharModal = () => {
         setMostrarModal(false);
     }
-
-    const renderIcons = (iconsType, tarefaId) => {
-        if (iconsType === 'icones1') {
-            return (
-                <>
-                    <Icones className="material-symbols-outlined" onClick={() => deletar(tarefaId)}>delete</Icones>
-                    <Icones className="material-symbols-outlined" onClick={() => proximo(tarefaId)}>arrow_forward</Icones>
-                </>
+    const proximo = (id) => {
+            setAtividades(prev =>
+                prev.map(t =>
+                    t.id === id
+                        ? { ...t, quadrante: t.quadrante === 1 ? 2 : 3 } // Q1→Q2, Q3→Q4
+                        : t
+                )
             );
-        } else if (iconsType === 'icones2') {
-            return (
-                <>
-                    <Icones className="material-symbols-outlined" onClick={() => deletar(tarefaId)}>delete</Icones>
-                    <Icones className="material-symbols-outlined" onClick={() => anterior(tarefaId)}>arrow_left_alt</Icones>
-                    <Icones className="material-symbols-outlined" onClick={() => proximo(tarefaId)}>arrow_forward</Icones>
-                </>
+        };
+    
+        const anterior = (id) => {
+            setAtividades(prev =>
+                prev.map(t =>
+                    t.id === id
+                        ? { ...t, quadrante: t.quadrante === 2 ? 1 : 4 } // Q2→Q1, Q4→Q3
+                        : t
+                )
             );
-        } else if (iconsType === 'icones3') {
-            return (
-                <>
-                    <Icones className="material-symbols-outlined" onClick={() => deletar(tarefaId)}>delete</Icones>
-                    <Icones className="material-symbols-outlined" onClick={() => anterior(tarefaId)}>arrow_left_alt</Icones>
-                </>
+        };
+    
+        const abaixo = (id) => {
+            setAtividades(prev =>
+                prev.map(t =>
+                    t.id === id
+                        ? { ...t, quadrante: t.quadrante === 1 ? 3 : 2 } // Q1→Q3, Q2→Q4
+                        : t
+                )
             );
-        }
-        return null;
-    };
+        };
+    
+        const acima = (id) => {
+            setAtividades(prev =>
+                prev.map(t =>
+                    t.id === id
+                        ? { ...t, quadrante: t.quadrante === 3 ? 1 : 4 } // Q3→Q1, Q4→Q2
+                        : t
+                )
+            );
+        };
+    
+        const renderIcons = (iconsType, atividadeId) => {
+            if (iconsType === 'icones1') {
+                return (
+                    <>
+                        <Icones className="material-symbols-outlined" onClick={() => deletar(atividadeId)}>delete</Icones>
+                        <Icones className="material-symbols-outlined" onClick={() => abaixo(atividadeId)}>arrow_downward</Icones>
+                        <Icones className="material-symbols-outlined" onClick={() => proximo(atividadeId)}>arrow_right_alt</Icones>
+                    </>
+                );
+            } else if (iconsType === 'icones2') {
+                return (
+                    <>
+                        <Icones className="material-symbols-outlined" onClick={() => deletar(atividadeId)}>delete</Icones>
+                        <Icones className="material-symbols-outlined" onClick={() => anterior(atividadeId)}>arrow_left_alt</Icones>
+                        <Icones className="material-symbols-outlined" onClick={() => abaixo(atividadeId)}>arrow_downward</Icones>
+                    </>
+                );
+            } else if (iconsType === 'icones3') {
+                return (
+                    <>
+                        <Icones className="material-symbols-outlined" onClick={() => deletar(atividadeId)}>delete</Icones>
+                        <Icones className="material-symbols-outlined" onClick={() => acima(atividadeId)}>arrow_upward</Icones>
+                        <Icones className="material-symbols-outlined" onClick={() => proximo(atividadeId)}>arrow_right_alt</Icones>
+                    </>
+                );
+            } else if (iconsType === 'icones4') {
+                return (
+                    <>
+                        <Icones className="material-symbols-outlined" onClick={() => deletar(atividadeId)}>delete</Icones>
+                        <Icones className="material-symbols-outlined" onClick={() => anterior(atividadeId)}>arrow_left_alt</Icones>
+                        <Icones className="material-symbols-outlined" onClick={() => acima(atividadeId)}>arrow_upward</Icones>
+                    </>
+                );
+            }
+            return null;
+        };
 
     
     return (
@@ -118,7 +167,7 @@ function Eisenhower() {
                     onAdicionar={(atividade) => {
                         setAtividades((prev) => [
                             ...prev,
-                            { ...atividade, quadrante: quadranteSelecionado }
+                            { ...atividade, quadrante: quadranteSelecionado, icons:"icones"+quadranteSelecionado }
                         ]);
                         setMostrarModal(false);
                     }} />}
