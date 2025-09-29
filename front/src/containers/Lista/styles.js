@@ -15,15 +15,36 @@ export const ContainerLista = styled.div`
   border-radius: 20px;
   background-color: var(--fundo-menu);
   box-sizing: border-box;
+
+  display: flex;
+  flex-direction: column; 
 `;
 
 export const Conteudo = styled.div`
-  padding: 3vh;
+  padding: 0 3vh 0 3vh;
+  display: flex;
+  flex-direction: column;
+  flex: 1;      
+  overflow-y: auto;
+
+  &::-webkit-scrollbar {
+    width: 5px;
+  }
+
+  &::-webkit-scrollbar-track {
+    background: var(--fundo-menu);
+    border-radius: 10px;
+  }
+
+  &::-webkit-scrollbar-thumb {
+    background-color: var(--fundo-menu-ativo);
+    border-radius: 10px;
+  }
 `;
 
 export const Header = styled.div`
-  margin-bottom: 3vh;
   display: flex;
+  padding: 3vh;
 `;
 
 export const NomeLista = styled.div`
@@ -36,16 +57,10 @@ export const Botoes = styled.div`
   gap: 1.5vh;
   margin-left: auto;
 
-#add {
+  #add {
     cursor: pointer;
-    &:hover{
+    &:hover {
       color: rgba(255, 255, 255, 0.4);
-    }
-  }
-  #delete {
-    cursor: pointer;
-    &:hover{
-      color: var(--Importante-Urgente);
     }
   }
 `;
@@ -58,7 +73,7 @@ export const AreaAtividades = styled.div`
 `;
 
 export const Atividade = styled.div`
-  padding: 0 2vh 0 2vh;
+  padding: 0 2vh;
   width: 100%;
   background-color: var(--fundo-menu-ativo);
   font-size: 18px;
@@ -75,5 +90,28 @@ export const Prazo = styled.div`
   margin-left: auto;
 `;
 
-export const Parte2 = styled.div`
+export const Pesquisar = styled.div`
+  padding: 0 2vh;
+  width: calc(100% - 6vh);
+  background-color: var(--fundo-menu-ativo);
+  font-size: 18px;
+  display: flex;
+  align-items: center;
+  border-radius: 20px;
+  gap: 1vh;
+  height: 7vh;
+  margin: 2vh;
+  flex-shrink: 0;
 `;
+
+export const Input = styled.input`
+  font-size: 16px;
+  flex: 1;
+  height: 100%;
+  border: none;
+  background: transparent;
+  color: var(--cor-texto);
+  outline: none;
+`;
+
+export const Parte2 = styled.div``;

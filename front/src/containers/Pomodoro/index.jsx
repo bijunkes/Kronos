@@ -1,6 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
-import { Background, Container, Intervalos, Intervalo, Principal, ParteTempo, Cronometro, Circulo, BotaoCronometro, Configuracoes, TituloConfiguracoes, OpcoesConfiguracoes, OpcaoFoco, OpcaoCurto, OpcaoLongo, Atividades } from './styles';
+import { Background, Container, Intervalos, Intervalo, Principal, ParteTempo, Cronometro, Circulo, Reiniciar, Pular, Configuracoes, TituloConfiguracoes, OpcoesConfiguracoes, OpcaoFoco, FocoDuracao, FocoQtde, OpcaoCurto, OpcaoLongo, Atividades, Adicionar } from './styles';
+import ModalAtividades from '../ModalAtividades';
+import { listarTodasAtividades } from '../../services/api';
 
 function Pomodoro() {
     const [modo, setModo] = useState("foco");
@@ -16,12 +18,30 @@ function Pomodoro() {
 
     const [atividades, setAtividades] = useState([]);
     const [atividadeSelecionada, setAtividadeSelecionada] = useState(null);
+    const [trocaAutomatica, setTrocaAutomatica] = useState(false);
+
+    const [modalAberto, setModalAberto] = useState(false);
+    const abrirModal = () => setModalAberto(true);
+    const fecharModal = () => setModalAberto(false);
 
     useEffect(() => {
         axios.get("http://localhost:3000/atividades")
             .then((res) => setAtividades(res.data))
             .catch((err) => console.error(err));
     }, []);
+
+    useEffect(() => {
+        async function fetchAtividades() {
+            try {
+                const dados = await listarTodasAtividades();
+                setAtividades(dados);
+            } catch (error) {
+                console.error("Erro ao buscar atividades:", error);
+            }
+        }
+        fetchAtividades();
+    }, []);
+
 
     useEffect(() => {
         let intervalo = null;
@@ -35,52 +55,97 @@ function Pomodoro() {
 
     useEffect(() => {
         setTempo(config[modo]);
-        setAtivo(false);
+
+        if (trocaAutomatica) {
+            setAtivo(true);
+            setTrocaAutomatica(false);
+        } else {
+            setAtivo(false);
+        }
     }, [modo]);
 
     const formatarTempo = (segundos) =>
         `${String(Math.floor(segundos / 60)).padStart(2, "0")}:${String(segundos % 60).padStart(2, "0")}`;
 
     const handleFim = () => {
-        if (modo == "foco") {
-            setCicloAtual((c) => c + 1);
-            if ((cicloAtual + 1) % config.ciclos === 0) {
-                setModo("longo");
-            } else {
-                setModo("curto");
-            }
+        setTrocaAutomatica(true);
+
+        if (modo === "foco") {
+            setCicloAtual((c) => {
+                const novoCiclo = c + 1;
+                if (novoCiclo % config.ciclos === 0) {
+                    setModo("longo");
+                } else {
+                    setModo("curto");
+                }
+                return novoCiclo;
+            });
         } else {
+            if (modo === "longo") {
+                setCicloAtual(0);
+            }
             setModo("foco");
         }
-    }
+    };
+    const reiniciar = () => {
+        setAtivo(true);
+        setTempo(config[modo]);
+    };
+
+    const handleConfigChange = (e) => {
+        const { name, value } = e.target;
+        const novoValor = value === "" ? 1 : parseInt(value) || 1;
+
+
+        setConfig((prev) => ({
+            ...prev,
+            [name]: novoValor * (name === 'ciclos' ? 1 : 60),
+        }));
+
+        if (name === modo) {
+            setTempo(novoValor * 60);
+        }
+    };
 
     return (
         <Background>
             <Container>
-                <Intervalos>
-                    <Intervalo>
-                        Foco
-                    </Intervalo>
-                    <Intervalo>
-                        Intervalo Curto
-                    </Intervalo>
-                    <Intervalo>
-                        Intervalo Curto
+                
+                <Principal>
+                    <Intervalos>
+                    <Intervalo ativo>
+                        {modo === 'foco' && 'Foco'}
+                        {modo === 'curto' && 'Intervalo Curto'}
+                        {modo === 'longo' && 'Intervalo Longo'}
                     </Intervalo>
                 </Intervalos>
-                <Principal>
                     <ParteTempo>
                         <Cronometro>
                             <Circulo>
-                                <p id='ciclos'>0 / 4</p>
-                                <p id='tempo'>25:00</p>
-                                <span class="material-symbols-outlined">
-                                    play_arrow
+                                <p id='ciclos'>{cicloAtual} / {config.ciclos}</p>
+                                <p id='tempo'>{formatarTempo(tempo)}</p>
+
+                                <span
+                                    className="material-symbols-outlined"
+                                    onClick={() => setAtivo(!ativo)}
+                                >
+                                    {ativo ? 'pause' : 'play_arrow'}
                                 </span>
+
                             </Circulo>
-                            <BotaoCronometro>
-                                Começar
-                            </BotaoCronometro>
+                            <Reiniciar onClick={reiniciar}>
+                                <span class="material-symbols-outlined">
+                                    replay
+                                </span>
+                            </Reiniciar>
+                            {(modo === 'curto' || modo === 'longo') && (
+                                <Pular onClick={handleFim} style={{ marginTop: '1rem' }}>
+                                    <span class="material-symbols-outlined">
+                                        fast_forward
+                                    </span>
+                                </Pular>
+                            )}
+
                         </Cronometro>
                         <Configuracoes>
                             <TituloConfiguracoes>
@@ -88,24 +153,71 @@ function Pomodoro() {
                             </TituloConfiguracoes>
                             <OpcoesConfiguracoes>
                                 <OpcaoFoco>
-                                    Foco
+                                    <FocoDuracao>
+                                        Foco
+                                        <input
+                                            type="number"
+                                            min="1"
+                                            name="foco"
+                                            value={Math.floor(config.foco / 60)}
+                                            onChange={handleConfigChange}
+
+                                        />
+                                    </FocoDuracao>
+                                    <FocoQtde>
+                                        Ciclos
+                                        <input
+                                            type="number"
+                                            min="1"
+                                            name="ciclos"
+                                            value={config.ciclos}
+                                            onChange={handleConfigChange}
+                                        />
+                                    </FocoQtde>
                                 </OpcaoFoco>
                                 <OpcaoCurto>
                                     Intervalo Curto
+                                    <input
+                                        type="number"
+                                        min="1"
+                                        name="curto"
+                                        value={Math.floor(config.curto / 60)}
+                                        onChange={handleConfigChange}
+                                    />
                                 </OpcaoCurto>
                                 <OpcaoLongo>
                                     Intervalo Longo
+                                    <input
+                                        type="number"
+                                        min="1"
+                                        name="longo"
+                                        value={Math.floor(config.longo / 60)}
+                                        onChange={handleConfigChange}
+                                    />
                                 </OpcaoLongo>
                             </OpcoesConfiguracoes>
                         </Configuracoes>
                     </ParteTempo>
-                    <Atividades>
+                    
+                </Principal>
+                <Atividades>
+                        <h1>Atividades</h1>
+                        <Adicionar onClick={abrirModal}>
+                            Adicionar atividade
+                        </Adicionar>
 
                     </Atividades>
-                </Principal>
             </Container>
+            <ModalAtividades
+                aberto={modalAberto}
+                onFechar={() => setModalAberto(false)}
+                atividades={atividades}
+            />
+
         </Background>
+
     )
+
 }
 
 export default Pomodoro;

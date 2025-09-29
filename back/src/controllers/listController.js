@@ -2,8 +2,8 @@ import pool from '../db.js';
 
 
 export const criarLista = async (req, res) => {
-    const {nome} = req.body;
-    const usuarioUsername = req.usuarioUsername; 
+    const { nome } = req.body;
+    const usuarioUsername = req.usuarioUsername;
 
     if (!nome) return res.status(400).json({ error: "Nome da lista é obrigatório" });
 
@@ -14,36 +14,37 @@ export const criarLista = async (req, res) => {
         )
 
         if (listasExistentes.length > 0) {
-            return res.status(400).json({ error: 'Lista existente'});
+            return res.status(400).json({ error: 'Lista existente' });
         }
 
         const [resultado] = await pool.query(
             "INSERT INTO listaatividades (nomeLista, Usuarios_username) VALUES (?, ?)", [nome, usuarioUsername]
         );
-        
-        res.status(200).json({ 
+
+        res.status(200).json({
             message: "Lista Criada",
             idLista: resultado.insertId,
             nomeLista: nome
         });
     } catch (err) {
         console.log("Erro ao criar lista", err);
-        res.status(400).json({error: "Erro ao criar lista"});
+        res.status(400).json({ error: "Erro ao criar lista" });
     }
 }
 
 export const listarListas = async (req, res) => {
     const usuarioUsername = req.usuarioUsername;
 
-    try{
+    try {
         const [listas] = await pool.query(
-            `SELECT * FROM ListaAtividades
-             ORDER BY idLista DESC`, [usuarioUsername]
+            `SELECT * FROM ListaAtividades WHERE Usuarios_username = ? ORDER BY idLista DESC`,
+            [usuarioUsername]
         );
+
         res.json(listas);
     } catch (err) {
         console.log("Erro ao buscar listas:", err);
-        res.status(500).json({error: "Erro ao buscar listas"});
+        res.status(500).json({ error: "Erro ao buscar listas" });
     }
 }
 
@@ -76,13 +77,13 @@ export const garantirListaAtividades = async (usuarioUsername) => {
     const [listas] = await pool.query(
         "SELECT * FROM listaatividades WHERE nomeLista = ? AND Usuarios_username = ?", ["Atividades", usuarioUsername]
     );
-    
-    if(listas.length > 0) return listas[0];
+
+    if (listas.length > 0) return listas[0];
 
     const [result] = await pool.query(
         "INSERT INTO listaatividades (nomeLista, Usuarios_username) VALUES (?, ?)", ["Atividades", usuarioUsername]
     );
-    return {idLista: result.insertId, nomeLista: "Atividades", Usuarios_username: usuarioUsername};
+    return { idLista: result.insertId, nomeLista: "Atividades", Usuarios_username: usuarioUsername };
 }
 
 

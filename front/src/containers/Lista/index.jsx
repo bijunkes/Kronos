@@ -10,7 +10,9 @@ import {
     AreaAtividades,
     Atividade,
     Prazo,
-    Parte2
+    Parte2,
+    Pesquisar,
+    Input
 } from './styles.js';
 import { deletarLista, listarAtividadesPorLista, listarListas } from '../../services/api.js';
 import ModalCriarAtividade from '../ModalCriarAtividade/index.jsx';
@@ -24,8 +26,8 @@ function Lista() {
     const [atividades, setAtividades] = useState([]);
     const [atividadeSelecionada, setAtividadeSelecionada] = useState(null);
     const [mostrarModal, setMostrarModal] = useState(false);
+    const [filtro, setFiltro] = useState("");
 
-    // Carrega o ID da lista e as atividades
     useEffect(() => {
         const carregarLista = async () => {
             try {
@@ -71,69 +73,63 @@ function Lista() {
         setAtividades(novasAtividades);
     };
 
-    // Criação de atividade com fetch do backend
-    const handleAtividadeCriada = async (dadosAtividade) => {
+    const handleAtividadeCriada = async () => {
         if (!idLista) return;
-        try {
-            // Chama a função do Modal que cria no backend
-            await atualizarAtividades(idLista); // Recarrega após criação
-        } catch (err) {
-            console.error("Erro ao atualizar atividades:", err);
-        }
+        await atualizarAtividades(idLista);
     };
+
+    // ======= FILTRAR ATIVIDADES =======
+    const atividadesFiltradas = atividades.filter((a) =>
+        a.nomeAtividade.toLowerCase().includes(filtro.toLowerCase())
+    );
 
     return (
         <Background>
             <ContainerLista>
-                <Conteudo>
-                    <Header>
-                        <NomeLista>{nomeLista}</NomeLista>
-                        <Botoes>
-                            <span
-                                className="material-symbols-outlined"
-                                id="delete"
-                                onClick={handleExcluir}
-                            >
-                                delete
-                            </span>
-                            <span
-                                className="material-symbols-outlined"
-                                id="add"
-                                onClick={() => setMostrarModal(true)}
-                            >
-                                add
-                            </span>
-                        </Botoes>
-                    </Header>
-                    <AreaAtividades>
-                        {atividades.map((a, index) => {
-                            const isSelecionada = atividadeSelecionada?.idAtividade === a.idAtividade;
+                <Header>
+                    <NomeLista>{nomeLista}</NomeLista>
+                    <Botoes>
+                        <span
+                            className="material-symbols-outlined"
+                            id="delete"
+                            onClick={handleExcluir}
+                        >
+                            delete
+                        </span>
+                        <span
+                            className="material-symbols-outlined"
+                            id="add"
+                            onClick={() => setMostrarModal(true)}
+                        >
+                            add
+                        </span>
+                    </Botoes>
+                </Header>
 
+                <Conteudo>
+                    <AreaAtividades>
+                        {atividadesFiltradas.map((a, index) => {
+                            const isSelecionada = atividadeSelecionada?.idAtividade === a.idAtividade;
                             return (
                                 <Atividade
                                     key={a.idAtividade || index}
-                                    onClick={() => {
-                                        if (isSelecionada) {
-                                            setAtividadeSelecionada(null);
-                                        } else {
-                                            setAtividadeSelecionada(a);
-                                        }
-                                    }}
+                                    onClick={() => setAtividadeSelecionada(isSelecionada ? null : a)}
                                     style={{
                                         backgroundColor: isSelecionada
                                             ? 'var(--cinza-claro)'
-                                            : 'var(--fundo-menu-ativo)'
+                                            : 'var(--fundo-menu-ativo)',
                                     }}
                                 >
                                     <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
                                         <span
                                             className="material-symbols-outlined"
-                                            style={{ fontSize: "20px", cursor: "pointer" }}
-                                            onClick={() => toggleConcluido(index)}
+                                            style={{ fontSize: '20px', cursor: 'pointer' }}
+                                            onClick={(e) => {
+                                                e.stopPropagation();
+                                                toggleConcluido(index);
+                                            }}
                                         >
-                                            {a.concluido
-                                                ? "radio_button_checked"
-                                                : "radio_button_unchecked"}
+                                            {a.concluido ? 'radio_button_checked' : 'radio_button_unchecked'}
                                         </span>
                                         {a.nomeAtividade}
                                     </div>
@@ -147,6 +143,16 @@ function Lista() {
                         })}
                     </AreaAtividades>
                 </Conteudo>
+
+                <Pesquisar>
+                    <span className="material-symbols-outlined">search</span>
+                    <Input
+                        type="text"
+                        placeholder="Pesquisar..."
+                        value={filtro}
+                        onChange={(e) => setFiltro(e.target.value)}
+                    />
+                </Pesquisar>
             </ContainerLista>
 
             <ModalCriarAtividade

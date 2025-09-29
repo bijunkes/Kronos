@@ -1,11 +1,76 @@
 import styled from 'styled-components';
 
-export const Background = styled.div`
+export const Overlay = styled.div`
+  position: fixed;
+  top: 0;
+  left: 0;
   width: 100%;
   height: 100%;
+  background-color: rgba(0, 0, 0, 0.5);
   display: flex;
-  flex-direction: row;
-  color: var(--cor-texto);
+  justify-content: center;
+  align-items: center;
+  z-index: 999;
+`;
+
+export const ModalContainer = styled.div`
+  height: 80vh;
+  width: 50vh;
+  color: var(--fundo-menu);
+  box-shadow: 0 0 20px rgba(0, 0, 0, 0.3);
+  border-radius: 20px;
+  background-color: var(--fundo-menu);
+`;
+
+export const ModalHeader = styled.div`
+    display: flex;
+    font-size: 22px;
+    font-weight: bold;
+    color: var(--cor-texto);
+    padding: 3vh;
+`;
+
+export const ModalInput = styled.input`
+    width: 80%;
+    font-size: 18px;
+    color: var(--cor-texto);
+    background-color: var(--fundo-campo);
+    height: 7vh;
+    border-radius: 20px;
+    margin-left: 3vh;
+    margin-right: 3vh;
+    padding: 0 3vh;
+    margin-bottom: 2vh;
+
+    &::placeholder {
+        color: #999;
+        font-size: 18px;
+    }
+`;
+
+export const ModalButton = styled.div`
+    display: flex;
+    flex-direction: row;
+    padding: 3vh;
+    gap: 1.5vh;
+    justify-content: flex-end;
+`;
+
+export const Button = styled.button`
+    font-size: 18px;
+    color: var(--cor-texto);
+    background-color: var(--fundo-campo);
+    border-radius: 20px;
+    height: 7vh;
+    padding: 0 3vh;
+    cursor: pointer;
+
+    &#cancelar:hover {
+        background-color: var(--Importante-Urgente);
+    }
+    &#criar:hover {
+        background-color: var(--NaoImportante-NaoUrgente);
+    }
 `;
 
 export const ContainerLista = styled.div`
@@ -21,11 +86,11 @@ export const ContainerLista = styled.div`
 `;
 
 export const Conteudo = styled.div`
-  padding: 0 3vh 0 3vh;
   display: flex;
   flex-direction: column;
   flex: 1;      
   overflow-y: auto;
+  padding: 0 3vh;
 
   &::-webkit-scrollbar {
     width: 5px;
@@ -42,15 +107,6 @@ export const Conteudo = styled.div`
   }
 `;
 
-export const Header = styled.div`
-  display: flex;
-  padding: 3vh;
-`;
-
-export const NomeLista = styled.div`
-  font-size: 20px;
-  font-weight: bold;
-`;
 
 export const Botoes = styled.div`
   display: flex;
@@ -81,7 +137,6 @@ export const Atividade = styled.div`
   display: flex;
   align-items: center;
   border-radius: 20px;
-  gap: 1vh;
   cursor: pointer;
 `;
 
@@ -113,5 +168,3 @@ export const Input = styled.input`
   color: var(--cor-texto);
   outline: none;
 `;
-
-export const Parte2 = styled.div``;

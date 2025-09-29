@@ -11,19 +11,21 @@ export const Container = styled.div`
   margin: 4vh;
   height: 92vh;
   width: 168.5vh;
+  padding: 3vh;
   border-radius: 20px;
   background-color: var(--fundo-menu);
   box-sizing: border-box;
+  display: flex;
+  flex-direction: row;
+  gap: 3vh;
 `;
 
 export const Intervalos = styled.div`
     font-size: 20px;
     font-weight: bold;
     display: flex;
-    gap: 3vh;
     align-items: center;
     justify-content: center;
-    padding: 3vh;
 `;
 
 export const Intervalo = styled.div`
@@ -34,23 +36,22 @@ export const Intervalo = styled.div`
     justify-content: center;
     padding: 1.5vh;
     border-radius: 16px;
+    cursor: default;
 `;
 
 export const Principal = styled.div`
     display: flex;
-    flex-direction: row;
-    gap: 2vh;
-    height: calc(100% - 10vh);
-    width: 100%;
+    flex-direction: column;
+    gap: 3vh;
+    height: 100%;
+    width: calc(100% / 3);
 `;
 
 export const ParteTempo = styled.div`
     display: flex;
     flex-direction: column;
     height: 77vh;
-    width: calc(100% / 3);
     align-items: center;
-    padding: 0 1vh 0 3vh;
 `;
 
 export const Cronometro = styled.div`
@@ -58,55 +59,65 @@ export const Cronometro = styled.div`
     height: 50vh;
     width: 100%;
     background-color: var(--fundo-menu-ativo);
-    padding: 2vh;
     border-radius: 16px;
     margin-bottom: 3vh;
     align-items: center;
     justify-content: center;
     flex-direction: column;
+    position: relative;
+    cursor: default;
 `;
 
 export const Circulo = styled.div`
     display: flex;
     background-color: var(--cinza-claro);
-    width: 28vh;
-    height: 28vh;
+    width: 33vh;
+    height: 33vh;
     border-radius: 100%;
-    font-size: 22px;
+    font-size: 26px;
     align-items: center;
     justify-content: center;
     flex-direction: column;
     gap: 2vh;
-    margin-bottom: 2vh;
 
     #ciclos {
         margin-top: 1.5vh;
     }
     #tempo {
-        font-size: 46px;
+        font-size: 50px;
     }
     span {
-        font-size: 38px;
+        font-size: 42px;
         &:hover{
             cursor: pointer;
         }
     }
 `;
 
-export const BotaoCronometro = styled.div`
-    display: flex;
-    background-color: var(--cinza-claro);
-    width: calc(100% - 2vh);
-    padding: 1.5vh;
-    border-radius: 16px;
-    align-items: center;
-    justify-content: center;
-    font-size: 18px;
+export const Reiniciar = styled.button`
+    position: absolute;
+    bottom: 2vh;
+    left: 2vh;
+    padding: 6px 12px;
+    border-radius: 4px;
+    cursor: pointer;
 
-    &:hover{
-        cursor: pointer;
+    &:hover {
+        color: var(--cinza-claro);
     }
+`;
 
+export const Pular = styled.button`
+    position: absolute;
+    bottom: 2vh;
+    right: 2vh;
+    padding: 6px 12px;
+    border-radius: 4px;
+    cursor: pointer;
+
+    &:hover {
+        color: var(--cinza-claro);
+    }
 `;
 
 export const Configuracoes = styled.div`
@@ -127,18 +138,51 @@ export const TituloConfiguracoes = styled.div`
 export const OpcoesConfiguracoes = styled.div`
 flex-direction: column;
     display: flex;
-    font-size: 20px;
+    font-size: 18px;
     padding: 1vh;
     gap: 2vh;
 `;
 
 export const OpcaoFoco = styled.div`
     display: flex;
+    height: 6vh;
+    border-radius: 14px;
+    align-items: center;
+    gap: 1.5vh;
+`;
+
+export const FocoDuracao = styled.div`
+    display: flex;
     background-color: var(--cinza-claro);
     height: 6vh;
     border-radius: 14px;
     align-items: center;
-    padding: 3vh;
+    padding: 0 1vh 0 3vh;
+    width: 50%;
+    gap: 1vh;
+
+    input {
+        padding: 1vh;
+        width: 100%;
+        margin-left: 3vh;
+    }
+`;
+
+export const FocoQtde = styled.div`
+    display: flex;
+    background-color: var(--cinza-claro);
+    height: 6vh;
+    border-radius: 14px;
+    align-items: center;
+    padding: 0 1vh 0 3vh;
+    width: 50%;
+    gap: 1vh;
+
+    input {
+        padding: 1vh;
+        width: 100%;
+        margin-left: 3vh;
+    }
 `;
 
 export const OpcaoCurto = styled.div`
@@ -147,7 +191,15 @@ export const OpcaoCurto = styled.div`
     height: 6vh;
     border-radius: 14px;
     align-items: center;
-    padding: 3vh;
+    padding: 0 1vh 0 3vh;
+    width: 100%;
+    gap: 1vh;
+
+    input {
+        padding: 1vh;
+        width: 13%;
+        margin-left: 17.5vh;
+    }
 `;
 
 export const OpcaoLongo = styled.div`
@@ -156,12 +208,43 @@ export const OpcaoLongo = styled.div`
     height: 6vh;
     border-radius: 14px;
     align-items: center;
-    padding: 3vh;
+    padding: 0 1vh 0 3vh;
+    width: 100%;
+    gap: 1vh;
+
+    input {
+        padding: 1vh;
+        width: 13%;
+        margin-left: 16.5vh;
+    }
 `;
 
 export const Atividades = styled.div`
     background-color: var(--fundo-menu-ativo);
-    height: 77vh;
+    height: 100%;
     width: 107.5vh;
     border-radius: 16px;
+    padding: 3vh;
+    display: flex;
+    flex-direction: column;
+    width: calc(100% / 3 * 2);
+
+    h1 {
+        font-size: 22px;
+        font-weight: bold;
+    }
+`;
+
+export const Adicionar = styled.div`
+    background-color: var(--cinza-claro);
+    height: 7vh;
+    width: 100%;
+    border-radius: 16px;
+    padding: 3vh;
+    font-size: 18px;
+    margin-top: auto;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
 `;
