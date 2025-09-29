@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
-import { Background, Container, Intervalos, Intervalo, Principal, ParteTempo, Cronometro, Circulo, Reiniciar, Pular, Configuracoes, TituloConfiguracoes, OpcoesConfiguracoes, OpcaoFoco, FocoDuracao, FocoQtde, OpcaoCurto, OpcaoLongo, Atividades, Adicionar } from './styles';
+import { Background, Container, Intervalos, Intervalo, Principal, ParteTempo, Cronometro, Circulo, Reiniciar, Pular, Configuracoes, TituloConfiguracoes, OpcoesConfiguracoes, OpcaoFoco, FocoDuracao, FocoQtde, OpcaoCurto, OpcaoLongo, Atividades, Atividade, Adicionar, Lista } from './styles';
 import ModalAtividades from '../ModalAtividades';
 import { listarTodasAtividades } from '../../services/api';
 
@@ -23,12 +23,6 @@ function Pomodoro() {
     const [modalAberto, setModalAberto] = useState(false);
     const abrirModal = () => setModalAberto(true);
     const fecharModal = () => setModalAberto(false);
-
-    useEffect(() => {
-        axios.get("http://localhost:3000/atividades")
-            .then((res) => setAtividades(res.data))
-            .catch((err) => console.error(err));
-    }, []);
 
     useEffect(() => {
         async function fetchAtividades() {
@@ -107,18 +101,23 @@ function Pomodoro() {
         }
     };
 
+    const adicionarAtividade = (novaAtividade) => {
+        setAtividades((prev) => [...prev, novaAtividade]);
+    };
+
+
     return (
         <Background>
             <Container>
-                
+
                 <Principal>
                     <Intervalos>
-                    <Intervalo ativo>
-                        {modo === 'foco' && 'Foco'}
-                        {modo === 'curto' && 'Intervalo Curto'}
-                        {modo === 'longo' && 'Intervalo Longo'}
-                    </Intervalo>
-                </Intervalos>
+                        <Intervalo ativo>
+                            {modo === 'foco' && 'Foco'}
+                            {modo === 'curto' && 'Intervalo Curto'}
+                            {modo === 'longo' && 'Intervalo Longo'}
+                        </Intervalo>
+                    </Intervalos>
                     <ParteTempo>
                         <Cronometro>
                             <Circulo>
@@ -198,21 +197,41 @@ function Pomodoro() {
                             </OpcoesConfiguracoes>
                         </Configuracoes>
                     </ParteTempo>
-                    
+
                 </Principal>
                 <Atividades>
-                        <h1>Atividades</h1>
-                        <Adicionar onClick={abrirModal}>
-                            Adicionar atividade
-                        </Adicionar>
+                    <h1>Atividades</h1>
+                    <Lista>
+                        {atividades.map((a, index) => (
+                        <Atividade key={a.id || index}>
+                            <span
+                                className="material-symbols-outlined"
+                                style={{ fontSize: '20px', cursor: 'pointer' }}
+                                onClick={(e) => {
+                                    e.stopPropagation();
+                                    toggleConcluido(index);
+                                }}
+                            >
+                                {a.concluido ? 'radio_button_checked' : 'radio_button_unchecked'}
+                            </span>
+                            {a.nomeAtividade}
+                        </Atividade>
+                    ))}
+                    </Lista>
+                    
 
-                    </Atividades>
+                    <Adicionar onClick={abrirModal}>
+                        Adicionar atividade
+                    </Adicionar>
+                </Atividades>
             </Container>
             <ModalAtividades
                 aberto={modalAberto}
-                onFechar={() => setModalAberto(false)}
+                onFechar={fecharModal}
                 atividades={atividades}
+                onAdicionar={adicionarAtividade}
             />
+
 
         </Background>
 

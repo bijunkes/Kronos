@@ -228,11 +228,50 @@ export const Atividades = styled.div`
     display: flex;
     flex-direction: column;
     width: calc(100% / 3 * 2);
+    gap: 1.5vh;
+    
 
     h1 {
         font-size: 22px;
         font-weight: bold;
+        margin-bottom: 1%.5;
     }
+`;
+
+export const Atividade = styled.div`
+    background-color: var(--cinza-claro);
+    height: 7vh;
+    width: 100%;
+    border-radius: 16px;
+    padding: 3vh;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: 1.5vh;
+`;
+
+export const Lista = styled.div`
+    height: 100%;
+    width: 100%;
+    flex: 1;      
+  overflow-y: auto;
+  display: flex;
+  gap: 1.5vh;
+  flex-direction: column;
+
+  &::-webkit-scrollbar {
+    width: 5px;
+  }
+
+  &::-webkit-scrollbar-track {
+    background: var(--fundo-menu-ativo);
+    border-radius: 10px;
+  }
+
+  &::-webkit-scrollbar-thumb {
+    background-color: var(--cinza-claro);
+    border-radius: 10px;
+  }
 `;
 
 export const Adicionar = styled.div`

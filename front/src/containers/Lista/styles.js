@@ -92,7 +92,7 @@ export const Prazo = styled.div`
 
 export const Pesquisar = styled.div`
   padding: 0 2vh;
-  width: calc(100% - 6vh);
+  width: calc(100% - 4vh);
   background-color: var(--fundo-menu-ativo);
   font-size: 18px;
   display: flex;

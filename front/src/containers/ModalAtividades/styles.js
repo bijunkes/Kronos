@@ -28,6 +28,14 @@ export const ModalHeader = styled.div`
     font-weight: bold;
     color: var(--cor-texto);
     padding: 3vh;
+    justify-content: space-between;
+
+    span {
+      cursor: pointer;
+      &:hover{
+        color: var(--cinza-claro);
+      }  
+    }
 `;
 
 export const ModalInput = styled.input`
@@ -138,6 +146,7 @@ export const Atividade = styled.div`
   align-items: center;
   border-radius: 20px;
   cursor: pointer;
+  padding: 0 3vh;
 `;
 
 export const Prazo = styled.div`

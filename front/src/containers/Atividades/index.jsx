@@ -24,14 +24,14 @@ function Atividades() {
     const [mostrarModal, setMostrarModal] = useState(false);
     const [filtro, setFiltro] = useState("");
 
-    const atualizarAtividades = async () => {
-        try {
-            const dados = await listarTodasAtividades();
-            setAtividades(dados);
-        } catch (err) {
-            console.error("Erro ao buscar atividades", err);
-        }
-    };
+    const atualizarAtividades = async (id) => {
+    try {
+        const dados = await listarAtividadesPorLista(id);
+        setAtividades(dados);
+    } catch (err) {
+        console.error("Erro ao buscar atividades", err);
+    }
+};
 
     useEffect(() => {
         const carregarLista = async () => {

@@ -112,21 +112,23 @@ function Menu() {
 
 
   const handleCriarLista = async (nome) => {
-    if (listas.some(lista => lista.nomeLista.toLowerCase() === nome.toLowerCase())) {
-      alert("Lista existe. Tente outro nome.");
-      return;
-    }
-    try {
-      const novaLista = await criarLista(nome);
-      fecharModal();
-      await criarLista(nome);
-      atualizarListas();
-      window.dispatchEvent(new Event('listasAtualizadas'));
-      navigate(`/listas/${encodeURIComponent(novaLista.nomeLista)}`);
-    } catch (err) {
-      console.error("Erro ao criar lista:", err)
+  try {
+    const novaLista = await criarLista(nome);
+    fecharModal();
+    atualizarListas();
+    window.dispatchEvent(new Event('listasAtualizadas'));
+    navigate(`/listas/${encodeURIComponent(novaLista.nomeLista)}`);
+  } catch (err) {
+    if (err.response && err.response.data && err.response.data.error) {
+      const erroMensagem = err.response.data.error;
+      console.error("Erro ao criar lista:", erroMensagem);
+    } else {
+      console.error("Erro inesperado ao criar lista:", err);
+      alert("Erro inesperado ao criar lista");
     }
   }
+};
+
 
   const handleLogout = () => {
     localStorage.removeItem("token");
