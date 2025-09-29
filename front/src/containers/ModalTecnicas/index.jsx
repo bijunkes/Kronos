@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { listarAtividades, listarListas } from '../../services/api.js';  // Certifique-se de importar listarListas
+import { listarAtividades, listarListas } from '../../services/api.js';  
 import { Overlay, AtividadeCard, ModalContainer, ModalHeader, Icones, ModalBody } from './style.js';
 
 function ModalTecnicas({ onClose, onAdicionar}) {
@@ -33,7 +33,7 @@ function ModalTecnicas({ onClose, onAdicionar}) {
 
     useEffect(() => {
         buscarAtividades();
-        carregarListaPadrao(); // Agora a função está sendo chamada de forma independente
+        carregarListaPadrao();
     }, []);
 
    
@@ -52,8 +52,8 @@ function ModalTecnicas({ onClose, onAdicionar}) {
                     {erro && <p style={{ color: 'red' }}>{erro}</p>}
                     {atividades.length === 0 && !carregando && !erro && <p>Nenhuma atividade disponível.</p>}
                     {atividades.map((atividade, index) => (
-                        <AtividadeCard onClick={onAdicionar} key={atividade.idAtividade || index}>
-                            <p><strong>{atividade.nomeAtividade || "Sem nome"}</strong></p>
+                        <AtividadeCard onClick={() => onAdicionar(atividade, idPadrao)} key={atividade.idAtividade}>
+                            <p><strong>{atividade.nomeAtividade}</strong></p>
                         </AtividadeCard>
                     ))}
                 </ModalBody>

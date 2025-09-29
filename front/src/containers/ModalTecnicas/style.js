@@ -38,7 +38,8 @@ export const ModalBody = styled.div`
   width: 90%;
   align-self: center;
   height: auto;
-  margin-top: 1rem;  
+  margin-top: 1rem; 
+  flex-direction: column;
 `;
 
 export const ModalHeader = styled.div`
