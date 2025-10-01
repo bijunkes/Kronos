@@ -112,3 +112,16 @@ export const listarTodasAtividades = async () => {
     return response.data;
 };
 
+export const deletarAtividadeDeMatriz = async (idAtividadeEisenhower) => {
+  const response = await api.delete('/eisenhower/');
+  return response.data;
+};
+export const adicionarAtividadeEmMatriz = async (dados) => {
+  const response = await api.post('/eisenhower/',dados);
+  return response.data;
+};
+export const atualizarAtividadeEmMatriz = async (dados) => {
+  const response = await api.put('/eisenhower/', dados);
+  return response.data;
+};
+

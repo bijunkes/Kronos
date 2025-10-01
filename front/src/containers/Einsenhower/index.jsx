@@ -15,6 +15,7 @@ import {
     AdicionarTarefa,
     Icones
 } from "./style.js"
+import {  adicionarAtividadeEmMatriz, atualizarAtividadeEmMatriz } from "../../services/api.js";
 import ModalTecnicas from "../ModalTecnicas/index.jsx";
 import { showOkToast } from "../../components/showToast.jsx";
 
@@ -36,7 +37,7 @@ function Eisenhower() {
     const handleFecharModal = () => {
         setMostrarModal(false);
     }
-    const proximo = (id) => {
+    const proximo = async (id) => {
         setAtividades(prev =>
             prev.map(t =>
                 t.idAtividade === id
@@ -50,9 +51,13 @@ function Eisenhower() {
                     : t
             )
         );
+        await atualizarAtividadeEmMatriz({
+            idAtividadeEisenhower: id,
+            classificacao: t.quadrante
+        })
     };
 
-    const anterior = (id) => {
+    const anterior = async  (id) => {
         setAtividades(prev =>
             prev.map(t =>
                 t.idAtividade === id
@@ -62,13 +67,19 @@ function Eisenhower() {
                             t.quadrante === 2 ? 1 :
                                 t.quadrante === 4 ? 3 :
                                     t.quadrante
+                                    
                     }
                     : t
+                    
             )
         );
+        await atualizarAtividadeEmMatriz({
+            idAtividadeEisenhower: id,
+            classificacao: t.quadrante
+        })
     };
 
-    const abaixo = (id) => {
+    const abaixo = async  (id) => {
         setAtividades(prev =>
             prev.map(t =>
                 t.idAtividade === id
@@ -82,9 +93,13 @@ function Eisenhower() {
                     : t
             )
         );
+        await atualizarAtividadeEmMatriz({
+            idAtividadeEisenhower: id,
+            classificacao: t.quadrante
+        })
     };
 
-    const acima = (id) => {
+    const acima = async (id) => {
         setAtividades(prev =>
             prev.map(t =>
                 t.idAtividade === id
@@ -98,11 +113,21 @@ function Eisenhower() {
                     : t
             )
         );
+        await atualizarAtividadeEmMatriz({
+            idAtividadeEisenhower: id,
+            classificacao: t.quadrante
+        })
     };
     const verificaAtividadeEmLista = (atividadeId) => {
 
         return atividadesAdicionadas.some((atividade) => atividade.idAtividade === atividadeId)
 
+    }
+    const deletar = (atividadeId) => {
+        
+        setAtividades((prev) => [...prev, atividades.filter(atividade => atividade.id === atividadeId)]);
+        setAtividadesAdicionadas((prev) => [...prev, atividadesAdicionadas.filter(atividade => atividade.id === atividadeId)]);
+        
     }
 
 
@@ -143,15 +168,25 @@ function Eisenhower() {
         return null;
     };
 
-    const adicionarAtividade = (atividade) => {
+    const adicionarAtividade =  async (atividade) => {
         if (verificaAtividadeEmLista(atividade.idAtividade)) {
             showOkToast("Atividade já inserida na matriz!", "error");
             setMostrarModal(false);
             return;
         }
 
-        const novaAtividade = { ...atividade, quadrante: quadranteSelecionado, nome: atividade.nomeAtividade };
-
+        const novaAtividade = { ...atividade, quadrante: quadranteSelecionado, nome: atividade.nomeAtividade};
+        try {
+             
+                await adicionarAtividadeEmMatriz({
+                
+                idAtividadeEisenhower: atividade.idAtividade,
+                classificacao: quadranteSelecionado
+              });
+        
+            } catch (err) {
+              console.error("Erro ao criar atividade: ", err);
+            }
 
         setAtividades((prev) => [...prev, novaAtividade]);
         setAtividadesAdicionadas((prev) => [...prev, novaAtividade]);
