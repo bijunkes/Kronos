@@ -1,5 +1,5 @@
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
     Container,
     NaoImportanteUrgente,
@@ -15,19 +15,52 @@ import {
     AdicionarTarefa,
     Icones
 } from "./style.js"
-import {  adicionarAtividadeEmMatriz, atualizarAtividadeEmMatriz } from "../../services/api.js";
+import { adicionarAtividadeEmMatriz, atualizarAtividadeEmMatriz, listarAtividadesEmMatriz, listarAtividades, atualizarIdEisenAtividade} from "../../services/api.js";
 import ModalTecnicas from "../ModalTecnicas/index.jsx";
 import { showOkToast } from "../../components/showToast.jsx";
 
 
 function Eisenhower() {
 
-    const [mostrarModal, setMostrarModal] = useState(false)
-    const [atividades, setAtividades] = useState([])
-    const [atividadesAdicionadas, setAtividadesAdicionadas] = useState([])
-
-
+    const [mostrarModal, setMostrarModal] = useState(false);
+    const [atividades, setAtividades] = useState([]);
+    const [atividadesAdicionadas, setAtividadesAdicionadas] = useState([]);
     const [quadranteSelecionado, setQuadranteSelecionado] = useState(null);
+    const [carregando, setCarregando] = useState(true);
+    const [erro, setErro] = useState('');
+    
+
+    const buscarAtividades = async () => {
+
+        try {
+            const todasAtividadesEmMatriz = await listarAtividadesEmMatriz();
+            
+            const todasAtividades = await listarAtividades();
+            console.log(todasAtividadesEmMatriz);
+           const matrizMap = new Map();
+           todasAtividadesEmMatriz.forEach(item => {
+            matrizMap.set(item.idAtividadeEisenhower, item.classificacao)
+           })
+           const atividadesEmMatriz = todasAtividades.filter(atv => matrizMap.has(atv.Eisenhower_idAtividadeEisenhower)).map(atv => ({
+            ...atv,
+            quandrante: atv.Eisenhower_idAtividadeEisenhower,
+            nome: atv.nomeAtividade,
+           }))
+           setAtividades(atividadesEmMatriz);
+            setAtividadesAdicionadas(atividadesEmMatriz);
+
+            console.log(atividadesEmMatriz);
+        } catch (err) {
+            console.error('Erro ao carregar todas as atividades', err);
+            setErro('Erro ao carregar as atividades.');
+        } finally {
+            setCarregando(false);
+        }
+    };
+
+    useEffect(() => {
+        buscarAtividades();
+    }, []);
 
     const handleClick = (quadranteId) => {
         setQuadranteSelecionado(quadranteId);
@@ -38,8 +71,8 @@ function Eisenhower() {
         setMostrarModal(false);
     }
     const proximo = async (id) => {
-        setAtividades(prev =>
-            prev.map(t =>
+        setAtividades(prev => {
+            const novaLista = prev.map(t =>
                 t.idAtividade === id
                     ? {
                         ...t,
@@ -50,16 +83,21 @@ function Eisenhower() {
                     }
                     : t
             )
-        );
-        await atualizarAtividadeEmMatriz({
-            idAtividadeEisenhower: id,
-            classificacao: t.quadrante
+            const atividadeAtualizada = novaLista.find(t => t.idAtividade === id);
+
+
+            atualizarAtividadeEmMatriz({
+                idAtividadeEisenhower: id,
+                classificacao: atividadeAtualizada.quadrante
+            });
+
+            return novaLista;
         })
     };
 
-    const anterior = async  (id) => {
-        setAtividades(prev =>
-            prev.map(t =>
+    const anterior = async (id) => {
+        setAtividades(prev => {
+            const novoLista = prev.map(t =>
                 t.idAtividade === id
                     ? {
                         ...t,
@@ -67,21 +105,26 @@ function Eisenhower() {
                             t.quadrante === 2 ? 1 :
                                 t.quadrante === 4 ? 3 :
                                     t.quadrante
-                                    
+
                     }
                     : t
-                    
+
             )
-        );
-        await atualizarAtividadeEmMatriz({
-            idAtividadeEisenhower: id,
-            classificacao: t.quadrante
+            const atividadeAtualizada = novaLista.find(t => t.idAtividade === id);
+
+
+            atualizarAtividadeEmMatriz({
+                idAtividadeEisenhower: id,
+                classificacao: atividadeAtualizada.quadrante
+            });
+
+            return novaLista;
         })
     };
 
-    const abaixo = async  (id) => {
-        setAtividades(prev =>
-            prev.map(t =>
+    const abaixo = async (id) => {
+        setAtividades(prev => {
+            const novaLista = prev.map(t =>
                 t.idAtividade === id
                     ? {
                         ...t,
@@ -92,16 +135,21 @@ function Eisenhower() {
                     }
                     : t
             )
-        );
-        await atualizarAtividadeEmMatriz({
-            idAtividadeEisenhower: id,
-            classificacao: t.quadrante
+            const atividadeAtualizada = novaLista.find(t => t.idAtividade === id);
+
+
+            atualizarAtividadeEmMatriz({
+                idAtividadeEisenhower: id,
+                classificacao: atividadeAtualizada.quadrante
+            });
+
+            return novaLista;
         })
     };
 
     const acima = async (id) => {
-        setAtividades(prev =>
-            prev.map(t =>
+        setAtividades(prev => {
+            const novLista = prev.map(t =>
                 t.idAtividade === id
                     ? {
                         ...t,
@@ -112,10 +160,15 @@ function Eisenhower() {
                     }
                     : t
             )
-        );
-        await atualizarAtividadeEmMatriz({
-            idAtividadeEisenhower: id,
-            classificacao: t.quadrante
+            const atividadeAtualizada = novaLista.find(t => t.idAtividade === id);
+
+
+            atualizarAtividadeEmMatriz({
+                idAtividadeEisenhower: id,
+                classificacao: atividadeAtualizada.quadrante
+            });
+
+            return novaLista;
         })
     };
     const verificaAtividadeEmLista = (atividadeId) => {
@@ -124,11 +177,9 @@ function Eisenhower() {
 
     }
     const deletar = (atividadeId) => {
-        
-        setAtividades((prev) => [...prev, atividades.filter(atividade => atividade.id === atividadeId)]);
-        setAtividadesAdicionadas((prev) => [...prev, atividadesAdicionadas.filter(atividade => atividade.id === atividadeId)]);
-        
-    }
+        setAtividades(prev => prev.filter(atividade => atividade.idAtividade !== atividadeId));
+        setAtividadesAdicionadas(prev => prev.filter(atividade => atividade.idAtividade !== atividadeId));
+    };
 
 
     const renderIcons = (iconsType, atividadeId) => {
@@ -168,25 +219,30 @@ function Eisenhower() {
         return null;
     };
 
-    const adicionarAtividade =  async (atividade) => {
+    const adicionarAtividade = async (atividade) => {
         if (verificaAtividadeEmLista(atividade.idAtividade)) {
             showOkToast("Atividade já inserida na matriz!", "error");
             setMostrarModal(false);
             return;
         }
 
-        const novaAtividade = { ...atividade, quadrante: quadranteSelecionado, nome: atividade.nomeAtividade};
+        const novaAtividade = { ...atividade, quadrante: quadranteSelecionado, nome: atividade.nomeAtividade };
         try {
-             
-                await adicionarAtividadeEmMatriz({
-                
-                idAtividadeEisenhower: atividade.idAtividade,
+
+            const res = await adicionarAtividadeEmMatriz({
                 classificacao: quadranteSelecionado
-              });
-        
-            } catch (err) {
-              console.error("Erro ao criar atividade: ", err);
-            }
+            });
+            const idEisen = "id: "+res.idAtividadeEisenhower;
+            console.log(idEisen)
+            await atualizarIdEisenAtividade(novaAtividade.idAtividade, {
+                Eisenhower_idAtividadeEisenhower: idEisen,
+                usuarioUsername: novaAtividade.usuarioUsername,
+               
+            })
+
+        } catch (err) {
+            console.error("Erro ao adicionar ou atualizar atividade: ", err);
+        }
 
         setAtividades((prev) => [...prev, novaAtividade]);
         setAtividadesAdicionadas((prev) => [...prev, novaAtividade]);
@@ -198,29 +254,31 @@ function Eisenhower() {
     return (
         <>
             <Container>
-
+                {carregando && <p>Carregando...</p>}
+                {erro && <p style={{ color: 'red' }}>{erro}</p>}
                 <ImportanteUrgente><Lista id="1">{atividades
                     .filter((a) => a.quadrante === 1)
                     .map(
                         (atividade) =>
-                            
-                                <Atividade key={atividade.idAtividade}>
-                                    {atividade.nome}
 
-                                    {renderIcons(`icones${atividade.quadrante}`, atividade.idAtividade)}
-                                </Atividade>
+                            <Atividade key={atividade.idAtividade}>
+                                {atividade.nome}
+
+                                {renderIcons(`icones${atividade.quadrante}`, atividade.idAtividade)}
+                            </Atividade>
                     )}</Lista> <AdicionarTarefa onClick={() => handleClick(1)} id="Adicionar">Adicionar Tarefa</AdicionarTarefa></ImportanteUrgente>
+
                 <ImportanteNaoUrgente>
                     <Lista id="2">{atividades
                         .filter((a) => a.quadrante === 2)
                         .map(
                             (atividade) =>
-                                 
-                                    <Atividade key={atividade.idAtividade}>
-                                        {atividade.nome}
 
-                                        {renderIcons(`icones${atividade.quadrante}`, atividade.idAtividade)}
-                                    </Atividade>
+                                <Atividade key={atividade.idAtividade}>
+                                    {atividade.nome}
+
+                                    {renderIcons(`icones${atividade.quadrante}`, atividade.idAtividade)}
+                                </Atividade>
                         )}</Lista> <AdicionarTarefa onClick={() => handleClick(2)} id="Adicionar">Adicionar Tarefa</AdicionarTarefa>
                 </ImportanteNaoUrgente>
 
@@ -229,25 +287,26 @@ function Eisenhower() {
                         .filter((a) => a.quadrante === 3)
                         .map(
                             (atividade) =>
-                                 
-                                    <Atividade key={atividade.idAtividade}>
-                                        {atividade.nome}
 
-                                        {renderIcons(`icones${atividade.quadrante}`, atividade.idAtividade)}
-                                    </Atividade>
+                                <Atividade key={atividade.idAtividade}>
+                                    {atividade.nome}
+
+                                    {renderIcons(`icones${atividade.quadrante}`, atividade.idAtividade)}
+                                </Atividade>
                         )}</Lista> <AdicionarTarefa onClick={() => handleClick(3)} id="Adicionar">Adicionar Tarefa</AdicionarTarefa>
                 </NaoImportanteUrgente>
+
                 <NaoImportanteNaoUrgente>
                     <Lista id="4">{atividades
                         .filter((a) => a.quadrante === 4)
                         .map(
                             (atividade) =>
-                               
-                                    <Atividade key={atividade.idAtividade}>
-                                        {atividade.nome}
 
-                                        {renderIcons(`icones${atividade.quadrante}`, atividade.idAtividade)}
-                                    </Atividade>
+                                <Atividade key={atividade.idAtividade}>
+                                    {atividade.nome}
+
+                                    {renderIcons(`icones${atividade.quadrante}`, atividade.idAtividade)}
+                                </Atividade>
                         )}</Lista> <AdicionarTarefa onClick={() => handleClick(4)} id="Adicionar">Adicionar Tarefa</AdicionarTarefa>
                 </NaoImportanteNaoUrgente>
 

@@ -90,6 +90,10 @@ export const atualizarAtividade = async (id, dados) => {
   const response = await api.put(`/atividades/${id}`, dados);
   return response.data;
 };
+export const atualizarIdEisenAtividade = async (id, dados) => {
+  const response = await api.put(`/atividades/eisenhower/${id}`, dados);
+  return response.data;
+};
 
 export const deletarAtividade = async (id) => {
   const response = await api.delete(`/atividades/${id}`);
@@ -111,9 +115,12 @@ export const listarTodasAtividades = async () => {
     const response = await api.get('/listas/atividades');
     return response.data;
 };
-
+export const listarAtividadesEmMatriz = async () => {
+    const response = await api.get('/eisenhower/idAtividadeEisenhower');
+    return response.data;
+};
 export const deletarAtividadeDeMatriz = async (idAtividadeEisenhower) => {
-  const response = await api.delete('/eisenhower/');
+  const response = await api.delete('/eisenhower/', idAtividadeEisenhower);
   return response.data;
 };
 export const adicionarAtividadeEmMatriz = async (dados) => {

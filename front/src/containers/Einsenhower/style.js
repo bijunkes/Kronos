@@ -167,7 +167,7 @@ export const AdicionarTarefa = styled.button`
 `;
 export const Icones = styled.button`
     position: relative;
-    left: 18rem;
+    left: 30%;
     color: rgba(255, 255, 255, 1);
 
 `;
