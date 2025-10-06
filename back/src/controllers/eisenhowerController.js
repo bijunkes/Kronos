@@ -2,40 +2,41 @@ import pool from "../db.js";
 
 export const adicionarAtividade = async (req, res) => {
     const {
-        idAtividadeEisenhower,
+        
         classificacao,
     } = req.body;
 
 
-    if (!idAtividadeEisenhower || !classificacao) {
-        return res.status(400).json({ error: "id e classificação são obrigatórios" });
+    if (!classificacao) {
+        return res.status(400).json({ error: "classificação são obrigatórios" });
     }
 
     try {
 
         const [resultado] = await pool.query(
             `INSERT INTO eisenhower
-                (idAtividadeEisenhower, 
-                classificacao)
-                VALUES (?, ?)`,
+                (classificacao)
+                VALUES (?)`,
             [
-                idAtividadeEisenhower,
                 classificacao
             ]
         );
-        res.status(201).json({ message: "Atividade adicionada ao Eisenhower"});
+        const idAtividadeEisenhower = resultado.insertId;
+        
+        res.status(201).json({idAtividadeEisenhower, message: "Atividade adicionada ao Eisenhower"});
     } catch (err) {
         console.error(err);
         res.status(500).json({ error: "Erro ao adicionar atividade ao Eisenhower" });
     }
 }
 export const listarAtividadesNaMatriz = async (req, res) => {
-    const id = req.params.idAtividadeEisenhower;
+   
     try {
-        const [atividades] = await pool.query(
-            `SELECT * FROM eisenhower WHERE idAtividadeEisenhower = ? ORDER BY classificacao ASC, idAtividadeEisenhower ASC`, [id]
+        const [linhas] = await pool.query(
+            `SELECT * FROM eisenhower ORDER BY classificacao ASC`
         );
-        res.json(atividades);
+         console.log('Dados da matriz:', linhas);
+        res.json(linhas);
     } catch (err) {
         console.error(err);
         res.status(500).json({ error: "Erro ao listar matriz" });

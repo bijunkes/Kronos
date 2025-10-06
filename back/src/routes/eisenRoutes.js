@@ -6,7 +6,7 @@ import verificarToken from "../middlewares/userMiddleware.js";
 const router = express.Router();
 
 router.post("/", verificarToken, adicionarAtividade);
-router.get("/:idAtividadeEisenhower", verificarToken, listarAtividadesNaMatriz);
+router.get("/idAtividadeEisenhower", verificarToken, listarAtividadesNaMatriz);
 router.get("/:idAtividadeEisenhower/:classificacao", verificarToken, listarAtividadesPorClassificacao);
 router.put("/", verificarToken, atualizarMatriz);
 router.delete("/", verificarToken, deletarAtividadeDeMatriz);
