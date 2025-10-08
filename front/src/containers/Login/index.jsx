@@ -13,7 +13,6 @@ import LogoKronos from '../../assets/LogoKronos.png';
 
 import { loginUsuario, solicitarResetSenha } from '../../services/api.js';
 
-import { loginUsuario} from '../../services/api.js';
 
 import { showOkToast } from '../../components/showToast.jsx';
 import toast from 'react-hot-toast';

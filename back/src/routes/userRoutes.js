@@ -6,6 +6,7 @@ import {
   perfil,
   redefinirSenha,
   resetConfirmar,
+  solicitarResetSenha,
   usuarioExiste
 } from '../controllers/userController.js';
 
