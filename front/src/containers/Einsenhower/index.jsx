@@ -15,7 +15,7 @@ import {
     AdicionarTarefa,
     Icones
 } from "./style.js"
-import { adicionarAtividadeEmMatriz, atualizarAtividadeEmMatriz, listarAtividadesEmMatriz, listarAtividades, atualizarIdEisenAtividade} from "../../services/api.js";
+import { adicionarAtividadeEmMatriz, atualizarAtividadeEmMatriz, listarAtividadesEmMatriz, listarAtividades, atualizarIdEisenAtividade, deletarAtividadeDeMatriz} from "../../services/api.js";
 import ModalTecnicas from "../ModalTecnicas/index.jsx";
 import { showOkToast } from "../../components/showToast.jsx";
 
@@ -43,7 +43,7 @@ function Eisenhower() {
            })
            const atividadesEmMatriz = todasAtividades.filter(atv => matrizMap.has(atv.Eisenhower_idAtividadeEisenhower)).map(atv => ({
             ...atv,
-            quandrante: atv.Eisenhower_idAtividadeEisenhower,
+            quadrante: atv.Eisenhower_idAtividadeEisenhower,
             nome: atv.nomeAtividade,
            }))
            setAtividades(atividadesEmMatriz);
@@ -176,9 +176,13 @@ function Eisenhower() {
         return atividadesAdicionadas.some((atividade) => atividade.idAtividade === atividadeId)
 
     }
-    const deletar = (atividadeId) => {
+    const deletar = async (atividadeId) => {
         setAtividades(prev => prev.filter(atividade => atividade.idAtividade !== atividadeId));
         setAtividadesAdicionadas(prev => prev.filter(atividade => atividade.idAtividade !== atividadeId));
+        const atividadeDeletada = atividades.find(a => a.Eisenhower_idAtividadeEisenhower === atividadeId);
+        await deletarAtividadeDeMatriz ({idAtividadeEisenhower: atividadeDeletada.Eisenhower_idAtividadeEisenhower })
+
+
     };
 
 
@@ -226,26 +230,30 @@ function Eisenhower() {
             return;
         }
 
-        const novaAtividade = { ...atividade, quadrante: quadranteSelecionado, nome: atividade.nomeAtividade };
+        
         try {
 
             const res = await adicionarAtividadeEmMatriz({
                 classificacao: quadranteSelecionado
             });
-            const idEisen = "id: "+res.idAtividadeEisenhower;
-            console.log(idEisen)
-            await atualizarIdEisenAtividade(novaAtividade.idAtividade, {
-                Eisenhower_idAtividadeEisenhower: idEisen,
-                usuarioUsername: novaAtividade.usuarioUsername,
+            const idEisen = res.idAtividadeEisenhower;
+            
+            const novaAtividade = { ...atividade, quadrante: quadranteSelecionado, nome: atividade.nomeAtividade, Eisenhower_idAtividadeEisenhower: idEisen, Usuarios_username: atividade.Usuarios_username };
+            console.log(novaAtividade);
+            await atualizarIdEisenAtividade(novaAtividade.idAtividade,{
+                Eisenhower_idAtividadeEisenhower: novaAtividade.Eisenhower_idAtividadeEisenhower,
+                Usuarios_username: novaAtividade.Usuarios_username,
+                idAtividade: novaAtividade.idAtividade
                
             })
+            setAtividades((prev) => [...prev, novaAtividade]);
+            setAtividadesAdicionadas((prev) => [...prev, novaAtividade]);
 
         } catch (err) {
             console.error("Erro ao adicionar ou atualizar atividade: ", err);
         }
 
-        setAtividades((prev) => [...prev, novaAtividade]);
-        setAtividadesAdicionadas((prev) => [...prev, novaAtividade]);
+        
 
         setMostrarModal(false);
     };
