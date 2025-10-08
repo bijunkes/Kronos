@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import {
   Container, Parte1, Logo, LeftAlign, Negrito, Opaco, ButtonEntrar,
@@ -16,11 +16,58 @@ import toast from 'react-hot-toast';
 
 function Login() {
   const navigate = useNavigate();
+
   const [email, setEmail] = useState('');
   const [senha, setSenha] = useState('');
   const [error, setError] = useState('');
   const [showPassword, setShowPassword] = useState(false);
   const togglePassword = () => setShowPassword(v => !v);
+
+  const getCookie = (name) =>
+    document.cookie.split('; ').find(c => c.startsWith(name + '='))?.split('=')[1];
+
+  const safeDecode = (s) => {
+    if (!s) return '';
+    const withSpaces = String(s).replace(/\+/g, ' ');
+    try {
+      const once = decodeURIComponent(withSpaces);
+      try { return decodeURIComponent(once); } catch { return once; }
+    } catch { return withSpaces; }
+  };
+
+  useEffect(() => {
+    let emailVal = '';
+    let msgVal   = '';
+
+    const emailC = getCookie('flash_email');
+    const msgC   = getCookie('flash_msg');
+
+    if (emailC || msgC) {
+      emailVal = safeDecode(emailC);
+      msgVal   = safeDecode(msgC);
+
+      document.cookie = 'flash_email=; Max-Age=0; path=/';
+      document.cookie = 'flash_msg=; Max-Age=0; path=/';
+    }
+
+    if (!emailVal && !msgVal) {
+      const qs = new URLSearchParams(window.location.search);
+      if (qs.get('verified') === '1') {
+        emailVal = safeDecode(qs.get('email') || '');
+        msgVal   = safeDecode(qs.get('toast') || '');
+        if (window.location.search) {
+          window.history.replaceState({}, '', window.location.pathname);
+        }
+      }
+    }
+
+    if (emailVal || msgVal) {
+      if (emailVal) setEmail(emailVal);
+      const msg = msgVal || 'conta cadastrada. Você já pode acessar.';
+      if (typeof showOkToast === 'function') showOkToast(msg, 'success');
+      else toast.success(msg);
+    }
+  }, []); 
 
   async function handleSubmit(e) {
     e.preventDefault();
@@ -51,6 +98,7 @@ function Login() {
     const tid = toast.loading('Enviando link de redefinição...', { position: 'top-center' });
     try {
       await solicitarResetSenha(emailParaReset);
+      showOkToast('Se o e-mail existir, enviaremos um link de redefinição.', 'success');
     } catch (err) {
       showOkToast(err?.response?.data?.error || 'Não foi possível enviar o link.', 'error');
     } finally {
@@ -86,13 +134,12 @@ function Login() {
             style={{ marginBottom: '3vh' }}
           />
 
-        
-          <div style={{position: "relative", width: "100%" }}>
+          <div style={{ position: "relative", width: "100%" }}>
             <Input
-            type={showPassword ? "text" : "password"}
-            placeholder="Senha"
-            value={senha}
-            onChange={e => setSenha(e.target.value)}
+              type={showPassword ? "text" : "password"}
+              placeholder="Senha"
+              value={senha}
+              onChange={e => setSenha(e.target.value)}
             />
             <ToggleEye
               src={showPassword ? olhoAberto : olhoFechado}
@@ -108,7 +155,12 @@ function Login() {
             />
           </div>
 
-          <EsqueceuSenha style={{marginTop: '1vh'}} as="button" type="button" onClick={handleEsqueceuSenha}>
+          <EsqueceuSenha
+            style={{ marginTop: '1vh' }}
+            as="button"
+            type="button"
+            onClick={handleEsqueceuSenha}
+          >
             Esqueceu a senha?
           </EsqueceuSenha>
 

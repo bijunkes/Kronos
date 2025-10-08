@@ -106,7 +106,7 @@ export const cadastroVerificacaoEmail = async (req, res) => {
 };
 
 
-// VERIFICAÇÃO DE EMAIL
+// VERIFICAÇÃO DE EMAIL 
 export const verificarEmail = async (req, res) => {
   const { token } = req.query;
   if (!token) return res.status(400).send('Token ausente.');
@@ -125,10 +125,10 @@ export const verificarEmail = async (req, res) => {
       [username, nome, email, senhaHash, new Date(), JSON.stringify(icon ?? null)]
     );
 
-    await pool.query('INSERT INTO ListaAtividades (nomeLista, Usuarios_username) VALUES (?, ?)', [
-      'Atividades',
-      username,
-    ]);
+    await pool.query(
+      'INSERT INTO ListaAtividades (nomeLista, Usuarios_username) VALUES (?, ?)',
+      ['Atividades', username]
+    );
 
     await pool.query(`
   INSERT INTO pomodoro (
@@ -162,11 +162,30 @@ export const verificarEmail = async (req, res) => {
       <script>window.location.replace(${JSON.stringify(loginUrl)});</script>
       <p>Redirecionando para <a href="${loginUrl}">login</a>…</p>
     `);
+    res.cookie('flash_email', encodeURIComponent(email), {
+      maxAge: 60_000,
+      httpOnly: false,
+      sameSite: 'Lax',
+      path: '/',
+      domain: 'localhost', 
+    });
+
+    res.cookie('flash_msg', encodeURIComponent('Conta cadastrada. Você já pode acessar.'), {
+      maxAge: 60_000,
+      httpOnly: false,
+      sameSite: 'Lax',
+      path: '/',
+      domain: 'localhost',
+    });
+
+    return res.redirect(303, `${APP_BASE}/login`);
   } catch (err) {
     console.error('Erro ao verificar e-mail:', err);
     return res.status(400).send('Token inválido ou expirado.');
   }
 };
+
+
 
 // LOGIN 
 export const login = async (req, res) => {
