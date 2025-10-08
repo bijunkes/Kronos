@@ -8,8 +8,13 @@ import cookieParser from 'cookie-parser';
 import userRoutes from './src/routes/userRoutes.js';
 import listRoutes from './src/routes/listRoutes.js';
 import atividadeRoutes from "./src/routes/atividadeRoutes.js";
+<<<<<<< HEAD
 import pomodoroRouter from './src/routes/pomodoroRoutes.js';
 import atividadeRoutes from './src/routes/atividadeRoutes.js';
+=======
+import eisenRoutes from "./src/routes/eisenRoutes.js";
+
+>>>>>>> semEmail
 
 const app = express();
 
@@ -41,7 +46,11 @@ app.use('/', userRoutes);
 
 app.use('/listas', listRoutes);
 app.use('/atividades', atividadeRoutes);
+<<<<<<< HEAD
 app.use('/pomodoro', pomodoroRouter);
+=======
+app.use('/eisenhower', eisenRoutes);
+>>>>>>> semEmail
 
 app.use((req, res) => {
   res.status(404).json({ error: 'Rota não encontrada' });

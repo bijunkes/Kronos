@@ -11,22 +11,9 @@ const API_BASE = process.env.API_BASE_URL || 'http://localhost:3000';
 const APP_BASE = process.env.APP_BASE_URL || 'http://localhost:5173';
 
 // Configuração do Nodemailer (Gmail com senha de app)
-const mailer = nodemailer.createTransport({
-  service: 'gmail',
-  auth: {
-    user: process.env.MAIL_USER,
-    pass: process.env.MAIL_PASS,
-  },
-});
+
 
 // FUNÇÕES AUXILIARES 
-function assinarTokenVerificacao(payload) {
-  return jwt.sign(payload, process.env.EMAIL_VERIFY_SECRET, { expiresIn: `${EMAIL_VERIFY_EXP_MIN}m` });
-}
-
-function verificarTokenVerificacao(token) {
-  return jwt.verify(token, process.env.EMAIL_VERIFY_SECRET);
-}
 
 // CADASTRO COM VERIFICAÇÃO POR EMAIL 
 export const cadastroVerificacaoEmail = async (req, res) => {
@@ -71,34 +58,14 @@ export const cadastroVerificacaoEmail = async (req, res) => {
 
     const senhaCriptografada = await bcrypt.hash(senhaStr, SALT_ROUND);
 
-    const token = assinarTokenVerificacao({
-      username: usernameStr,
-      nome: nomeStr,
-      email: emailStr,
-      senhaHash: senhaCriptografada,
-      icon: icon ?? null,
-      iat_ms: Date.now(),
-    });
+    await pool.query(
+  'INSERT INTO usuarios (username, nome, email, senha, dataCriacao, icon) VALUES (?, ?, ?, ?, ?, ?)',
+  [usernameStr, nomeStr, emailStr, senhaCriptografada, new Date(), JSON.stringify(icon ?? null)]
+);
 
-    const verifyUrl = `${API_BASE}/verificar-email?token=${encodeURIComponent(token)}`;
+return res.status(200).json({ message: 'Cadastro realizado com sucesso!' });
 
-    await mailer.sendMail({
-      from: `"Kronos" <${process.env.MAIL_USER}>`,
-      to: emailStr,
-      subject: 'Confirme seu cadastro - Kronos',
-      html: `
-        <h2>Olá, ${nomeStr || usernameStr}!</h2>
-        <p>Para concluir seu cadastro no <b>Kronos</b>, confirme seu e-mail clicando no botão abaixo:</p>
-        <p>
-          <a href="${verifyUrl}" style="padding:10px 20px;background:#4CAF50;color:#fff;text-decoration:none;border-radius:6px;display:inline-block">
-            Confirmar meu e-mail
-          </a>
-        </p>
-        <p style="color:#666">Este link expira em ${EMAIL_VERIFY_EXP_MIN} minutos.</p>
-      `,
-    });
-
-    return res.status(200).json({ message: 'Verifique seu e-mail para ativar a conta.' });
+    
   } catch (err) {
     console.error('Erro ao cadastrar usuário ou enviar e-mail de verificação:', err);
     return res.status(500).json({ error: 'Não foi possível processar a solicitação.' });
@@ -106,6 +73,7 @@ export const cadastroVerificacaoEmail = async (req, res) => {
 };
 
 
+<<<<<<< HEAD
 // VERIFICAÇÃO DE EMAIL 
 export const verificarEmail = async (req, res) => {
   const { token } = req.query;
@@ -187,6 +155,8 @@ export const verificarEmail = async (req, res) => {
 
 
 
+=======
+>>>>>>> semEmail
 // LOGIN 
 export const login = async (req, res) => {
   const { email, senha } = req.body;

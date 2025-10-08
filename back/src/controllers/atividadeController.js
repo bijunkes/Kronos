@@ -163,6 +163,27 @@ export const atualizarAtividade = async (req, res) => {
         res.status(500).json({ error: "Erro ao atualizar atividade" });
     }
 }
+export const atualizarIdEisenAtividade = async (req, res) => {
+    const usuario = req.body.Usuarios_username;
+    const idAtividade = req.body.idAtividade;
+    const idEisen = req.body.Eisenhower_idAtividadeEisenhower;
+    console.log(usuario);
+    console.log(idAtividade);
+    console.log(idEisen);
+
+    try {
+        await pool.query(
+            `UPDATE atividades SET
+            Eisenhower_idAtividadeEisenhower = ?
+            WHERE idAtividade = ? AND Usuarios_username = ?`,
+            [idEisen, idAtividade, usuario]
+        );
+        res.json({ message: "Atividade atualizada" });
+    } catch (err) {
+        console.error(err);
+        res.status(500).json({ error: "Erro ao atualizar atividade" });
+    }
+}
 
 export const deletarAtividade = async (req, res) => {
     const usuario = req.usuarioUsername;
@@ -170,7 +191,7 @@ export const deletarAtividade = async (req, res) => {
 
     try {
         await pool.query(
-            "DELETE FROM atividades WHERE idAtividade = ? AND Usuarios_username = ?", [idAtividade, usuario]
+            "DELETE FROM atividades WHERE idAtividade = ? AND Usuarios_username = ?;", [idAtividade, usuario]
         );
         res.json({ message: "Atividade deletada" });
     } catch (err) {

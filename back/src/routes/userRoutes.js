@@ -2,10 +2,8 @@ import express from 'express';
 import verificarToken from '../middlewares/userMiddleware.js';
 import {
   cadastroVerificacaoEmail,
-  verificarEmail,
   login,
   perfil,
-  solicitarResetSenha,
   redefinirSenha,
   resetConfirmar,
   usuarioExiste
@@ -17,11 +15,15 @@ userRoutes.get('/usuario-existe', usuarioExiste);
 userRoutes.post('/cadastro', cadastroVerificacaoEmail);
 userRoutes.post('/login', login);
 
-userRoutes.get('/verificar-email', verificarEmail);
+ // Se não for usar mais, pode ser removido
 
+<<<<<<< HEAD
 userRoutes.post('/senha/reset-solicitar', solicitarResetSenha);
 userRoutes.get('/senha/reset-confirmar', resetConfirmar);
 userRoutes.post('/senha/reset', redefinirSenha);
+=======
+// Troca a senha usando token
+>>>>>>> semEmail
 
 userRoutes.get('/perfil', verificarToken, perfil);
 

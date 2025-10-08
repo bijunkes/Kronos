@@ -9,8 +9,12 @@ import {
 import olhoFechado from "../../assets/olhoFechado.png";
 import olhoAberto from "../../assets/olhoAberto.png";
 import LogoKronos from '../../assets/LogoKronos.png';
+<<<<<<< HEAD
 
 import { loginUsuario, solicitarResetSenha } from '../../services/api.js';
+=======
+import { loginUsuario} from '../../services/api.js';
+>>>>>>> semEmail
 import { showOkToast } from '../../components/showToast.jsx';
 import toast from 'react-hot-toast';
 
@@ -91,6 +95,7 @@ function Login() {
     }
   }
 
+<<<<<<< HEAD
   const handleEsqueceuSenha = async () => {
     const emailParaReset = email.trim() || window.prompt('Digite o e-mail cadastrado:');
     if (!emailParaReset) return;
@@ -105,6 +110,9 @@ function Login() {
       toast.dismiss(tid);
     }
   };
+=======
+  
+>>>>>>> semEmail
 
   function handleVoltar() {
     navigate('/cadastro');
@@ -155,12 +163,16 @@ function Login() {
             />
           </div>
 
+<<<<<<< HEAD
           <EsqueceuSenha
             style={{ marginTop: '1vh' }}
             as="button"
             type="button"
             onClick={handleEsqueceuSenha}
           >
+=======
+          <EsqueceuSenha as="button" type="button" >
+>>>>>>> semEmail
             Esqueceu a senha?
           </EsqueceuSenha>
 
