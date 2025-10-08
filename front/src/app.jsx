@@ -22,11 +22,11 @@ function App() {
     return (
         <BrowserRouter>
             <Routes>
-<<<<<<< HEAD
-                <Route path="/" element={<Navigate to="/cadastro" replace />}/>
-=======
+
+                
+
                 <Route path="/" element={<Navigate to="/login" replace />}/>
->>>>>>> semEmail
+
                 <Route path="/login" element={<Login />} />
                 <Route path="/cadastro" element={<Cadastro />} />
                 

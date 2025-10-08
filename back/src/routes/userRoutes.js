@@ -17,13 +17,13 @@ userRoutes.post('/login', login);
 
  // Se não for usar mais, pode ser removido
 
-<<<<<<< HEAD
+
 userRoutes.post('/senha/reset-solicitar', solicitarResetSenha);
 userRoutes.get('/senha/reset-confirmar', resetConfirmar);
 userRoutes.post('/senha/reset', redefinirSenha);
-=======
+
 // Troca a senha usando token
->>>>>>> semEmail
+
 
 userRoutes.get('/perfil', verificarToken, perfil);
 

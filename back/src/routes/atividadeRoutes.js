@@ -1,9 +1,7 @@
 import express from 'express';
-<<<<<<< HEAD
-import { criarAtividade, listarAtividades, listarAtividadesPorLista, atualizarAtividade, deletarAtividade, listarTodasAtividades } from '../controllers/atividadeController.js';
-=======
-import { criarAtividade, listarAtividades, listarAtividadesPorLista, atualizarAtividade, deletarAtividade, atualizarIdEisenAtividade } from '../controllers/atividadeController.js';
->>>>>>> semEmail
+
+import { criarAtividade, listarAtividades, listarAtividadesPorLista, atualizarAtividade, deletarAtividade, atualizarIdEisenAtividade, listarTodasAtividades  } from '../controllers/atividadeController.js';
+
 import verificarToken from "../middlewares/userMiddleware.js";
 
 const router = express.Router();

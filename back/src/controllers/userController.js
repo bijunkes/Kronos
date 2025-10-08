@@ -73,7 +73,7 @@ return res.status(200).json({ message: 'Cadastro realizado com sucesso!' });
 };
 
 
-<<<<<<< HEAD
+
 // VERIFICAÇÃO DE EMAIL 
 export const verificarEmail = async (req, res) => {
   const { token } = req.query;
@@ -152,11 +152,6 @@ export const verificarEmail = async (req, res) => {
     return res.status(400).send('Token inválido ou expirado.');
   }
 };
-
-
-
-=======
->>>>>>> semEmail
 // LOGIN 
 export const login = async (req, res) => {
   const { email, senha } = req.body;
