@@ -75,11 +75,11 @@ export const atualizarMatriz = async (req, res) => {
 }
 export const deletarAtividadeDeMatriz = async (req, res) => {
     const id = req.body.idAtividadeEisenhower;
-    const classificacao = req.body.classificacao;
+    
 
     try {
         await pool.query(
-            "DELETE FROM eisenhower WHERE idAtividadeEisenhower = ? AND classificacao = ?", [id, classificacao]
+            "SET foreign_key_checks = 0;  DELETE FROM eisenhower WHERE idAtividadeEisenhower = ?;  SET foreign_key_checks = 1;", [id]
         );
         res.json({message: "Atividade deletada"});
     } catch (err) {

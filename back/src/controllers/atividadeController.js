@@ -102,14 +102,17 @@ export const atualizarAtividade = async (req, res) => {
     }
 }
 export const atualizarIdEisenAtividade = async (req, res) => {
-    const usuario = req.usuarioUsername;
-    const idAtividade = req.params.id;
-    const idEisen = req.Eisenhower_idAtividadeEisenhower;
+    const usuario = req.body.Usuarios_username;
+    const idAtividade = req.body.idAtividade;
+    const idEisen = req.body.Eisenhower_idAtividadeEisenhower;
+    console.log(usuario);
+    console.log(idAtividade);
+    console.log(idEisen);
 
     try {
         await pool.query(
             `UPDATE atividades SET
-            Eisenhower_idAtividadeEisenhower = ?,
+            Eisenhower_idAtividadeEisenhower = ?
             WHERE idAtividade = ? AND Usuarios_username = ?`,
             [idEisen, idAtividade, usuario]
         );
@@ -126,7 +129,7 @@ export const deletarAtividade = async (req, res) => {
 
     try {
         await pool.query(
-            "DELETE FROM atividades WHERE idAtividade = ? AND Usuarios_username = ?", [idAtividade, usuario]
+            "DELETE FROM atividades WHERE idAtividade = ? AND Usuarios_username = ?;", [idAtividade, usuario]
         );
         res.json({message: "Atividade deletada"});
     } catch (err) {
