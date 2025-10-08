@@ -223,13 +223,12 @@ export const Atividades = styled.div`
     background-color: var(--fundo-menu-ativo);
     height: 100%;
     width: 107.5vh;
-    border-radius: 16px;
     padding: 3vh;
     display: flex;
     flex-direction: column;
     width: calc(100% / 3 * 2);
     gap: 1.5vh;
-    
+    border-radius: 20px;
 
     h1 {
         font-size: 22px;
@@ -239,15 +238,30 @@ export const Atividades = styled.div`
 `;
 
 export const Atividade = styled.div`
+position: relative; 
     background-color: var(--cinza-claro);
     height: 7vh;
     width: 100%;
-    border-radius: 16px;
+    font-size: 18px;
+    border-radius: 20px;
     padding: 3vh;
     display: flex;
     flex-direction: row;
     align-items: center;
     gap: 1.5vh;
+
+    .btn-excluir {
+    position: absolute;
+    right: 3vh;       /* fixa no canto direito */
+    display: none; 
+    font-size: 24px;
+    cursor: pointer;
+    color: red;
+  }
+
+  &:hover .btn-excluir {
+    display: inline-block;
+  }
 `;
 
 export const Lista = styled.div`

@@ -34,9 +34,9 @@ export const cadastroVerificacaoEmail = async (req, res) => {
     const { username, nome, email, senha, icon } = req.body ?? {};
 
     const usernameStr = typeof username === 'string' ? username.trim() : '';
-    const nomeStr     = typeof nome     === 'string' ? nome.trim()     : '';
-    const emailStr    = typeof email    === 'string' ? email.trim()    : '';
-    const senhaStr    = String(senha ?? '').trim(); // <- garante string
+    const nomeStr = typeof nome === 'string' ? nome.trim() : '';
+    const emailStr = typeof email === 'string' ? email.trim() : '';
+    const senhaStr = String(senha ?? '').trim(); // <- garante string
 
     if (!usernameStr || usernameStr.length < 4) {
       return res.status(400).json({ error: 'O username deve ter no mínimo 4 caracteres.' });
@@ -130,6 +130,28 @@ export const verificarEmail = async (req, res) => {
       username,
     ]);
 
+    await pool.query(`
+  INSERT INTO pomodoro (
+    Usuarios_username,
+    duracaoFoco,
+    duracaoIntervaloCurto,
+    duracaoIntervaloLongo,
+    ciclosFoco,
+    ciclosIntervaloCurto,
+    ciclosIntervaloLongo,
+    atividadesVinculadas
+  ) VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+`, [
+      username,
+      '00:25:00',
+      '00:05:00',
+      '00:15:00',
+      4,
+      1,
+      1,
+      '[]'
+    ]);
+
     const loginUrl = `${APP_BASE}/login`;
     res.status(303).location(loginUrl);
     return res.send(`
@@ -197,7 +219,7 @@ export const solicitarResetSenha = async (req, res) => {
       return res.json({ message: 'Se o e-mail existir, enviaremos um link de redefinição.' });
     }
 
-    const user  = rows[0];
+    const user = rows[0];
     const token = jwt.sign(
       { email: user.email, username: user.username },
       process.env.RESET_SECRET,
@@ -248,7 +270,7 @@ export const redefinirSenha = async (req, res) => {
   }
 
   try {
-    const payload   = jwt.verify(token, process.env.RESET_SECRET); // { email, username }
+    const payload = jwt.verify(token, process.env.RESET_SECRET); // { email, username }
     const senhaHash = await bcrypt.hash(senha, SALT_ROUND);
 
     const [result] = await pool.query(

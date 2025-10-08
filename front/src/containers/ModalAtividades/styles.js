@@ -147,6 +147,10 @@ export const Atividade = styled.div`
   border-radius: 20px;
   cursor: pointer;
   padding: 0 3vh;
+
+  &:hover {
+    background-color: var(--cinza-claro);
+  }
 `;
 
 export const Prazo = styled.div`

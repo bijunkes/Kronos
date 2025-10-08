@@ -10,10 +10,12 @@ import {
   ContainerLista,
   Conteudo,
 } from "./styles";
+import { salvarAtividadesSessao } from '../../services/api.js';
 
 function ModalAtividades({ aberto, onFechar, atividades, onAdicionar }) {
   const [ativs, setAtivs] = useState(atividades || []);
   const [atividadeSelecionada, setAtividadeSelecionada] = useState(null);
+  const idSessao = 1;
   const [filtro, setFiltro] = useState("");
   const [novaAtividade, setNovaAtividade] = useState("");
 
@@ -38,17 +40,31 @@ function ModalAtividades({ aberto, onFechar, atividades, onAdicionar }) {
     if (!novaAtividade.trim()) return;
 
     const nova = {
-      idAtividade: Date.now(), // ID temporário único
+      idAtividade: Date.now(),
       nomeAtividade: novaAtividade,
       prazoAtividade: null,
       concluido: false,
     };
 
-    onAdicionar(nova); // Envia para o Pomodoro
-    setNovaAtividade(""); // Limpa o campo
-    onFechar(); // Fecha o modal
+    onAdicionar(nova);
+    setNovaAtividade("");
+    onFechar();
   };
 
+  const adicionarAtividadeSessao = async (atividade) => {
+
+    const jaExiste = atividadesSelecionadas.some(a => a.idAtividade === atividade.idAtividade);
+    if (jaExiste) return;
+
+    const novasAtivs = [...atividadesSelecionadas, atividade];
+    setAtividadesSelecionadas(novasAtivs);
+
+    try {
+      await salvarAtividadesSessao(idSessao, novasAtivs);
+    } catch (err) {
+      console.error("Erro ao salvar atividades da sessão:", err);
+    }
+  };
 
   return (
     <Overlay>
@@ -73,15 +89,9 @@ function ModalAtividades({ aberto, onFechar, atividades, onAdicionar }) {
                 <Atividade
                   key={a.idAtividade || index}
                   onClick={() => {
-                    onAdicionar(a);        // ✅ Adiciona imediatamente ao Pomodoro
-                    setAtividadeSelecionada(null); // limpa seleção
-                    onFechar();            // fecha o modal
-                  }}
-
-                  style={{
-                    backgroundColor: isSelecionada
-                      ? 'var(--cinza-claro)'
-                      : 'var(--fundo-menu-ativo)',
+                    setAtividadeSelecionada(a);
+                    onAdicionar(a);
+                    onFechar();
                   }}
                 >
                   <div>

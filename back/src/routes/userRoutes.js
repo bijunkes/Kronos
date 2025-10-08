@@ -19,9 +19,9 @@ userRoutes.post('/login', login);
 
 userRoutes.get('/verificar-email', verificarEmail);
 
-userRoutes.post('/senha/reset-solicitar', solicitarResetSenha); // envia e-mail com link
-userRoutes.get('/senha/reset-confirmar', resetConfirmar);       // redireciona para o front com ?token=...
-userRoutes.post('/senha/reset', redefinirSenha);                 // troca a senha usando token
+userRoutes.post('/senha/reset-solicitar', solicitarResetSenha);
+userRoutes.get('/senha/reset-confirmar', resetConfirmar);
+userRoutes.post('/senha/reset', redefinirSenha);
 
 userRoutes.get('/perfil', verificarToken, perfil);
 

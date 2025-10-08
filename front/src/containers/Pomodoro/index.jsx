@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import { Background, Container, Intervalos, Intervalo, Principal, ParteTempo, Cronometro, Circulo, Reiniciar, Pular, Configuracoes, TituloConfiguracoes, OpcoesConfiguracoes, OpcaoFoco, FocoDuracao, FocoQtde, OpcaoCurto, OpcaoLongo, Atividades, Atividade, Adicionar, Lista } from './styles';
 import ModalAtividades from '../ModalAtividades';
-import { listarTodasAtividades } from '../../services/api';
+import { listarTodasAtividades, listarAtividadesSessao, salvarAtividadesSessao } from '../../services/api.js';
 
 function Pomodoro() {
     const [modo, setModo] = useState("foco");
@@ -16,13 +16,35 @@ function Pomodoro() {
     const [ativo, setAtivo] = useState(false);
     const [cicloAtual, setCicloAtual] = useState(0);
 
+    const idSessao = 1;
+
     const [atividades, setAtividades] = useState([]);
-    const [atividadeSelecionada, setAtividadeSelecionada] = useState(null);
+    const [atividadesSelecionadas, setAtividadesSelecionadas] = useState([]);
     const [trocaAutomatica, setTrocaAutomatica] = useState(false);
 
     const [modalAberto, setModalAberto] = useState(false);
     const abrirModal = () => setModalAberto(true);
     const fecharModal = () => setModalAberto(false);
+
+    useEffect(() => {
+        const carregarAtividades = async () => {
+    try {
+        const atividades = await listarAtividadesSessao(idSessao); // idSessao = 1
+        setAtividadesSelecionadas(
+            atividades.map(a => ({
+                idAtividade: a.idAtividade,
+                nomeAtividade: a.nomeAtividade || "Sem nome",
+                concluido: a.concluido ?? false
+            }))
+        );
+    } catch (err) {
+        console.error("Erro ao carregar atividades da sessão:", err);
+    }
+};
+
+        carregarAtividades();
+    }, []);
+
 
     useEffect(() => {
         async function fetchAtividades() {
@@ -35,7 +57,6 @@ function Pomodoro() {
         }
         fetchAtividades();
     }, []);
-
 
     useEffect(() => {
         let intervalo = null;
@@ -101,15 +122,35 @@ function Pomodoro() {
         }
     };
 
-    const adicionarAtividade = (novaAtividade) => {
-        setAtividades((prev) => [...prev, novaAtividade]);
+    const adicionarAtividadeSessao = async (atividade) => {
+        const jaExiste = atividadesSelecionadas.some(a => a.idAtividade === atividade.idAtividade);
+        if (jaExiste) return;
+
+        const novasAtivs = [...atividadesSelecionadas, atividade];
+        setAtividadesSelecionadas(novasAtivs);
+
+        try {
+            await salvarAtividadesSessao(idSessao, novasAtivs);
+        } catch (err) {
+            console.error("Erro ao salvar atividades da sessão:", err);
+        }
+    };
+
+    const handleExcluirAtividade = async (idAtividade) => {
+        const novasAtivs = atividadesSelecionadas.filter(a => a.idAtividade !== idAtividade);
+        setAtividadesSelecionadas(novasAtivs);
+
+        try {
+            await salvarAtividadesSessao(idSessao, novasAtivs);
+        } catch (err) {
+            console.error("Erro ao excluir atividade da sessão:", err);
+        }
     };
 
 
     return (
         <Background>
             <Container>
-
                 <Principal>
                     <Intervalos>
                         <Intervalo ativo>
@@ -144,7 +185,6 @@ function Pomodoro() {
                                     </span>
                                 </Pular>
                             )}
-
                         </Cronometro>
                         <Configuracoes>
                             <TituloConfiguracoes>
@@ -197,28 +237,33 @@ function Pomodoro() {
                             </OpcoesConfiguracoes>
                         </Configuracoes>
                     </ParteTempo>
-
                 </Principal>
                 <Atividades>
                     <h1>Atividades</h1>
                     <Lista>
-                        {atividades.map((a, index) => (
-                        <Atividade key={a.id || index}>
-                            <span
-                                className="material-symbols-outlined"
-                                style={{ fontSize: '20px', cursor: 'pointer' }}
-                                onClick={(e) => {
-                                    e.stopPropagation();
-                                    toggleConcluido(index);
-                                }}
-                            >
-                                {a.concluido ? 'radio_button_checked' : 'radio_button_unchecked'}
-                            </span>
-                            {a.nomeAtividade}
-                        </Atividade>
-                    ))}
+                        {atividadesSelecionadas.map((a, index) => (
+                            <Atividade key={a?.idAtividade || index}>
+                                <span
+                                    className="material-symbols-outlined"
+                                    style={{ fontSize: '20px', cursor: 'pointer' }}
+                                    onClick={(e) => e.stopPropagation()}
+                                >
+                                    {a?.concluido ? 'radio_button_checked' : 'radio_button_unchecked'}
+                                </span>
+                                {a?.nomeAtividade || "Sem nome"}
+
+                                {/* Botão de excluir */}
+                                <span
+                                    className="material-symbols-outlined btn-excluir"
+                                    onClick={() => handleExcluirAtividade(a.idAtividade)}
+                                >
+                                    delete
+                                </span>
+                            </Atividade>
+                        ))}
+
+
                     </Lista>
-                    
 
                     <Adicionar onClick={abrirModal}>
                         Adicionar atividade
@@ -229,14 +274,11 @@ function Pomodoro() {
                 aberto={modalAberto}
                 onFechar={fecharModal}
                 atividades={atividades}
-                onAdicionar={adicionarAtividade}
+                onAdicionar={adicionarAtividadeSessao}
             />
 
-
         </Background>
-
     )
-
 }
 
 export default Pomodoro;

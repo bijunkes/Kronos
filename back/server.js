@@ -8,7 +8,7 @@ import cors from 'cors';
 import userRoutes from './src/routes/userRoutes.js';
 import listRoutes from './src/routes/listRoutes.js';
 import atividadeRoutes from "./src/routes/atividadeRoutes.js";
-
+import pomodoroRouter from './src/routes/pomodoroRoutes.js';
 
 const app = express();
 
@@ -34,6 +34,7 @@ app.get('/status', (req, res) => res.json({ ok: true }));
 app.use('/', userRoutes);
 app.use('/listas', listRoutes);
 app.use('/atividades', atividadeRoutes);
+app.use('/pomodoro', pomodoroRouter);
 
 app.use((req, res) => {
   res.status(404).json({ error: 'Rota não encontrada' });
@@ -50,3 +51,4 @@ app.listen(PORT, () => {
   console.log(`APP_BASE_URL: ${process.env.APP_BASE_URL || 'http://localhost:5173'}`);
   console.log(`API_BASE_URL: ${process.env.API_BASE_URL || `http://localhost:${PORT}`}`);
 });
+

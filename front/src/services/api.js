@@ -112,4 +112,16 @@ export const deletarLista = async (id) =>
 export const listarTodasAtividades = async () =>
   (await api.get('/atividades', { __successSilent: true })).data;
 
+export const salvarAtividadesSessao = async (idSessao, atividades) => {
+  const res = await api.post(`/pomodoro/${idSessao}/atividades`, {
+    atividades: atividades.map(a => a.idAtividade)
+  });
+  return res.data;
+};
+
+export const listarAtividadesSessao = async (idSessao) => {
+  const res = await api.get(`/pomodoro/${idSessao}/atividades`);
+  return res.data;
+};
+
 export default api;
