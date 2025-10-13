@@ -24,6 +24,26 @@ export const NomeAtividade = styled.div`
 `;
 
 export const Status = styled.div`
-    font-size: 16px;
-    opacity: 50%;
+  font-size: 16px;
+  opacity: 50%;
+`;
+
+export const Datas = styled.div`
+  display: flex;
+  flex-direction: row;
+  gap: 2vh;
+  margin: 2vh 0;
+`;
+
+export const Data = styled.div`
+  padding: 0 3vh;
+  width: 100%;
+  background-color: var(--fundo-menu-ativo);
+  font-size: 18px;
+  height: 7vh;
+  display: flex;
+  align-items: center;
+  border-radius: 20px;
+  gap: 1vh;
+  cursor: pointer;
 `;

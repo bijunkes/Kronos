@@ -1,11 +1,9 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
-import {Container, Header, NomeAtividade, Status
-    
-} from './styles.js'
+import { Container, Header, NomeAtividade, Status, Datas, Data } from './styles.js'
 
 function AtividadeSelecionada({ atividade, onClose }) {
-    if (!atividade) return null; 
+    if (!atividade) return null;
 
     return (
         <Container>
@@ -14,8 +12,16 @@ function AtividadeSelecionada({ atividade, onClose }) {
                     {atividade.nomeAtividade}
                 </NomeAtividade>
                 <Status>
-                    A fazer
+                    A concluir
                 </Status>
+                <Datas>
+                    <Data>
+                        Prazo: {new Date(atividade.prazoAtividade).toLocaleDateString("pt-BR", { timeZone: "UTC", })}
+                    </Data>
+                    <Data>
+                        Conclusão: 
+                    </Data>
+                </Datas>
             </Header>
         </Container>
     );

@@ -9,7 +9,6 @@ import userRoutes from './src/routes/userRoutes.js';
 import listRoutes from './src/routes/listRoutes.js';
 import atividadeRoutes from "./src/routes/atividadeRoutes.js";
 import pomodoroRouter from './src/routes/pomodoroRoutes.js';
-import atividadeRoutes from './src/routes/atividadeRoutes.js';
 
 const app = express();
 

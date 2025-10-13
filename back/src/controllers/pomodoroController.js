@@ -1,8 +1,7 @@
 import pool from "../db.js";
 
-// Salvar atividades na sessão
 export const salvarAtividadesSessao = async (req, res) => {
-  const { atividades } = req.body; // [{ idAtividade, concluido }]
+  const { atividades } = req.body;
   const idSessao = req.params.id;
 
   try {
@@ -18,7 +17,6 @@ export const salvarAtividadesSessao = async (req, res) => {
   }
 };
 
-// Listar atividades da sessão
 export const listarAtividadesSessao = async (req, res) => {
   const idSessao = req.params.id;
 
@@ -32,27 +30,35 @@ export const listarAtividadesSessao = async (req, res) => {
 
     const atividadesSalvas = JSON.parse(sessao[0].atividadesVinculadas || '[]');
 
-    if (!atividadesSalvas.length) return res.json([]);
+    let ids = [];
 
-    // Buscar nomes das atividades na tabela 'atividades'
-    const ids = atividadesSalvas.map(a => a.idAtividade);
+    if (typeof atividadesSalvas[0] === "number") {
+      ids = atividadesSalvas;
+    } else {
+      ids = atividadesSalvas
+        .map(a => a.idAtividade)
+        .filter(id => id !== undefined && id !== null);
+    }
+
     const [atividadesComNome] = await pool.query(
       `SELECT idAtividade, nomeAtividade FROM atividades WHERE idAtividade IN (?)`,
       [ids]
     );
 
-    const atividades = atividadesSalvas.map(a => {
-      const atividade = atividadesComNome.find(x => x.idAtividade === a.idAtividade);
+    const atividades = ids.map(id => {
+      const atividade = atividadesComNome.find(x => x.idAtividade === id);
       return {
-        idAtividade: a.idAtividade,
-        concluido: a.concluido ?? false,
+        idAtividade: id,
+        concluido: false,
         nomeAtividade: atividade?.nomeAtividade || "Sem nome"
       };
     });
 
     res.json(atividades);
+
   } catch (err) {
     console.error("Erro ao listar atividades da sessão:", err);
     res.status(500).json({ error: "Erro ao listar atividades" });
   }
 };
+

@@ -136,7 +136,7 @@ export const TituloConfiguracoes = styled.div`
 `;
 
 export const OpcoesConfiguracoes = styled.div`
-flex-direction: column;
+    flex-direction: column;
     display: flex;
     font-size: 18px;
     padding: 1vh;
@@ -238,7 +238,7 @@ export const Atividades = styled.div`
 `;
 
 export const Atividade = styled.div`
-position: relative; 
+    position: relative; 
     background-color: var(--cinza-claro);
     height: 7vh;
     width: 100%;
@@ -252,11 +252,11 @@ position: relative;
 
     .btn-excluir {
     position: absolute;
-    right: 3vh;       /* fixa no canto direito */
+    right: 3vh;
     display: none; 
     font-size: 24px;
     cursor: pointer;
-    color: red;
+    color: var(--Importante-Urgente);
   }
 
   &:hover .btn-excluir {
@@ -265,9 +265,9 @@ position: relative;
 `;
 
 export const Lista = styled.div`
-    height: 100%;
-    width: 100%;
-    flex: 1;      
+  height: 100%;
+  width: 100%;
+  flex: 1;      
   overflow-y: auto;
   display: flex;
   gap: 1.5vh;

@@ -28,23 +28,27 @@ function Pomodoro() {
 
     useEffect(() => {
         const carregarAtividades = async () => {
-    try {
-        const atividades = await listarAtividadesSessao(idSessao); // idSessao = 1
-        setAtividadesSelecionadas(
-            atividades.map(a => ({
-                idAtividade: a.idAtividade,
-                nomeAtividade: a.nomeAtividade || "Sem nome",
-                concluido: a.concluido ?? false
-            }))
-        );
-    } catch (err) {
-        console.error("Erro ao carregar atividades da sessão:", err);
-    }
-};
+            try {
+                const atividadesSessao = await listarAtividadesSessao(idSessao);
+                const todasAtividades = await listarTodasAtividades();
+
+                const atividadesComNome = atividadesSessao.map(a => {
+                    const atividadeCompleta = todasAtividades.find(t => t.idAtividade === a.idAtividade);
+                    return {
+                        ...a,
+                        nomeAtividade: a.nomeAtividade || atividadeCompleta?.nomeAtividade || "Sem nome",
+                        concluido: a.concluido ?? false
+                    };
+                });
+
+                setAtividadesSelecionadas(atividadesComNome);
+            } catch (err) {
+                console.error("Erro ao carregar atividades da sessão:", err);
+            }
+        };
 
         carregarAtividades();
     }, []);
-
 
     useEffect(() => {
         async function fetchAtividades() {
