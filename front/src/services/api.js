@@ -91,7 +91,10 @@ export const listarAtividadesPorLista = async (idLista) =>
 
 export const atualizarAtividade = async (id, dados) =>
   (await api.put(`/atividades/${id}`, dados)).data;
-
+export const atualizarIdEisenAtividade = async (id, dados) => {
+  const response = await api.put(`/atividades/eisenhower/${id}`, dados);
+  return response.data;
+};
 export const deletarAtividade = async (id) =>
   (await api.delete(`/atividades/${id}`)).data;
 
@@ -104,6 +107,22 @@ export const criarLista = async (nome) =>
 export const listarListas = async () => {
   const listas = (await api.get('/listas', { __successSilent: true })).data;
   return listas.filter((lista) => lista.nome !== 'Atividades');
+};
+export const listarAtividadesEmMatriz = async () => {
+    const response = await api.get('/eisenhower/idAtividadeEisenhower');
+    return response.data;
+};
+export const deletarAtividadeDeMatriz = async (idAtividadeEisenhower) => {
+  const response = await api.delete('/eisenhower/', idAtividadeEisenhower);
+  return response.data;
+};
+export const adicionarAtividadeEmMatriz = async (dados) => {
+  const response = await api.post('/eisenhower/',dados);
+  return response.data;
+};
+export const atualizarAtividadeEmMatriz = async (dados) => {
+  const response = await api.put('/eisenhower/', dados);
+  return response.data;
 };
 
 export const deletarLista = async (id) =>

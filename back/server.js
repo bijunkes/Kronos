@@ -9,7 +9,7 @@ import userRoutes from './src/routes/userRoutes.js';
 import listRoutes from './src/routes/listRoutes.js';
 import atividadeRoutes from "./src/routes/atividadeRoutes.js";
 import pomodoroRouter from './src/routes/pomodoroRoutes.js';
-import atividadeRoutes from './src/routes/atividadeRoutes.js';
+import eisenRoutes from "./src/routes/eisenRoutes.js";
 
 const app = express();
 
@@ -42,6 +42,7 @@ app.use('/', userRoutes);
 app.use('/listas', listRoutes);
 app.use('/atividades', atividadeRoutes);
 app.use('/pomodoro', pomodoroRouter);
+app.use('/eisenhower', eisenRoutes);
 
 app.use((req, res) => {
   res.status(404).json({ error: 'Rota não encontrada' });
