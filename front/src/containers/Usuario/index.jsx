@@ -17,35 +17,42 @@ import {
   Loading,
 } from './style';
 
-
 import olhoAberto from '../../assets/olhoAberto.png';
 import olhoFechado from '../../assets/olhoFechado.png';
 import defaultUserImage from '../../assets/defaultUserImage.jpg';
 
-
-import { getPerfil, atualizarPerfil, excluirConta } from '../../services/api.js';
+import {
+  getPerfil,
+  atualizarPerfil,
+  excluirConta,
+  enviarIcone
+} from '../../services/api.js';
 import { showOkToast } from '../../components/showToast.jsx';
 import toast from 'react-hot-toast';
 
-
 function Usuario() {
   const navigate = useNavigate();
-
 
   const [carregando, setCarregando] = useState(true);
   const [editando, setEditando] = useState(false);
   const [mostraSenha, setMostraSenha] = useState(false);
 
-
   const [nome, setNome] = useState('');
   const [username, setUsername] = useState('');
   const [email, setEmail] = useState('');
   const [senha, setSenha] = useState('');
+
+  // ícone salvo no servidor
+  const [icon, setIcon] = useState(null);
+  // pré-visualização local (ainda não salva)
+  const [tempIconUrl, setTempIconUrl] = useState(null);
+  const [tempIconFile, setTempIconFile] = useState(null);
+
+  const [uploading, setUploading] = useState(false); // usado apenas no "Salvar" (upload real)
   const [orig, setOrig] = useState(null);
 
-
   const nomeRef = useRef(null);
-
+  const fileRef = useRef(null);
 
   useEffect(() => {
     (async () => {
@@ -54,16 +61,67 @@ function Usuario() {
         setNome(p.nome || '');
         setUsername(p.username || '');
         setEmail(p.email || '');
-        setOrig({ nome: p.nome || '', username: p.username || '', email: p.email || '' });
+        setIcon(p.icon || null);
+        setOrig({
+          nome: p.nome || '',
+          username: p.username || '',
+          email: p.email || '',
+          icon: p.icon || null
+        });
+
+        // sincroniza o menu
+        window.dispatchEvent(new CustomEvent('user:icon', { detail: { iconUrl: p.icon || null } }));
+        if (p.icon) localStorage.setItem('user_icon_url', p.icon);
+        else localStorage.removeItem('user_icon_url');
       } catch (e) {
         showOkToast(e?.message || 'Erro ao carregar perfil', 'error');
       } finally {
         setCarregando(false);
       }
     })();
+
+    // limpeza do objectURL ao desmontar
+    return () => {
+      if (tempIconUrl) URL.revokeObjectURL(tempIconUrl);
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
+  // avatar só clica quando editando (abre o input file)
+  const onAvatarClick = () => {
+    if (!editando || uploading) return;
+    fileRef.current?.click();
+  };
 
+  // PRÉ-VISUALIZAÇÃO local, sem salvar no servidor
+  const onFileChange = (e) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    if (!/^image\/(png|jpeg|jpg|webp)$/.test(file.type)) {
+      showOkToast('Use PNG, JPG ou WEBP.', 'error');
+      e.target.value = '';
+      return;
+    }
+    if (file.size > 2 * 1024 * 1024) {
+      showOkToast('Imagem até 2MB.', 'error');
+      e.target.value = '';
+      return;
+    }
+
+    // limpa URL anterior, se existir
+    if (tempIconUrl) URL.revokeObjectURL(tempIconUrl);
+
+    const url = URL.createObjectURL(file);
+    setTempIconUrl(url);
+    setTempIconFile(file);
+   
+
+    // não enviamos nada agora; upload só acontecerá no onSalvar
+    e.target.value = '';
+  };
+
+  // ===== Handlers =====
   function onEditar() {
     setEditando(true);
     setSenha('');
@@ -71,184 +129,105 @@ function Usuario() {
     setTimeout(() => nomeRef.current?.focus(), 0);
   }
 
-
   function onCancelar() {
+    // restaura campos
     if (orig) {
-      setNome(orig.nome);
-      setUsername(orig.username);
-      setEmail(orig.email);
+      setNome(orig.nome || '');
+      setUsername(orig.username || '');
+      setEmail(orig.email || '');
+      setIcon(orig.icon || null);
     }
+    // descarta pré-visualização
+    if (tempIconUrl) URL.revokeObjectURL(tempIconUrl);
+    setTempIconUrl(null);
+    setTempIconFile(null);
+
     setSenha('');
     setMostraSenha(false);
     setEditando(false);
   }
-
 
   async function onSalvar(e) {
-  e.preventDefault();
+    e?.preventDefault?.();
 
+    const mudouNome  = orig && nome !== orig.nome;
+    const mudouEmail = orig && email !== orig.email;
+    const temSenha   = !!(senha && String(senha).trim());
+    const mudouIcon  = !!tempIconFile; // somente se o usuário escolheu uma nova imagem
 
-const payload = {};
-  const mudouNome   = orig && nome !== orig.nome;
-  const mudouEmail  = orig && email !== orig.email;
-  const mudouUser   = orig && username !== orig.username;
-  const temSenha    = !!(senha && String(senha).trim());
+    const payload = {};
+    if (mudouNome)  payload.nome  = nome;
+    if (mudouEmail) payload.email = email;
+    if (temSenha)   payload.senha = String(senha).trim();
 
-
-  if (mudouNome)  payload.nome = nome;
-  if (mudouEmail) payload.email = email;
-  if (mudouUser)  payload.username = username;
-  if (temSenha)   payload.senha = String(senha).trim();
-
-
-  if (Object.keys(payload).length === 0) {
-    showOkToast('Nada para atualizar.', 'success');
-    setEditando(false);
-    setSenha('');
-    setMostraSenha(false);
-    return;
-  }
-
-
-  try {
-    const tid = toast.loading('Salvando...', { position: 'top-center' });
-    const resp = await atualizarPerfil(payload);
-    toast.dismiss(tid);
-
-
-    if (mudouEmail || resp?.pendingEmail) {
-      showOkToast('Uma mensagem de confirmação foi enviada ao seu novo e-mail.', 'success');
-    } else {
-      showOkToast(resp?.message || 'Perfil atualizado com sucesso!', 'success');
+    // Se nada mudou (nem imagem), não faz nada
+    if (!mudouIcon && Object.keys(payload).length === 0) {
+      showOkToast('Nada para atualizar.', 'success');
+      setEditando(false);
+      setSenha('');
+      setMostraSenha(false);
+      return;
     }
 
+    try {
+      const tid = toast.loading('Salvando...', { position: 'top-center' });
 
-    const u = resp?.user || { nome, username, email };
-    setOrig({ nome: u.nome, username: u.username, email: u.email });
-    setNome(u.nome);
-    setUsername(u.username);
-    setEmail(u.email);
+      // 1) atualiza campos de texto, se houver
+      if (Object.keys(payload).length > 0) {
+        await atualizarPerfil(payload);
+      }
 
+      // 2) se tiver imagem pendente, envia agora
+      if (mudouIcon) {
+        setUploading(true);
+        const { iconUrl } = await enviarIcone(tempIconFile);
+        setIcon(iconUrl || null);
+        setOrig((o) => ({ ...(o || {}), icon: iconUrl || null }));
 
-    setEditando(false);
-    setSenha('');
-    setMostraSenha(false);
-  } catch (err) {
-    toast.dismiss();
-    showOkToast(
-      err?.response?.data?.error || err?.message || 'Não foi possível atualizar o perfil.',
-      'error'
-    );
-  }
-}
+        // atualiza menu e persiste
+        window.dispatchEvent(new CustomEvent('user:icon', { detail: { iconUrl: iconUrl || null } }));
+        if (iconUrl) localStorage.setItem('user_icon_url', iconUrl);
+        else localStorage.removeItem('user_icon_url');
 
+        // limpa preview local
+        if (tempIconUrl) URL.revokeObjectURL(tempIconUrl);
+        setTempIconUrl(null);
+        setTempIconFile(null);
+      }
 
-  function confirmToast(
-    message,
-    { confirmText = 'Excluir conta', cancelText = 'Cancelar', width = 520 } = {}
-  ) {
-    return new Promise((resolve) => {
-      let settled = false;
+      toast.dismiss(tid);
+      showOkToast('Perfil atualizado com sucesso!', 'success');
 
+      // atualiza orig com os dados salvos
+      setOrig({ nome, username, email, icon: mudouIcon ? (icon || null) : (orig?.icon || null) });
 
-      const id = toast(
-        (t) => (
-          <div
-            style={{
-              width: '100%',
-              color: '#000',
-              display: 'flex',
-              flexDirection: 'column',
-              alignItems: 'center',
-              textAlign: 'center',
-            }}
-          >
-            <p style={{ margin: 0, whiteSpace: 'pre-line', color: '#000' }}>{message}</p>
-
-
-            <div
-              style={{
-                display: 'flex',
-                gap: 12,
-                justifyContent: 'center',
-                alignItems: 'center',
-                width: '100%',
-                marginTop: 16,
-              }}
-            >
-              <button
-                type="button"
-                onClick={(e) => {
-                  e.preventDefault();
-                  e.stopPropagation();
-                  settled = true;
-                  resolve(true);
-                  toast.dismiss(t.id);
-                }}
-                style={{
-                  padding: '10px 16px',
-                  borderRadius: 8,
-                  border: '1px solid #137511',
-                  background: '#167f14',
-                  color: '#ffffff',
-                  cursor: 'pointer',
-                  minWidth: 160,
-                }}
-              >
-                {confirmText}
-              </button>
-
-
-              <button
-                type="button"
-                onClick={(e) => {
-                  e.preventDefault();
-                  e.stopPropagation();
-                  settled = true;
-                  resolve(false);
-                  toast.dismiss(t.id);
-                }}
-                style={{
-                  padding: '10px 16px',
-                  borderRadius: 8,
-                  border: '1px solid #681212',
-                  background: '#7c1414',
-                  color: '#ffffff',
-                  cursor: 'pointer',
-                  minWidth: 160,
-                }}
-              >
-                {cancelText}
-              </button>
-            </div>
-          </div>
-        ),
-        {
-          position: 'top-center',
-          duration: Infinity,
-          style: { background: '#fff', color: '#000', width, minWidth: width, maxWidth: 'none' },
-          onClose: () => { if (!settled) resolve(false); },
-        }
+      setEditando(false);
+      setSenha('');
+      setMostraSenha(false);
+    } catch (err) {
+      toast.dismiss();
+      showOkToast(
+        err?.response?.data?.error || err?.message || 'Não foi possível atualizar o perfil.',
+        'error'
       );
-    });
+    } finally {
+      setUploading(false);
+    }
   }
-
 
   async function onExcluir() {
-    const confirma = await confirmToast(
-      'Tem certeza que deseja excluir sua conta?\nEssa ação não pode ser desfeita.',
-      { confirmText: 'Excluir conta', cancelText: 'Cancelar' }
-    );
-    if (!confirma) return;
-
+    const ok = window.confirm('Tem certeza que deseja excluir sua conta? Essa ação não pode ser desfeita.');
+    if (!ok) return;
 
     try {
       const tid = toast.loading('Excluindo conta...', { position: 'top-center' });
       await excluirConta();
       toast.dismiss(tid);
       localStorage.removeItem('token');
+      localStorage.removeItem('user_icon_url');
       navigate('/cadastro');
     } catch (err) {
+      toast.dismiss();
       showOkToast(
         err?.response?.data?.error || err?.message || 'Não foi possível excluir a conta.',
         'error'
@@ -256,27 +235,57 @@ const payload = {};
     }
   }
 
+  // ===== UI =====
+  const avatarSrc = tempIconUrl || icon || defaultUserImage; // mostra preview se existir
 
   return (
     <Container>
       <Card>
         <Header>
-          <Avatar>
-            <img src={defaultUserImage} alt="Foto do usuário" />
+          <Avatar
+            onClick={onAvatarClick}
+            title={editando ? (uploading ? 'Enviando...' : 'Clique para escolher uma foto') : ''}
+            style={{ cursor: editando && !uploading ? 'pointer' : 'default', position: 'relative' }}
+          >
+            <img
+              src={avatarSrc}
+              alt="Foto do usuário"
+              style={{ opacity: uploading ? 0.6 : 1, transition: 'opacity .2s' }}
+            />
+            {editando && (
+              <div
+                style={{
+                  position: 'absolute',
+                  inset: 0,
+                  background: 'rgba(0,0,0,.25)',
+                  borderRadius: '50%',
+                }}
+              />
+            )}
           </Avatar>
-
 
           <HeaderText>
             <h2>Meu Perfil</h2>
             <p>Gerencie suas informações</p>
+
+            {/* input oculto para upload */}
+            <input
+              ref={fileRef}
+              type="file"
+              accept="image/png,image/jpeg,image/webp"
+              style={{ display: 'none' }}
+              onChange={onFileChange}
+            />
           </HeaderText>
         </Header>
-
 
         {carregando ? (
           <Loading>Carregando…</Loading>
         ) : (
-          <Form onSubmit={(e) => e.preventDefault()}>
+          <Form
+            onSubmit={(e) => e.preventDefault()}
+            style={{ opacity: editando ? 1 : 0.6, transition: 'opacity .2s' }}
+          >
             <Field>
               <Label htmlFor="nome">Nome</Label>
               <Input
@@ -290,7 +299,6 @@ const payload = {};
               />
             </Field>
 
-
             <Field>
               <Label htmlFor="username">Username</Label>
               <Input
@@ -298,10 +306,9 @@ const payload = {};
                 type="text"
                 placeholder="@usuario"
                 value={username}
-                readOnly // imutável no backend
+                readOnly
               />
             </Field>
-
 
             <Field>
               <Label htmlFor="email">Email</Label>
@@ -314,7 +321,6 @@ const payload = {};
                 readOnly={!editando}
               />
             </Field>
-
 
             <Field>
               <Label htmlFor="senha">Senha</Label>
@@ -336,7 +342,6 @@ const payload = {};
               </InputWithIcon>
             </Field>
 
-
             <ButtonRow>
               {!editando ? (
                 <>
@@ -349,10 +354,10 @@ const payload = {};
                 </>
               ) : (
                 <>
-                  <Button id="salvar" type="button" onClick={onSalvar}>
-                    Salvar
+                  <Button id="salvar" type="button" onClick={onSalvar} disabled={uploading}>
+                    {uploading ? 'Salvando…' : 'Salvar'}
                   </Button>
-                  <Button id="cancelar" type="button" onClick={onCancelar}>
+                  <Button id="cancelar" type="button" onClick={onCancelar} disabled={uploading}>
                     Cancelar
                   </Button>
                 </>
@@ -365,8 +370,4 @@ const payload = {};
   );
 }
 
-
 export default Usuario;
-
-
-

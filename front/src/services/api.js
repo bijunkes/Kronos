@@ -88,7 +88,8 @@ export const solicitarResetSenha = async (email) =>
 
 
 export const redefinirSenha = async ({ token, novaSenha }) =>
-  (await api.post('/senha/reset', { token, novaSenha })).data;
+  (await api.post('/senha/reset', { token, novaSenha }, { withCredentials: true })).data;
+
 
 
 export const loginUsuario = async (dados) =>
@@ -211,6 +212,18 @@ export const atualizarAtividadeEmMatriz = async (dados) => {
   const response = await api.put('/eisenhower/', dados);
   return response.data;
 };
+
+export const enviarIcone = async (file) => {
+  const fd = new FormData();
+  fd.append('icon', file);
+  return (await api.put('/usuarios/me/icon', fd, {
+    headers: { 'Content-Type': 'multipart/form-data' }
+  })).data;
+};
+
+export const removerIcone = async () =>
+  (await api.delete('/usuarios/me/icon')).data;
+
 export default api;
 
 

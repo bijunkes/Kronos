@@ -3,6 +3,9 @@ dotenv.config();
 
 import express from 'express';
 import cors from 'cors';
+import path from 'path';
+import fs from 'fs';
+
 import cookieParser from 'cookie-parser';
 
 import userRoutes from './src/routes/userRoutes.js';
@@ -34,6 +37,11 @@ app.use(cors({
 app.use(express.json());
 
 app.use(cookieParser());
+
+const UPLOAD_ROOT = path.join(process.cwd(), 'uploads');
+const AVATARS_DIR = path.join(UPLOAD_ROOT, 'avatars');
+fs.mkdirSync(AVATARS_DIR, { recursive: true });
+app.use('/uploads', express.static(UPLOAD_ROOT));
 
 app.get('/status', (req, res) => res.json({ ok: true }));
 
