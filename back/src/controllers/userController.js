@@ -3,6 +3,8 @@ import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
 import nodemailer from 'nodemailer';
 import pool from '../db.js';
+import fs from 'fs';
+import path from 'path';
 
 const SALT_ROUND = Number(process.env.SALT_ROUNDS || 10);
 const EMAIL_VERIFY_EXP_MIN = Number(process.env.EMAIL_VERIFY_EXP_MIN || 60);
@@ -36,10 +38,10 @@ export const cadastroVerificacaoEmail = async (req, res) => {
     const usernameStr = typeof username === 'string' ? username.trim() : '';
     const nomeStr = typeof nome === 'string' ? nome.trim() : '';
     const emailStr = typeof email === 'string' ? email.trim() : '';
-    const senhaStr = String(senha ?? '').trim(); // <- garante string
+    const senhaStr = String(senha ?? '').trim();
 
-    if (!usernameStr || usernameStr.length < 4) {
-      return res.status(400).json({ error: 'O username deve ter no mínimo 4 caracteres.' });
+    if (!usernameStr || usernameStr.length < 4 || usernameStr.length > 12) {
+      return res.status(400).json({ error: 'O username deve ter entre 4 e 12 caracteres.' });
     }
 
     if (!nomeStr) {
@@ -47,7 +49,7 @@ export const cadastroVerificacaoEmail = async (req, res) => {
     }
 
     if (nomeStr.length > 15) {
-      return res.status(400).json({ error: 'O nome deve ter no máximo 15 carcteres' });
+      return res.status(400).json({ error: 'O nome deve ter no máximo 15 caracteres.' });
     }
 
     if (!emailStr) {
@@ -64,10 +66,10 @@ export const cadastroVerificacaoEmail = async (req, res) => {
     }
 
     const [uRows] = await pool.query('SELECT 1 FROM usuarios WHERE username = ? LIMIT 1', [usernameStr]);
-    if (uRows.length) return res.status(400).json({ error: 'Username já cadastrado' });
+    if (uRows.length) return res.status(400).json({ error: 'Username já cadastrado.' });
 
     const [eRows] = await pool.query('SELECT 1 FROM usuarios WHERE email = ? LIMIT 1', [emailStr]);
-    if (eRows.length) return res.status(400).json({ error: 'Email já cadastrado' });
+    if (eRows.length) return res.status(400).json({ error: 'Email já cadastrado.' });
 
     const senhaCriptografada = await bcrypt.hash(senhaStr, SALT_ROUND);
 
@@ -106,43 +108,63 @@ export const cadastroVerificacaoEmail = async (req, res) => {
 };
 
 
-// VERIFICAÇÃO DE EMAIL 
+
+// VERIFICAÇÃO DE EMAIL
 export const verificarEmail = async (req, res) => {
   const { token } = req.query;
   if (!token) return res.status(400).send('Token ausente.');
 
+  let payload;
   try {
-    const { username, nome, email, senhaHash, icon } = verificarTokenVerificacao(token);
+    payload = verificarTokenVerificacao(token);
+  } catch (err) {
+    return res.status(400).send('Token inválido ou expirado.');
+  }
 
-    const [[u]] = await pool.query('SELECT 1 FROM usuarios WHERE username = ? LIMIT 1', [username]);
-    if (u) return res.status(400).send('Username já cadastrado.');
+  const { username, nome, email, senhaHash, icon } = payload || {};
+  if (!username || !email || !senhaHash) {
+    return res.status(400).send('Token inválido (dados incompletos).');
+  }
 
-    const [[e]] = await pool.query('SELECT 1 FROM usuarios WHERE email = ? LIMIT 1', [email]);
-    if (e) return res.status(400).send('Email já cadastrado.');
+  const conn = await pool.getConnection();
+  try {
+    await conn.beginTransaction();
 
-    await pool.query(
-      'INSERT INTO usuarios (username, nome, email, senha, dataCriacao, icon) VALUES (?, ?, ?, ?, ?, ?)',
-      [username, nome, email, senhaHash, new Date(), JSON.stringify(icon ?? null)]
+    const [[u]] = await conn.query(
+      'SELECT 1 FROM usuarios WHERE username = ? LIMIT 1',
+      [username]
+    );
+    if (u) {
+      await conn.rollback();
+      return res.status(400).send('Username já cadastrado.');
+    }
+
+    const [[e]] = await conn.query(
+      'SELECT 1 FROM usuarios WHERE email = ? LIMIT 1',
+      [email]
+    );
+    if (e) {
+      await conn.rollback();
+      return res.status(400).send('Email já cadastrado.');
+    }
+
+    await conn.query(
+      `
+      INSERT INTO usuarios (username, nome, email, senha, dataCriacao, icon)
+      VALUES (?, ?, ?, ?, ?, ?)
+      `,
+      [username, nome || null, email, senhaHash, new Date(), JSON.stringify(icon ?? null)]
     );
 
-    await pool.query(
-      'INSERT INTO ListaAtividades (nomeLista, Usuarios_username) VALUES (?, ?)',
+    await conn.query(
+      `
+      INSERT INTO listaatividades (nomeLista, Usuarios_username)
+      VALUES (?, ?)
+      `,
       ['Atividades', username]
     );
 
-    await pool.query(`
-  INSERT INTO pomodoro (
-    Usuarios_username,
-    duracaoFoco,
-    duracaoIntervaloCurto,
-    duracaoIntervaloLongo,
-    ciclosFoco,
-    ciclosIntervaloCurto,
-    ciclosIntervaloLongo,
-    atividadesVinculadas
-  ) VALUES (?, ?, ?, ?, ?, ?, ?, ?)
-`, [
-      username,
+    const pomodoroVals = [
       '00:25:00',
       '00:05:00',
       '00:15:00',
@@ -150,24 +172,56 @@ export const verificarEmail = async (req, res) => {
       1,
       1,
       '[]'
-    ]);
+    ];
 
-    const loginUrl = `${APP_BASE}/login`;
-    res.status(303).location(loginUrl);
-    return res.send(`
-      <!doctype html>
-      <meta charset="utf-8" />
-      <title>Redirecionando…</title>
-      <meta http-equiv="refresh" content="0;url='${loginUrl}'" />
-      <script>window.location.replace(${JSON.stringify(loginUrl)});</script>
-      <p>Redirecionando para <a href="${loginUrl}">login</a>…</p>
-    `);
+    try {
+      await conn.query(
+        `
+        INSERT INTO pomodoro (
+          username,
+          duracaoFoco,
+          duracaoIntervaloCurto,
+          duracaoIntervaloLongo,
+          ciclosFoco,
+          ciclosIntervaloCurto,
+          ciclosIntervaloLongo,
+          atividadesVinculadas
+        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+        `,
+        [username, ...pomodoroVals]
+      );
+    } catch (e1) {
+      try {
+        await conn.query(
+          `
+          INSERT INTO pomodoro (
+            Usuarios_username,
+            duracaoFoco,
+            duracaoIntervaloCurto,
+            duracaoIntervaloLongo,
+            ciclosFoco,
+            ciclosIntervaloCurto,
+            ciclosIntervaloLongo,
+            atividadesVinculadas
+          ) VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+          `,
+          [username, ...pomodoroVals]
+        );
+      } catch (e2) {
+        console.warn(
+          'Preferências Pomodoro não criadas (seguindo assim mesmo):',
+          e2?.sqlMessage || e2
+        );
+      }
+    }
+
+    await conn.commit();
+
     res.cookie('flash_email', encodeURIComponent(email), {
       maxAge: 60_000,
       httpOnly: false,
       sameSite: 'Lax',
       path: '/',
-      domain: 'localhost', 
     });
 
     res.cookie('flash_msg', encodeURIComponent('Conta cadastrada. Você já pode acessar.'), {
@@ -175,16 +229,17 @@ export const verificarEmail = async (req, res) => {
       httpOnly: false,
       sameSite: 'Lax',
       path: '/',
-      domain: 'localhost',
     });
 
-    return res.redirect(303, `${APP_BASE}/login`);
+    return res.redirect(303, `${APP_BASE.replace(/\/+$/,'')}/login`);
   } catch (err) {
-    console.error('Erro ao verificar e-mail:', err);
-    return res.status(400).send('Token inválido ou expirado.');
+    try { await conn.rollback(); } catch {}
+    console.error('Erro ao verificar e-mail:', err?.sqlMessage || err);
+    return res.status(500).send('Erro interno ao concluir cadastro.');
+  } finally {
+    conn.release();
   }
 };
-
 
 
 // LOGIN 
@@ -208,19 +263,37 @@ export const login = async (req, res) => {
 
 // PERFIL 
 export const perfil = async (req, res) => {
-  const usuarioUsername = req.usuarioUsername;
+  const username = req.usuarioUsername;
   try {
-    const [usuarios] = await pool.query(
-      'SELECT username, nome, email, senha, dataCriacao, icon FROM usuarios WHERE username = ?',
-      [usuarioUsername]
+    const [[u]] = await pool.query(
+      'SELECT username, nome, email, icon FROM usuarios WHERE username = ? LIMIT 1',
+      [username]
     );
-    if (!usuarios.length) return res.status(404).json({ error: 'Usuário não encontrado' });
-    return res.json(usuarios[0]);
+    if (!u) return res.status(404).json({ error: 'Usuário não encontrado.' });
+
+    let iconUrl = null;
+    try {
+      if (u.icon) {
+        const data = typeof u.icon === 'string' ? JSON.parse(u.icon) : u.icon;
+        const rel = data?.url || (typeof data === 'string' ? data : null);
+        if (rel) {
+          iconUrl = `${API_BASE}${rel.startsWith('/') ? '' : '/'}${rel}`;
+        }
+      }
+    } catch {}
+
+    return res.json({
+      username: u.username,
+      nome: u.nome,
+      email: u.email,
+      icon: iconUrl, 
+    });
   } catch (err) {
-    console.error('Erro ao buscar usuário:', err);
-    return res.status(500).json({ error: 'Erro ao buscar usuário' });
+    return res.status(500).json({ error: err?.sqlMessage || 'Erro ao buscar perfil.' });
   }
 };
+  
+
 
 // RESET DE SENHA
 export const solicitarResetSenha = async (req, res) => {
@@ -233,7 +306,7 @@ export const solicitarResetSenha = async (req, res) => {
       [email]
     );
 
-    // resposta genérica para não vazar existência de conta
+
     if (!rows.length) {
       return res.json({ message: 'Se o e-mail existir, enviaremos um link de redefinição.' });
     }
@@ -245,7 +318,6 @@ export const solicitarResetSenha = async (req, res) => {
       { expiresIn: `${RESET_EXP_MIN}m` }
     );
 
-    // o link bate na API e redireciona para a página do front
     const link = `${API_BASE}/senha/reset-confirmar?token=${encodeURIComponent(token)}`;
 
     await mailer.sendMail({
@@ -278,8 +350,6 @@ export const redefinirSenha = async (req, res) => {
   if (!token || !senha) {
     return res.status(400).json({ error: 'Dados incompletos.' });
   }
-
-  // regras de senha
   if (senha.length < 5 || senha.length > 20) {
     return res.status(400).json({ error: 'A senha deve ter entre 5 e 20 caracteres.' });
   }
@@ -289,19 +359,28 @@ export const redefinirSenha = async (req, res) => {
   }
 
   try {
-    const payload = jwt.verify(token, process.env.RESET_SECRET); // { email, username }
+    const payload = jwt.verify(token, process.env.RESET_SECRET); 
     const senhaHash = await bcrypt.hash(senha, SALT_ROUND);
 
     const [result] = await pool.query(
       'UPDATE usuarios SET senha = ? WHERE email = ? LIMIT 1',
       [senhaHash, payload.email]
     );
-
     if (result.affectedRows === 0) {
       return res.status(400).json({ error: 'Usuário não encontrado.' });
     }
 
-    return res.json({ message: 'Senha redefinida com sucesso. Agora você já pode fazer login.' });
+    res.cookie('flash_email', encodeURIComponent(payload.email), {
+      maxAge: 60_000,
+      httpOnly: false,
+      sameSite: 'Lax',
+      path: '/',
+    });
+
+    return res.json({
+      message: 'Senha redefinida com sucesso. Agora você já pode fazer login.',
+      prefillEmail: payload.email
+    });
   } catch (err) {
     console.error('Erro em redefinirSenha:', err);
     if (err.name === 'TokenExpiredError') {
@@ -310,6 +389,7 @@ export const redefinirSenha = async (req, res) => {
     return res.status(400).json({ error: 'Token inválido.' });
   }
 };
+
 
 // CONFIRMAÇÃO DE RESET (redireciona para o front)
 export const resetConfirmar = async (req, res) => {
@@ -328,7 +408,6 @@ export const resetConfirmar = async (req, res) => {
   `);
 };
 
-
 // VERIFICA SE USUÁRIO EXISTE 
 export const usuarioExiste = async (req, res) => {
   const { email } = req.query;
@@ -343,6 +422,7 @@ export const usuarioExiste = async (req, res) => {
   }
   
 };
+
 // EXCLUIR CONTA
 export const excluirConta = async (req, res) => {
   const usernameAuth = req.usuarioUsername;
@@ -350,33 +430,56 @@ export const excluirConta = async (req, res) => {
     return res.status(400).json({ error: 'Usuário da sessão não identificado.' });
   }
 
-
   const conn = await pool.getConnection();
+
+  const tryDel = async (sql, param) => {
+    try {
+      const [r] = await conn.query(sql, [param]);
+      return r?.affectedRows ?? 0;
+    } catch {
+      return 0;
+    }
+  };
+
   try {
     await conn.beginTransaction();
 
-
-    const [rAtvList] = await conn.query(`
+    const delAtvPorLista = await tryDel(
+      `
       DELETE A
       FROM atividades A
       JOIN listaatividades L
         ON  L.idLista = A.ListaAtividades_idLista
         AND L.Usuarios_username = A.ListaAtividades_Usuarios_username
       WHERE L.Usuarios_username = ?
-    `, [usernameAuth]);
-
-
-    const [rAtvUser] = await conn.query(
-      `DELETE FROM atividades WHERE Usuarios_username = ?`,
-      [usernameAuth]
+      `,
+      usernameAuth
     );
 
+    const delAtvDiretas =
+      (await tryDel(`DELETE FROM atividades WHERE Usuarios_username = ?`, usernameAuth)) +
+      (await tryDel(`DELETE FROM atividades WHERE username = ?`, usernameAuth));
 
-    const [rList] = await conn.query(
+    const delEisenhower =
+      (await tryDel(`DELETE FROM eisenhower WHERE Usuarios_username = ?`, usernameAuth)) +
+      (await tryDel(`DELETE FROM eisenhower WHERE username = ?`, usernameAuth));
+
+    const delKanban =
+      (await tryDel(`DELETE FROM kanban WHERE Usuarios_username = ?`, usernameAuth)) +
+      (await tryDel(`DELETE FROM kanban WHERE username = ?`, usernameAuth));
+
+    const delLembretes =
+      (await tryDel(`DELETE FROM lembretes WHERE Usuarios_username = ?`, usernameAuth)) +
+      (await tryDel(`DELETE FROM lembretes WHERE username = ?`, usernameAuth));
+
+    const delPomodoro =
+      (await tryDel(`DELETE FROM pomodoro WHERE Usuarios_username = ?`, usernameAuth)) +
+      (await tryDel(`DELETE FROM pomodoro WHERE username = ?`, usernameAuth));
+
+    const delListas = await tryDel(
       `DELETE FROM listaatividades WHERE Usuarios_username = ?`,
-      [usernameAuth]
+      usernameAuth
     );
-
 
     const [ru] = await conn.query(
       `DELETE FROM usuarios WHERE username = ? LIMIT 1`,
@@ -387,15 +490,20 @@ export const excluirConta = async (req, res) => {
       return res.status(404).json({ error: 'Usuário não encontrado.' });
     }
 
-
     await conn.commit();
+
     return res.json({
       ok: true,
       message: 'Conta excluída com sucesso.',
       debug: {
-        del_ativ_por_lista: rAtvList?.affectedRows ?? 0,
-        del_ativ_diretas: rAtvUser?.affectedRows ?? 0,
-        del_listas: rList?.affectedRows ?? 0
+        del_ativ_por_lista: delAtvPorLista,
+        del_ativ_diretas: delAtvDiretas,
+        del_eisenhower: delEisenhower,
+        del_kanban: delKanban,
+        del_lembretes: delLembretes,
+        del_pomodoro: delPomodoro,
+        del_listas: delListas,
+        del_usuario: ru.affectedRows
       }
     });
   } catch (err) {
@@ -411,21 +519,18 @@ export const excluirConta = async (req, res) => {
 
 
 // EDITAR CONTA
-const PASSWORD_RULE = /^(?=.*[^A-Za-z0-9]).{5,}$/;
+const PASSWORD_RULE = /^(?=.*[^A-Za-z0-9]).{5,20}$/; // 5 a 20 chars + 1 especial
 const EMAIL_RULE    = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 const EMAIL_CHANGE_EXP_MIN = Number(process.env.EMAIL_CHANGE_EXP_MIN || 1440);
-
 
 export const editarPerfil = async (req, res) => {
   const usernameAuth = req.usuarioUsername;
   if (!usernameAuth) return res.status(401).json({ error: 'Não autenticado.' });
 
-
   const nomeReq  = (req.body?.nome ?? '').trim();
   const userReq  = (req.body?.username ?? '').trim();
   const emailReq = (req.body?.email ?? '').trim();
-  const senhaReq = String(req.body?.senha ?? '');
-
+  const senhaReq = String(req.body?.senha ?? '').trim();
 
   const conn = await pool.getConnection();
   try {
@@ -438,12 +543,10 @@ export const editarPerfil = async (req, res) => {
     }
     const userDB = rows[0];
 
-
     const wantsNome  = !!nomeReq  && nomeReq  !== userDB.nome;
     const wantsUser  = !!userReq  && userReq  !== userDB.username;
     const wantsEmail = !!emailReq && emailReq.toLowerCase() !== String(userDB.email || '').toLowerCase();
     const wantsSenha = !!senhaReq;
-
 
     if (wantsUser) {
       return res.status(400).json({
@@ -455,7 +558,7 @@ export const editarPerfil = async (req, res) => {
     }
     if (wantsSenha && !PASSWORD_RULE.test(senhaReq)) {
       return res.status(400).json({
-        error: 'A nova senha deve ter no mínimo 5 caracteres e pelo menos 1 caractere especial.',
+        error: 'A senha deve ter entre 5 e 20 caracteres e pelo menos 1 caractere especial.',
       });
     }
     if (wantsEmail) {
@@ -468,14 +571,11 @@ export const editarPerfil = async (req, res) => {
       }
     }
 
-
     if (!wantsNome && !wantsSenha && !wantsEmail) {
       return res.json({ message: 'Nada para atualizar.' });
     }
 
-
     await conn.beginTransaction();
-
 
     const sets = [];
     const params = [];
@@ -484,7 +584,6 @@ export const editarPerfil = async (req, res) => {
       const hash = await bcrypt.hash(senhaReq, SALT_ROUND);
       sets.push('senha = ?'); params.push(hash);
     }
-
 
     if (sets.length) {
       params.push(usernameAuth);
@@ -498,9 +597,8 @@ export const editarPerfil = async (req, res) => {
       }
     }
 
-
     await conn.commit();
-   
+
     let pendingEmail = false;
     if (wantsEmail) {
       pendingEmail = true;
@@ -509,8 +607,7 @@ export const editarPerfil = async (req, res) => {
         process.env.EMAIL_VERIFY_SECRET,
         { expiresIn: `${EMAIL_CHANGE_EXP_MIN}m` }
       );
-      const confirmUrl = `${API_BASE}/usuarios/confirmar-email?token=${encodeURIComponent(token)}`;
-
+      const confirmUrl = `${API_BASE.replace(/\/+$/,'')}/confirmar-email?token=${token}`;
 
       try {
         await mailer.sendMail({
@@ -533,9 +630,7 @@ export const editarPerfil = async (req, res) => {
       }
     }
 
-
     return res.json({
-      //message: 'Perfil atualizado com sucesso.',
       pendingEmail,
       user: {
         username: userDB.username,
@@ -543,7 +638,6 @@ export const editarPerfil = async (req, res) => {
         email: userDB.email,
       },
     });
-
 
   } catch (err) {
     try { await conn.rollback(); } catch {}
@@ -636,6 +730,59 @@ export const confirmarNovoEmail = async (req, res) => {
   }
 };
 
+const relToAbs = (rel) => `${API_BASE}${rel.startsWith('/') ? '' : '/'}${rel}`;
+
+export const uploadIcon = async (req, res) => {
+  if (!req.file) return res.status(400).json({ error: 'Arquivo ausente.' });
+
+  const username = req.usuarioUsername;
+  const publicPath = `/uploads/avatars/${req.file.filename}`; 
+
+  try {
+    await pool.query(
+      'UPDATE usuarios SET icon = CAST(? AS JSON) WHERE username = ? LIMIT 1',
+      [JSON.stringify({ url: publicPath }), username]
+    );
+
+    return res.json({
+      message: 'Foto atualizada.',
+      iconUrl: relToAbs(publicPath), 
+    });
+  } catch (err) {
+    return res.status(500).json({ error: err?.sqlMessage || 'Falha ao salvar icon.' });
+  }
+};
+
+export const removerIcon = async (req, res) => {
+  const username = req.usuarioUsername;
+
+  try {
+    const [[row]] = await pool.query(
+      'SELECT icon FROM usuarios WHERE username = ? LIMIT 1',
+      [username]
+    );
+
+    if (row?.icon) {
+      try {
+        const data = typeof row.icon === 'string' ? JSON.parse(row.icon) : row.icon;
+        const rel = data?.url || null;
+        if (rel) {
+          const abs = path.join(process.cwd(), rel.replace(/^\//,''));
+          fs.unlinkSync(abs);
+        }
+      } catch {}
+    }
+
+    await pool.query(
+      'UPDATE usuarios SET icon = NULL WHERE username = ? LIMIT 1',
+      [username]
+    );
+
+    return res.json({ message: 'Foto removida.', iconUrl: null });
+  } catch (err) {
+    return res.status(500).json({ error: err?.sqlMessage || 'Falha ao remover icon.' });
+  }
+};
 
 
 

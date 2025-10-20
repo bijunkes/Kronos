@@ -22,15 +22,13 @@ export const criarAtividade = async (req, res) => {
             listaAtual = listaPadrao.idLista;
         }
 
-        const dataCriacao = new Date();
-
         const [resultado] = await pool.query(
             `INSERT INTO atividades
                 (nomeAtividade, 
                 statusAtividade, 
                 descricaoAtividade, 
                 prazoAtividade, 
-                dataCriacao, 
+                dataConclusao, 
                 ListaAtividades_idLista, 
                 ListaAtividades_Usuarios_username,
                 Usuarios_username)
@@ -39,7 +37,7 @@ export const criarAtividade = async (req, res) => {
                 nomeAtividade,
                 statusAtividade, descricaoAtividade,
                 prazoAtividade,
-                dataCriacao,
+                dataConclusao,
                 listaAtual,
                 usuario,
                 usuario
@@ -90,15 +88,13 @@ export const criarAtividadeAtividades = async (req, res) => {
         // garante que a lista 'Atividades' existe para esse usuário
         const listaPadrao = await garantirListaAtividades(usuario);
 
-        const dataCriacao = new Date();
-
         const [resultado] = await pool.query(
             `INSERT INTO atividades
                 (nomeAtividade, 
                 statusAtividade, 
                 descricaoAtividade, 
                 prazoAtividade, 
-                dataCriacao, 
+                dataConclusao, 
                 ListaAtividades_idLista, 
                 ListaAtividades_Usuarios_username,
                 Usuarios_username)
@@ -108,7 +104,7 @@ export const criarAtividadeAtividades = async (req, res) => {
                 statusAtividade,
                 descricaoAtividade,
                 prazoAtividade,
-                dataCriacao,
+                dataConclusao,
                 listaPadrao.idLista,  // sempre vai pra lista "Atividades"
                 usuario,
                 usuario
@@ -138,7 +134,7 @@ export const listarAtividades = async (req, res) => {
     const usuario = req.usuarioUsername;
     try {
         const [atividades] = await pool.query(
-            `SELECT * FROM atividades WHERE Usuarios_username = ? ORDER BY dataCriacao ASC`, [usuario]
+            `SELECT * FROM atividades WHERE Usuarios_username = ? ORDER BY dataConclusao ASC`, [usuario]
         );
         res.json(atividades);
     } catch (err) {
@@ -153,7 +149,7 @@ export const listarAtividadesPorLista = async (req, res) => {
 
     try {
         const [atividades] = await pool.query(
-            `SELECT * FROM atividades WHERE Usuarios_username = ? AND ListaAtividades_idLista = ? ORDER BY dataCriacao ASC`, [usuario, listaId]
+            `SELECT * FROM atividades WHERE Usuarios_username = ? AND ListaAtividades_idLista = ? ORDER BY dataConclusao ASC`, [usuario, listaId]
         );
         res.json(atividades);
     } catch (err) {
@@ -165,21 +161,50 @@ export const listarAtividadesPorLista = async (req, res) => {
 export const atualizarAtividade = async (req, res) => {
     const usuario = req.usuarioUsername;
     const idAtividade = req.params.id;
-    const { nomeAtividade, descricaoAtividade, prazoAtividade, statusAtividade } = req.body;
+
+    const {
+        nomeAtividade,
+        descricaoAtividade,
+        prazoAtividade,
+        statusAtividade,
+        dataConclusao,
+        ListaAtividades_idLista,
+        Pomodoro_idStatus,
+        Kanban_idAtividadeKanban,
+        Eisenhower_idAtividadeEisenhower
+    } = req.body;
 
     try {
         await pool.query(
             `UPDATE atividades SET
-            nomeAtividade = ?,
-            descricaoAtividade = ?,
-            prazoAtividade = ?,
-            statusAtividade = ?
+                nomeAtividade = ?,
+                descricaoAtividade = ?,
+                prazoAtividade = ?,
+                statusAtividade = ?,
+                dataConclusao = ?,
+                ListaAtividades_idLista = ?,
+                Pomodoro_idStatus = ?,
+                Kanban_idAtividadeKanban = ?,
+                Eisenhower_idAtividadeEisenhower = ?
             WHERE idAtividade = ? AND Usuarios_username = ?`,
-            [nomeAtividade, descricaoAtividade, prazoAtividade, statusAtividade, idAtividade, usuario]
+            [
+                nomeAtividade,
+                descricaoAtividade || null,
+                prazoAtividade,
+                statusAtividade,
+                dataConclusao || null,
+                ListaAtividades_idLista,
+                Pomodoro_idStatus || null,
+                Kanban_idAtividadeKanban || null,
+                Eisenhower_idAtividadeEisenhower || null,
+                idAtividade,
+                usuario
+            ]
         );
+
         res.json({ message: "Atividade atualizada" });
     } catch (err) {
-        console.error(err);
+        console.error("Erro ao atualizar atividade:", err);
         res.status(500).json({ error: "Erro ao atualizar atividade" });
     }
 }

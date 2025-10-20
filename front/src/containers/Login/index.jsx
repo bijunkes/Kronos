@@ -63,7 +63,7 @@ function Login() {
 
     if (emailVal || msgVal) {
       if (emailVal) setEmail(emailVal);
-      const msg = msgVal || 'conta cadastrada. Você já pode acessar.';
+      const msg = msgVal || 'Senha redefinida com sucesso. Agora você já pode fazer login.';
       if (typeof showOkToast === 'function') showOkToast(msg, 'success');
       else toast.success(msg);
     }
@@ -98,7 +98,7 @@ function Login() {
     const tid = toast.loading('Enviando link de redefinição...', { position: 'top-center' });
     try {
       await solicitarResetSenha(emailParaReset);
-      showOkToast('Se o e-mail existir, enviaremos um link de redefinição.', 'success');
+      //showOkToast('Se o e-mail existir, enviaremos um link de redefinição.', 'success');
     } catch (err) {
       showOkToast(err?.response?.data?.error || 'Não foi possível enviar o link.', 'error');
     } finally {

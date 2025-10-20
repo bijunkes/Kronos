@@ -13,7 +13,7 @@ import {
     Pesquisar,
     Input
 } from './styles.js';
-import { listarAtividadesPorLista, listarListas, listarTodasAtividades } from '../../services/api.js';
+import { listarAtividadesPorLista, listarListas, listarTodasAtividades, atualizarAtividade } from '../../services/api.js';
 import ModalCriarAtividade from '../ModalCriarAtividade/index.jsx';
 import AtividadeSelecionada from '../AtividadeSelecionada/index.jsx';
 
@@ -23,44 +23,101 @@ function Atividades() {
     const [atividadeSelecionada, setAtividadeSelecionada] = useState(null);
     const [mostrarModal, setMostrarModal] = useState(false);
     const [filtro, setFiltro] = useState("");
-
-    const atualizarAtividades = async (id) => {
-    try {
-        const dados = await listarAtividadesPorLista(id);
-        setAtividades(dados);
-    } catch (err) {
-        console.error("Erro ao buscar atividades", err);
-    }
-};
+    const [listaSelecionada, setListaSelecionada] = useState('');
 
     useEffect(() => {
-        const carregarLista = async () => {
+        const carregarAtividades = async () => {
             try {
-                const listas = await listarListas();
-                const lista = listas.find(l => l.nomeLista === "Atividades");
-
-                if (lista) {
-                    setIdLista(lista.idLista);
-                    atualizarAtividades(lista.idLista);
-                }
-
                 const todasAtividades = await listarTodasAtividades();
-                setAtividades(todasAtividades);
+                const todasComConcluido = todasAtividades.map(a => ({
+                    ...a,
+                    concluido: a.statusAtividade === 1,
+                }));
+                setAtividades(ordenarAtividades(todasComConcluido));
+
+                const listas = await listarListas();
+                const listaPadrao = listas.find(l => l.nomeLista === "Atividades");
+                if (listaPadrao) setIdLista(listaPadrao.idLista);
+
             } catch (err) {
-                console.error("Erro ao carregar lista ou atividades", err);
+                console.error("Erro ao carregar atividades ou lista padrão", err);
             }
         };
-        carregarLista();
+        carregarAtividades();
     }, []);
 
-    const toggleConcluido = (index) => {
-        const novasAtividades = [...atividades];
-        novasAtividades[index].concluido = !novasAtividades[index].concluido;
-        setAtividades(novasAtividades);
+    const formatarDataMySQL = (data) => {
+        if (!data) return null;
+        if (data.length === 10) return `${data} 00:00:00`;
+
+        const d = new Date(data);
+        const yyyy = d.getFullYear();
+        const mm = String(d.getMonth() + 1).padStart(2, '0');
+        const dd = String(d.getDate()).padStart(2, '0');
+        const hh = String(d.getHours()).padStart(2, '0');
+        const mi = String(d.getMinutes()).padStart(2, '0');
+        const ss = String(d.getSeconds()).padStart(2, '0');
+        return `${yyyy}-${mm}-${dd} ${hh}:${mi}:${ss}`;
+    };
+
+    const ordenarAtividades = (lista) => {
+        return [...lista].sort((a, b) => {
+            if (a.concluido !== b.concluido) return a.concluido ? 1 : -1;
+            const dataA = a.prazoAtividade ? new Date(a.prazoAtividade) : null;
+            const dataB = b.prazoAtividade ? new Date(b.prazoAtividade) : null;
+            if (!dataA && !dataB) return 0;
+            if (!dataA) return 1;
+            if (!dataB) return -1;
+            return dataA - dataB;
+        });
+    };
+
+    const toggleConcluido = async (index) => {
+        const atividade = atividades[index];
+        const novaConclusao = !atividade.concluido
+            ? atividade.dataConclusao || formatarDataMySQL(new Date())
+            : null;
+        const novoStatus = !atividade.concluido ? 1 : 0;
+
+        const novaAtividade = {
+            ...atividade,
+            concluido: !atividade.concluido,
+            dataConclusao: novaConclusao,
+            statusAtividade: novoStatus
+        };
+
+        const novasAtividades = [
+            ...atividades.slice(0, index),
+            novaAtividade,
+            ...atividades.slice(index + 1)
+        ];
+
+        setAtividades(ordenarAtividades(novasAtividades));
+
+        if (atividadeSelecionada?.idAtividade === atividade.idAtividade) {
+            setAtividadeSelecionada(novaAtividade);
+        }
+
+        try {
+            await atualizarAtividade(atividade.idAtividade, {
+                nomeAtividade: atividade.nomeAtividade,
+                descricaoAtividade: atividade.descricaoAtividade,
+                prazoAtividade: formatarDataMySQL(atividade.prazoAtividade),
+                dataConclusao: novaConclusao,
+                statusAtividade: novoStatus,
+                ListaAtividades_idLista: listaSelecionada || atividade.ListaAtividades_idLista
+            });
+        } catch (err) {
+            console.error('Erro ao atualizar atividade:', err);
+            setAtividades(atividades);
+            if (atividadeSelecionada?.idAtividade === atividade.idAtividade) {
+                setAtividadeSelecionada(atividade);
+            }
+        }
     };
 
     const atividadesFiltradas = atividades.filter((a) =>
-        a.nomeAtividade.toLowerCase().includes(filtro.toLowerCase())
+        (a.nomeAtividade || '').toLowerCase().startsWith(filtro.toLowerCase())
     );
 
     return (
@@ -78,8 +135,8 @@ function Atividades() {
                         </span>
                     </Botoes>
                 </Header>
-                <Conteudo>
 
+                <Conteudo>
                     <AreaAtividades>
                         {atividadesFiltradas.map((a, index) => {
                             const isSelecionada = atividadeSelecionada?.idAtividade === a.idAtividade;
@@ -135,8 +192,16 @@ function Atividades() {
                     isOpen={mostrarModal}
                     onClose={() => setMostrarModal(false)}
                     listaId={idLista}
-                    onAtividadeCriada={() => {
-                        atualizarAtividades();
+                    onAtividadeCriada={async () => {
+                        setMostrarModal(false);
+                        if (idLista) {
+                            const dados = await listarAtividadesPorLista(idLista);
+                            const dadosComConcluido = dados.map(a => ({
+                                ...a,
+                                concluido: a.statusAtividade === 1
+                            }));
+                            setAtividades(ordenarAtividades(dadosComConcluido));
+                        }
                     }}
                 />
             )}
@@ -145,6 +210,22 @@ function Atividades() {
                 <AtividadeSelecionada
                     atividade={atividadeSelecionada}
                     onClose={() => setAtividadeSelecionada(null)}
+                    onAtualizarAtividade={(atividadeAtualizada) => {
+                        if (!atividadeAtualizada) {
+                            setAtividadeSelecionada(null);
+                            setAtividades(prev => prev.filter(a => a.idAtividade !== (atividadeSelecionada?.idAtividade)));
+                            return;
+                        }
+
+                        setAtividades(prev => ordenarAtividades(
+                            prev.map(a =>
+                                a.idAtividade === atividadeAtualizada.idAtividade
+                                    ? { ...atividadeAtualizada, concluido: !!atividadeAtualizada.dataConclusao }
+                                    : a
+                            )
+                        ));
+                        setAtividadeSelecionada({ ...atividadeAtualizada, concluido: !!atividadeAtualizada.dataConclusao });
+                    }}
                 />
             </Parte2>
         </Background>
