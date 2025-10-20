@@ -23,7 +23,8 @@ import defaultUserImage from '../../assets/defaultUserImage.jpg';
 import {
   criarLista,
   listarListas,
-  deletarLista, // (mantido se você usa em outro lugar)
+  deletarLista, 
+  
   getPerfil
 } from '../../services/api.js';
 
@@ -41,25 +42,22 @@ function Menu() {
   const [submenuAberto, setSubmenuAberto] = useState('');
   const [submenuSelecionado, setSubmenuSelecionado] = useState({ pai: '', item: '' });
 
-  // carrega perfil + ícone
   useEffect(() => {
     (async () => {
       try {
-        const perfil = await getPerfil(); // GET /usuarios/me
+        const perfil = await getPerfil(); 
         setUsuario({ nome: perfil.nome || '', username: perfil.username || '' });
         setIconUrl(perfil.icon || null);
 
-        // persiste e avisa possíveis ouvintes (não faz mal ter aqui também)
         if (perfil.icon) localStorage.setItem('user_icon_url', perfil.icon);
         else localStorage.removeItem('user_icon_url');
       } catch (err) {
-        // silencioso no menu
+       
         console.error('Erro ao buscar usuário no menu:', err?.response?.data || err);
       }
     })();
   }, []);
 
-  // escuta atualizações de ícone disparadas pela página de Perfil
   useEffect(() => {
     const handler = (e) => {
       const url = e?.detail?.iconUrl || null;
@@ -69,7 +67,6 @@ function Menu() {
     };
     window.addEventListener('user:icon', handler);
 
-    // fallback: se recarregar outra rota e já existir ícone salvo
     const saved = localStorage.getItem('user_icon_url');
     if (saved) setIconUrl(saved);
 

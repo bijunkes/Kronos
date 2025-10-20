@@ -42,13 +42,11 @@ function Usuario() {
   const [email, setEmail] = useState('');
   const [senha, setSenha] = useState('');
 
-  // ícone salvo no servidor
   const [icon, setIcon] = useState(null);
-  // pré-visualização local (ainda não salva)
   const [tempIconUrl, setTempIconUrl] = useState(null);
   const [tempIconFile, setTempIconFile] = useState(null);
 
-  const [uploading, setUploading] = useState(false); // usado apenas no "Salvar" (upload real)
+  const [uploading, setUploading] = useState(false); 
   const [orig, setOrig] = useState(null);
 
   const nomeRef = useRef(null);
@@ -69,7 +67,6 @@ function Usuario() {
           icon: p.icon || null
         });
 
-        // sincroniza o menu
         window.dispatchEvent(new CustomEvent('user:icon', { detail: { iconUrl: p.icon || null } }));
         if (p.icon) localStorage.setItem('user_icon_url', p.icon);
         else localStorage.removeItem('user_icon_url');
@@ -80,20 +77,16 @@ function Usuario() {
       }
     })();
 
-    // limpeza do objectURL ao desmontar
     return () => {
       if (tempIconUrl) URL.revokeObjectURL(tempIconUrl);
     };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  // avatar só clica quando editando (abre o input file)
   const onAvatarClick = () => {
     if (!editando || uploading) return;
     fileRef.current?.click();
   };
 
-  // PRÉ-VISUALIZAÇÃO local, sem salvar no servidor
   const onFileChange = (e) => {
     const file = e.target.files?.[0];
     if (!file) return;
@@ -109,7 +102,6 @@ function Usuario() {
       return;
     }
 
-    // limpa URL anterior, se existir
     if (tempIconUrl) URL.revokeObjectURL(tempIconUrl);
 
     const url = URL.createObjectURL(file);
@@ -117,11 +109,9 @@ function Usuario() {
     setTempIconFile(file);
    
 
-    // não enviamos nada agora; upload só acontecerá no onSalvar
     e.target.value = '';
   };
 
-  // ===== Handlers =====
   function onEditar() {
     setEditando(true);
     setSenha('');
@@ -130,14 +120,14 @@ function Usuario() {
   }
 
   function onCancelar() {
-    // restaura campos
+  
     if (orig) {
       setNome(orig.nome || '');
       setUsername(orig.username || '');
       setEmail(orig.email || '');
       setIcon(orig.icon || null);
     }
-    // descarta pré-visualização
+   
     if (tempIconUrl) URL.revokeObjectURL(tempIconUrl);
     setTempIconUrl(null);
     setTempIconFile(null);
@@ -153,14 +143,13 @@ function Usuario() {
     const mudouNome  = orig && nome !== orig.nome;
     const mudouEmail = orig && email !== orig.email;
     const temSenha   = !!(senha && String(senha).trim());
-    const mudouIcon  = !!tempIconFile; // somente se o usuário escolheu uma nova imagem
+    const mudouIcon  = !!tempIconFile;
 
     const payload = {};
     if (mudouNome)  payload.nome  = nome;
     if (mudouEmail) payload.email = email;
     if (temSenha)   payload.senha = String(senha).trim();
 
-    // Se nada mudou (nem imagem), não faz nada
     if (!mudouIcon && Object.keys(payload).length === 0) {
       showOkToast('Nada para atualizar.', 'success');
       setEditando(false);
@@ -172,24 +161,20 @@ function Usuario() {
     try {
       const tid = toast.loading('Salvando...', { position: 'top-center' });
 
-      // 1) atualiza campos de texto, se houver
       if (Object.keys(payload).length > 0) {
         await atualizarPerfil(payload);
       }
 
-      // 2) se tiver imagem pendente, envia agora
       if (mudouIcon) {
         setUploading(true);
         const { iconUrl } = await enviarIcone(tempIconFile);
         setIcon(iconUrl || null);
         setOrig((o) => ({ ...(o || {}), icon: iconUrl || null }));
 
-        // atualiza menu e persiste
         window.dispatchEvent(new CustomEvent('user:icon', { detail: { iconUrl: iconUrl || null } }));
         if (iconUrl) localStorage.setItem('user_icon_url', iconUrl);
         else localStorage.removeItem('user_icon_url');
 
-        // limpa preview local
         if (tempIconUrl) URL.revokeObjectURL(tempIconUrl);
         setTempIconUrl(null);
         setTempIconFile(null);
@@ -198,7 +183,6 @@ function Usuario() {
       toast.dismiss(tid);
       showOkToast('Perfil atualizado com sucesso!', 'success');
 
-      // atualiza orig com os dados salvos
       setOrig({ nome, username, email, icon: mudouIcon ? (icon || null) : (orig?.icon || null) });
 
       setEditando(false);
@@ -235,8 +219,7 @@ function Usuario() {
     }
   }
 
-  // ===== UI =====
-  const avatarSrc = tempIconUrl || icon || defaultUserImage; // mostra preview se existir
+  const avatarSrc = tempIconUrl || icon || defaultUserImage; 
 
   return (
     <Container>

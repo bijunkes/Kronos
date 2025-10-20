@@ -286,7 +286,7 @@ export const perfil = async (req, res) => {
       username: u.username,
       nome: u.nome,
       email: u.email,
-      icon: iconUrl, // o front usa diretamente no <img src={icon}/>
+      icon: iconUrl, 
     });
   } catch (err) {
     return res.status(500).json({ error: err?.sqlMessage || 'Erro ao buscar perfil.' });
@@ -306,7 +306,7 @@ export const solicitarResetSenha = async (req, res) => {
       [email]
     );
 
-    // resposta genérica para não vazar existência de conta
+
     if (!rows.length) {
       return res.json({ message: 'Se o e-mail existir, enviaremos um link de redefinição.' });
     }
@@ -318,7 +318,6 @@ export const solicitarResetSenha = async (req, res) => {
       { expiresIn: `${RESET_EXP_MIN}m` }
     );
 
-    // o link bate na API e redireciona para a página do front
     const link = `${API_BASE}/senha/reset-confirmar?token=${encodeURIComponent(token)}`;
 
     await mailer.sendMail({
@@ -360,7 +359,7 @@ export const redefinirSenha = async (req, res) => {
   }
 
   try {
-    const payload = jwt.verify(token, process.env.RESET_SECRET); // { email, username }
+    const payload = jwt.verify(token, process.env.RESET_SECRET); 
     const senhaHash = await bcrypt.hash(senha, SALT_ROUND);
 
     const [result] = await pool.query(
@@ -371,7 +370,6 @@ export const redefinirSenha = async (req, res) => {
       return res.status(400).json({ error: 'Usuário não encontrado.' });
     }
 
-    // Cookie de “flash” (opcional) — útil se you já usa esse padrão
     res.cookie('flash_email', encodeURIComponent(payload.email), {
       maxAge: 60_000,
       httpOnly: false,
@@ -424,6 +422,7 @@ export const usuarioExiste = async (req, res) => {
   }
   
 };
+
 // EXCLUIR CONTA
 export const excluirConta = async (req, res) => {
   const usernameAuth = req.usuarioUsername;
@@ -433,7 +432,6 @@ export const excluirConta = async (req, res) => {
 
   const conn = await pool.getConnection();
 
-  // helper para tentar um DELETE e, se der erro (coluna/tabela diferente), retornar 0
   const tryDel = async (sql, param) => {
     try {
       const [r] = await conn.query(sql, [param]);
@@ -738,10 +736,9 @@ export const uploadIcon = async (req, res) => {
   if (!req.file) return res.status(400).json({ error: 'Arquivo ausente.' });
 
   const username = req.usuarioUsername;
-  const publicPath = `/uploads/avatars/${req.file.filename}`; // caminho público
+  const publicPath = `/uploads/avatars/${req.file.filename}`; 
 
   try {
-    // grava JSON válido na coluna (tipo JSON)
     await pool.query(
       'UPDATE usuarios SET icon = CAST(? AS JSON) WHERE username = ? LIMIT 1',
       [JSON.stringify({ url: publicPath }), username]
@@ -749,7 +746,7 @@ export const uploadIcon = async (req, res) => {
 
     return res.json({
       message: 'Foto atualizada.',
-      iconUrl: relToAbs(publicPath), // o front usa direto
+      iconUrl: relToAbs(publicPath), 
     });
   } catch (err) {
     return res.status(500).json({ error: err?.sqlMessage || 'Falha ao salvar icon.' });
@@ -765,7 +762,6 @@ export const removerIcon = async (req, res) => {
       [username]
     );
 
-    // tenta remover o arquivo antigo
     if (row?.icon) {
       try {
         const data = typeof row.icon === 'string' ? JSON.parse(row.icon) : row.icon;
