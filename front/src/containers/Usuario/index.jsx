@@ -1,3 +1,4 @@
+// src/pages/Usuario/index.jsx
 import React, { useEffect, useState, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import {
@@ -27,8 +28,7 @@ import {
   excluirConta,
   enviarIcone
 } from '../../services/api.js';
-import { showOkToast } from '../../components/showToast.jsx';
-import toast from 'react-hot-toast';
+import { showOkToast, showConfirmToast } from '../../components/showToast.jsx';
 
 function Usuario() {
   const navigate = useNavigate();
@@ -36,6 +36,7 @@ function Usuario() {
   const [carregando, setCarregando] = useState(true);
   const [editando, setEditando] = useState(false);
   const [mostraSenha, setMostraSenha] = useState(false);
+  const [saving, setSaving] = useState(false);
 
   const [nome, setNome] = useState('');
   const [username, setUsername] = useState('');
@@ -46,7 +47,7 @@ function Usuario() {
   const [tempIconUrl, setTempIconUrl] = useState(null);
   const [tempIconFile, setTempIconFile] = useState(null);
 
-  const [uploading, setUploading] = useState(false); 
+  const [uploading, setUploading] = useState(false);
   const [orig, setOrig] = useState(null);
 
   const nomeRef = useRef(null);
@@ -67,11 +68,20 @@ function Usuario() {
           icon: p.icon || null
         });
 
+        // Ícone (cache + broadcast)
         window.dispatchEvent(new CustomEvent('user:icon', { detail: { iconUrl: p.icon || null } }));
         if (p.icon) localStorage.setItem('user_icon_url', p.icon);
         else localStorage.removeItem('user_icon_url');
+
+        // Perfil (cache + broadcast) -> usado pelo Menu para atualizar o nome
+        localStorage.setItem('user_nome', p.nome || '');
+        window.dispatchEvent(
+          new CustomEvent('user:profile', {
+            detail: { nome: p.nome || '', username: p.username || '', email: p.email || '', icon: p.icon || null }
+          })
+        );
       } catch (e) {
-        showOkToast(e?.message || 'Erro ao carregar perfil', 'error');
+        console.error('Erro ao carregar perfil', e);
       } finally {
         setCarregando(false);
       }
@@ -80,6 +90,7 @@ function Usuario() {
     return () => {
       if (tempIconUrl) URL.revokeObjectURL(tempIconUrl);
     };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const onAvatarClick = () => {
@@ -107,7 +118,6 @@ function Usuario() {
     const url = URL.createObjectURL(file);
     setTempIconUrl(url);
     setTempIconFile(file);
-   
 
     e.target.value = '';
   };
@@ -120,14 +130,12 @@ function Usuario() {
   }
 
   function onCancelar() {
-  
     if (orig) {
       setNome(orig.nome || '');
       setUsername(orig.username || '');
       setEmail(orig.email || '');
       setIcon(orig.icon || null);
     }
-   
     if (tempIconUrl) URL.revokeObjectURL(tempIconUrl);
     setTempIconUrl(null);
     setTempIconFile(null);
@@ -139,6 +147,7 @@ function Usuario() {
 
   async function onSalvar(e) {
     e?.preventDefault?.();
+    setSaving(true);
 
     const mudouNome  = orig && nome !== orig.nome;
     const mudouEmail = orig && email !== orig.email;
@@ -151,18 +160,17 @@ function Usuario() {
     if (temSenha)   payload.senha = String(senha).trim();
 
     if (!mudouIcon && Object.keys(payload).length === 0) {
-      showOkToast('Nada para atualizar.', 'success');
       setEditando(false);
       setSenha('');
       setMostraSenha(false);
+      setSaving(false);
       return;
     }
 
     try {
-      const tid = toast.loading('Salvando...', { position: 'top-center' });
-
       if (Object.keys(payload).length > 0) {
-        await atualizarPerfil(payload);
+        const resp = await atualizarPerfil(payload, { silentSuccess: true });
+        if (resp?.message) showOkToast(resp.message, 'success');
       }
 
       if (mudouIcon) {
@@ -180,46 +188,46 @@ function Usuario() {
         setTempIconFile(null);
       }
 
-      toast.dismiss(tid);
-      showOkToast('Perfil atualizado com sucesso!', 'success');
-
       setOrig({ nome, username, email, icon: mudouIcon ? (icon || null) : (orig?.icon || null) });
+
+      // Perfil (cache + broadcast) após salvar -> Sidebar atualiza imediatamente
+      localStorage.setItem('user_nome', nome || '');
+      window.dispatchEvent(
+        new CustomEvent('user:profile', {
+          detail: { nome, username, email, icon: mudouIcon ? (icon || null) : (orig?.icon || null) }
+        })
+      );
 
       setEditando(false);
       setSenha('');
       setMostraSenha(false);
     } catch (err) {
-      toast.dismiss();
-      showOkToast(
-        err?.response?.data?.error || err?.message || 'Não foi possível atualizar o perfil.',
-        'error'
-      );
+      console.error('Falha ao salvar perfil', err);
     } finally {
       setUploading(false);
+      setSaving(false);
     }
   }
 
   async function onExcluir() {
-    const ok = window.confirm('Tem certeza que deseja excluir sua conta? Essa ação não pode ser desfeita.');
+    const ok = await showConfirmToast(
+      'Tem certeza que deseja excluir sua conta? Essa ação não pode ser desfeita.',
+      { confirmLabel: 'Excluir', cancelLabel: 'Cancelar' }
+    );
     if (!ok) return;
 
     try {
-      const tid = toast.loading('Excluindo conta...', { position: 'top-center' });
       await excluirConta();
-      toast.dismiss(tid);
       localStorage.removeItem('token');
       localStorage.removeItem('user_icon_url');
+      localStorage.removeItem('user_nome');
       navigate('/cadastro');
     } catch (err) {
-      toast.dismiss();
-      showOkToast(
-        err?.response?.data?.error || err?.message || 'Não foi possível excluir a conta.',
-        'error'
-      );
+      console.error('Erro ao excluir conta', err);
     }
   }
 
-  const avatarSrc = tempIconUrl || icon || defaultUserImage; 
+  const avatarSrc = tempIconUrl || icon || defaultUserImage;
 
   return (
     <Container>
@@ -337,8 +345,8 @@ function Usuario() {
                 </>
               ) : (
                 <>
-                  <Button id="salvar" type="button" onClick={onSalvar} disabled={uploading}>
-                    {uploading ? 'Salvando…' : 'Salvar'}
+                  <Button id="salvar" type="button" onClick={onSalvar} disabled={saving || uploading}>
+                    {saving ? 'Salvando…' : 'Salvar'}
                   </Button>
                   <Button id="cancelar" type="button" onClick={onCancelar} disabled={uploading}>
                     Cancelar

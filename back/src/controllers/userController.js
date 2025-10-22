@@ -538,9 +538,8 @@ export const editarPerfil = async (req, res) => {
       'SELECT username, nome, email FROM usuarios WHERE username = ? LIMIT 1',
       [usernameAuth]
     );
-    if (!rows?.length) {
-      return res.status(404).json({ error: 'Usuário não encontrado.' });
-    }
+    if (!rows?.length) return res.status(404).json({ error: 'Usuário não encontrado.' });
+
     const userDB = rows[0];
 
     const wantsNome  = !!nomeReq  && nomeReq  !== userDB.nome;
@@ -553,8 +552,8 @@ export const editarPerfil = async (req, res) => {
         error: 'Alteração de username indisponível: este campo é chave estrangeira em outras tabelas.'
       });
     }
-    if (wantsNome && nomeReq.length > 20) {
-      return res.status(400).json({ error: 'O nome deve ter no máximo 20 caracteres.' });
+    if (wantsNome && nomeReq.length > 15) {
+      return res.status(400).json({ error: 'O nome deve ter no máximo 15 caracteres.' });
     }
     if (wantsSenha && !PASSWORD_RULE.test(senhaReq)) {
       return res.status(400).json({
@@ -600,6 +599,8 @@ export const editarPerfil = async (req, res) => {
     await conn.commit();
 
     let pendingEmail = false;
+    let mailErrMsg = null;
+
     if (wantsEmail) {
       pendingEmail = true;
       const token = jwt.sign(
@@ -607,10 +608,16 @@ export const editarPerfil = async (req, res) => {
         process.env.EMAIL_VERIFY_SECRET,
         { expiresIn: `${EMAIL_CHANGE_EXP_MIN}m` }
       );
-      const confirmUrl = `${API_BASE.replace(/\/+$/,'')}/confirmar-email?token=${token}`;
+
+      const confirmUrl =
+        `${API_BASE.replace(/\/+$/,'')}/confirmar-email?token=${encodeURIComponent(token)}`;
 
       try {
-        await mailer.sendMail({
+        console.log('[MAIL] Enviando confirmação de novo e-mail');
+        console.log('  Para:', emailReq);
+        console.log('  Link:', confirmUrl);
+
+        const info = await mailer.sendMail({
           from: `"Kronos" <${process.env.MAIL_USER}>`,
           to: emailReq,
           subject: 'Confirme seu novo e-mail - Kronos',
@@ -625,18 +632,27 @@ export const editarPerfil = async (req, res) => {
             <p style="color:#666">Este link expira em ${EMAIL_CHANGE_EXP_MIN} minutos.</p>
           `,
         });
-      } catch (mailErr) {
-        console.error('Falha ao enviar e-mail de confirmação:', mailErr?.message || mailErr);
+
+        console.log('[MAIL] accepted:', info?.accepted, 'rejected:', info?.rejected);
+      } catch (e) {
+        mailErrMsg = e?.message || String(e);
+        console.error('Falha ao enviar e-mail de confirmação:', mailErrMsg);
       }
     }
 
     return res.json({
+      message: pendingEmail
+        ? (mailErrMsg
+            ? 'Perfil atualizado, mas não foi possível enviar o e-mail de confirmação.'
+            : 'Verifique seu novo e-mail para salvar a edição.')
+        : 'Perfil atualizado com sucesso.',
       pendingEmail,
       user: {
         username: userDB.username,
         nome: wantsNome ? nomeReq : userDB.nome,
         email: userDB.email,
       },
+      mailError: mailErrMsg || undefined,
     });
 
   } catch (err) {
@@ -647,6 +663,7 @@ export const editarPerfil = async (req, res) => {
     conn.release();
   }
 };
+
 
 
 export const confirmarNovoEmail = async (req, res) => {

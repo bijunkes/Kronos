@@ -108,18 +108,11 @@ export const getPerfil = async () =>
   (await api.get('/me', { __successSilent: true })).data;
 
 
-export const atualizarPerfil = async ({ nome, username, email, senha }) => {
-  const payload = { nome, username, email };
-  if (senha && String(senha).trim()) payload.senha = String(senha).trim();
-
-
-   return (await api.put('/me', payload, { __successSilent: true })).data;
-
-
+export const atualizarPerfil = async (dados, opts = {}) => {
+  const cfg = opts.silentSuccess ? {__successSilent: true} : {};
+   return (await api.put('/me', dados, cfg)).data;
 
 }
-
-
 
 
 export const excluirConta = async () =>
@@ -216,6 +209,7 @@ export const atualizarAtividadeEmMatriz = async (id, classificacao) => {
   return response.data;
 };
 
+
 export const listarAtividadesEmKanban = async () => {
     const response = await api.get('/kanban/idAtividadeKanban');
     return response.data;
@@ -243,6 +237,7 @@ export const enviarIcone = async (file) => {
 
 export const removerIcone = async () =>
   (await api.delete('/usuarios/me/icon')).data;
+
 
 export default api;
 
