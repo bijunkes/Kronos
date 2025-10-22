@@ -13,7 +13,9 @@ import {
     Atividade,
     Lista,
     AdicionarTarefa,
-    Icones
+    Icones,
+    BoxIcones,
+    BoxNomeTarefa
 } from "./style.js"
 import { adicionarAtividadeEmMatriz, atualizarAtividadeEmMatriz, listarAtividadesEmMatriz, listarAtividades, atualizarIdEisenAtividade, deletarAtividadeDeMatriz } from "../../services/api.js";
 import ModalTecnicas from "../ModalTecnicas/index.jsx";
@@ -270,9 +272,9 @@ function Eisenhower() {
                         (atividade) =>
 
                             <Atividade key={atividade.idAtividade}>
-                                {atividade.nome|| atividade.nomeAtividade}
-
-                                {renderIcons(`icones${atividade.quadrante}`, atividade.idAtividade)}
+                                <BoxNomeTarefa>{atividade.nome|| atividade.nomeAtividade}</BoxNomeTarefa>
+                                <BoxIcones>{renderIcons(`icones${atividade.quadrante}`, atividade.idAtividade)}</BoxIcones>
+                                
                             </Atividade>
                     )}</Lista> <AdicionarTarefa onClick={() => handleClick(1)} id="Adicionar">Adicionar Tarefa</AdicionarTarefa></ImportanteUrgente>
 
@@ -283,9 +285,8 @@ function Eisenhower() {
                             (atividade) =>
 
                                 <Atividade key={atividade.idAtividade}>
-                                    {atividade.nome|| atividade.nomeAtividade}
-
-                                    {renderIcons(`icones${atividade.quadrante}`, atividade.idAtividade)}
+                                    <BoxNomeTarefa>{atividade.nome|| atividade.nomeAtividade}</BoxNomeTarefa>
+                                    <BoxIcones>{renderIcons(`icones${atividade.quadrante}`, atividade.idAtividade)}</BoxIcones>
                                 </Atividade>
                         )}</Lista> <AdicionarTarefa onClick={() => handleClick(2)} id="Adicionar">Adicionar Tarefa</AdicionarTarefa>
                 </ImportanteNaoUrgente>
@@ -297,9 +298,8 @@ function Eisenhower() {
                             (atividade) =>
 
                                 <Atividade key={atividade.idAtividade}>
-                                    {atividade.nome|| atividade.nomeAtividade}
-
-                                    {renderIcons(`icones${atividade.quadrante}`, atividade.idAtividade)}
+                                    <BoxNomeTarefa>{atividade.nome|| atividade.nomeAtividade}</BoxNomeTarefa>
+                                    <BoxIcones>{renderIcons(`icones${atividade.quadrante}`, atividade.idAtividade)}</BoxIcones>
                                 </Atividade>
                         )}</Lista> <AdicionarTarefa onClick={() => handleClick(3)} id="Adicionar">Adicionar Tarefa</AdicionarTarefa>
                 </NaoImportanteUrgente>
@@ -311,9 +311,8 @@ function Eisenhower() {
                             (atividade) =>
 
                                 <Atividade key={atividade.idAtividade}>
-                                    {atividade.nome|| atividade.nomeAtividade}
-
-                                    {renderIcons(`icones${atividade.quadrante}`, atividade.idAtividade)}
+                                    <BoxNomeTarefa>{atividade.nome|| atividade.nomeAtividade}</BoxNomeTarefa>
+                                    <BoxIcones>{renderIcons(`icones${atividade.quadrante}`, atividade.idAtividade)}</BoxIcones>
                                 </Atividade>
                         )}</Lista> <AdicionarTarefa onClick={() => handleClick(4)} id="Adicionar">Adicionar Tarefa</AdicionarTarefa>
                 </NaoImportanteNaoUrgente>

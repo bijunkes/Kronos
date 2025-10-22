@@ -1,6 +1,7 @@
-import {React, useState} from 'react';
-import {Container,Painel, BoxTitulo, BoxTarefas, NomeTarefa, Icones, BoxAdicionar} from './style.js';
+import {React, useState, useEffect} from 'react';
+import {Container,Painel, BoxTitulo, BoxTarefas, NomeTarefa, Icones, BoxAdicionar, BoxNomeTarefa, BoxIcones} from './style.js';
 import ModalTecnicas from "../ModalTecnicas/index.jsx";
+import { adicionarAtividadeEmKanban, atualizarAtividadeEmKanban, listarAtividadesEmKanban, listarAtividades, atualizarIdKanbanAtividade, deletarAtividadeDeKanban } from "../../services/api.js";
 
 
 function Kanban() {
@@ -50,6 +51,12 @@ function Kanban() {
                 buscarAtividades();
             }, []);
 
+            const atualizaKanban = async (id, classificacao) => {
+                    console.log(`id: ${id}; classificação: ${classificacao}`)
+                    await atualizarAtividadeEmKanban(id, classificacao);
+                    
+                }
+
     const handleClick = (colunaId) => () => {
         setColunaSelecionada(colunaId);
         setMostrarModal(true);
@@ -67,8 +74,8 @@ function Kanban() {
                     
     const deletar =  async (atividadeId) => {
 
-        setAtividades((prev) => [...prev, atividades.filter(atividade => atividade.id === atividadeId)]);
-        setAtividadesAdicionadas((prev) => [...prev, atividadesAdicionadas.filter(atividade => atividade.id === atividadeId)]);
+        setAtividades(prev => prev.filter(atividade => atividade.idAtividade !== atividadeId));
+        setAtividadesAdicionadas(prev => prev.filter(atividade => atividade.idAtividade !== atividadeId));
         const atividadeDeletada = atividades.find(a => a.idAtividade == atividadeId);
                 console.log(atividadeDeletada.Kanban_idAtividadeKanban);
                 await deletarAtividadeDeKanban(atividadeDeletada.Kanban_idAtividadeKanban);
@@ -76,19 +83,21 @@ function Kanban() {
     }
     const proximo =  (atividadeId) => {
 
-     setAtividades((prevTarefas) => {
-            const novaLista = prevTarefas.map(atividade => 
-                atividade.id === atividadeId 
-                    ? { 
-                        ...atividade, 
-                        coluna: atividade.coluna < 3 ? atividade.coluna + 1 : 3, 
-                        icons: atividade.coluna === 2 ? 'icones3' : 'icones2' 
-                        
-                    } 
-                    : atividade,
-                    console.log("teste")
+     setAtividades((prev) => {
+            const novaLista = prev.map(t =>
+                t.idAtividade=== atividadeId
+                    ? {
+                        ...t,
+                        coluna:
+                            t.coluna === 1 ? 2 :
+                                t.coluna === 2 ? 3 :
+                                    t.coluna
+
+                    }
+                    : t
+
             )
-            const atividadeAtualizada = novaLista.find(t => t.idAtividade === id);
+            const atividadeAtualizada = novaLista.find(t => t.idAtividade === atividadeId);
 
 
             atualizaKanban(atividadeAtualizada.Kanban_idAtividadeKanban, atividadeAtualizada.coluna);
@@ -99,18 +108,21 @@ function Kanban() {
     }
     const anterior =  (atividadeId) => {
 
-     setAtividades((prevTarefas) => {
-           const novaLista = prevTarefas.map(atividade => 
-                atividade.id === atividadeId 
-                    ? { 
-                        ...atividade, 
-                        coluna: atividade.coluna > 1 ? atividade.coluna - 1 : 1, 
-                        icons: atividade.coluna === 2 ? 'icones1' :'icones2' 
-                        
-                    } 
-                    : atividade,
-                    console.log("teste"))
-                    const atividadeAtualizada = novaLista.find(t => t.idAtividade === id);
+     setAtividades((prev) => {
+           const novaLista = prev.map(t =>
+                t.idAtividade=== atividadeId
+                    ? {
+                        ...t,
+                        coluna:
+                            t.coluna === 2 ? 1 :
+                                t.coluna === 3 ? 2 :
+                                    t.coluna
+
+                    }
+                    : t
+
+            )
+                    const atividadeAtualizada = novaLista.find(t => t.idAtividade === atividadeId);
 
 
             atualizaKanban(atividadeAtualizada.Kanban_idAtividadeKanban, atividadeAtualizada.coluna);
@@ -201,16 +213,17 @@ function Kanban() {
                     <BoxTitulo>A Fazer</BoxTitulo>
                     {atividades.filter(atividade => atividade.coluna === 1).map(atividade => (
                         <BoxTarefas key={atividade.idAtividade} id={atividade.idAtividade}>
-                            <NomeTarefa>{atividade.nome}</NomeTarefa>
-                            {renderIcons(atividade.coluna, atividade.idAtividade)}
+                            <BoxNomeTarefa><NomeTarefa>{atividade.nome}</NomeTarefa></BoxNomeTarefa> 
+                            <BoxIcones>{renderIcons(atividade.coluna, atividade.idAtividade)}</BoxIcones> 
                         </BoxTarefas>
                     ))}
                     <BoxAdicionar onClick={handleClick(1)} id="Adicionar">Adicionar Tarefa</BoxAdicionar></Painel>
                 <Painel id='2'><BoxTitulo>Fazendo</BoxTitulo>
                 {atividades.filter(atividade => atividade.coluna === 2).map(atividade => (
                         <BoxTarefas key={atividade.idAtividade} id={atividade.idAtividade}>
-                            <NomeTarefa>{atividade.nome}</NomeTarefa>
-                            {renderIcons(atividade.coluna, atividade.idAtividade)}
+                            <BoxNomeTarefa><NomeTarefa>{atividade.nome}</NomeTarefa></BoxNomeTarefa>
+                            <BoxIcones>{renderIcons(atividade.coluna, atividade.idAtividade)}</BoxIcones> 
+                            
                         </BoxTarefas>
                     ))}
                     <BoxAdicionar onClick={handleClick(2)} id="Adicionar">Adicionar Tarefa</BoxAdicionar>
@@ -218,8 +231,8 @@ function Kanban() {
                 <Painel id='3'><BoxTitulo>Feito</BoxTitulo>
                 {atividades.filter(atividade => atividade.coluna === 3).map(atividade => (
                         <BoxTarefas key={atividade.idAtividade} id={atividade.idAtividade}>
-                            <NomeTarefa>{atividade.nome}</NomeTarefa>
-                            {renderIcons(atividade.coluna, atividade.idAtividade)}
+                            <BoxNomeTarefa><NomeTarefa>{atividade.nome}</NomeTarefa></BoxNomeTarefa> 
+                            <BoxIcones>{renderIcons(atividade.coluna, atividade.idAtividade)}</BoxIcones> 
                         </BoxTarefas>
                     ))}
                     <BoxAdicionar onClick={handleClick(3)} id="Adicionar">Adicionar Tarefa</BoxAdicionar>
