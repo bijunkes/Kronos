@@ -14,7 +14,7 @@ import {
     Pesquisar,
     Input
 } from './styles.js';
-import { deletarLista, listarAtividadesPorLista, listarListas } from '../../services/api.js';
+import { deletarLista, listarAtividadesPorLista, listarListas, atualizarAtividade } from '../../services/api.js';
 import ModalCriarAtividade from '../ModalCriarAtividade/index.jsx';
 import AtividadeSelecionada from '../AtividadeSelecionada/index.jsx';
 
@@ -44,11 +44,27 @@ function Lista() {
         carregarLista();
     }, [nomeLista]);
 
+    const ordenarAtividades = (lista) => {
+        return [...lista].sort((a, b) => {
+            if (a.concluido !== b.concluido) return a.concluido ? 1 : -1;
+            const dataA = a.prazoAtividade ? new Date(a.prazoAtividade) : null;
+            const dataB = b.prazoAtividade ? new Date(b.prazoAtividade) : null;
+            if (!dataA && !dataB) return 0;
+            if (!dataA) return 1;
+            if (!dataB) return -1;
+            return dataA - dataB;
+        });
+    };
+
     const atualizarAtividades = async (id) => {
         if (!id) return;
         try {
             const dados = await listarAtividadesPorLista(id);
-            setAtividades(Array.isArray(dados) ? dados : []);
+            const dadosComConcluido = dados.map(a => ({
+                ...a,
+                concluido: a.statusAtividade === 1
+            }));
+            setAtividades(ordenarAtividades(dadosComConcluido));
         } catch (err) {
             console.error("Erro ao buscar atividades da lista", err);
             setAtividades([]);
@@ -67,10 +83,38 @@ function Lista() {
         }
     };
 
-    const toggleConcluido = (index) => {
-        const novasAtividades = [...atividades];
-        novasAtividades[index].concluido = !novasAtividades[index].concluido;
-        setAtividades(novasAtividades);
+    const toggleConcluido = async (index) => {
+        const atividade = atividades[index];
+        const novaConclusao = !atividade.concluido
+            ? new Date().toISOString().slice(0, 19).replace('T', ' ')
+            : null;
+        const novoStatus = !atividade.concluido ? 1 : 0;
+
+        const novaAtividade = { ...atividade, concluido: !atividade.concluido, dataConclusao: novaConclusao, statusAtividade: novoStatus };
+        const novasAtividades = [...atividades.slice(0, index), novaAtividade, ...atividades.slice(index + 1)];
+        setAtividades(ordenarAtividades(novasAtividades));
+
+        if (atividadeSelecionada?.idAtividade === atividade.idAtividade) setAtividadeSelecionada(novaAtividade);
+
+        try {
+            const payload = {
+                nomeAtividade: atividade.nomeAtividade || "",
+                descricaoAtividade: atividade.descricaoAtividade || "",
+                prazoAtividade: atividade.prazoAtividade
+                    ? atividade.prazoAtividade.slice(0, 19).replace('T', ' ')
+                    : new Date().toISOString().slice(0, 19).replace('T', ' '),
+                dataConclusao: novaConclusao,
+                statusAtividade: novoStatus,
+                ListaAtividades_idLista: idLista,
+                ListaAtividades_Usuarios_username: atividade.ListaAtividades_Usuarios_username || atividade.Usuarios_username,
+                Usuarios_username: atividade.Usuarios_username || atividade.ListaAtividades_Usuarios_username,
+            };
+            await atualizarAtividade(atividade.idAtividade, payload);
+        } catch (err) {
+            console.error('Erro ao atualizar atividade:', err);
+            setAtividades(atividades);
+            if (atividadeSelecionada?.idAtividade === atividade.idAtividade) setAtividadeSelecionada(atividade);
+        }
     };
 
     const handleAtividadeCriada = async () => {
@@ -78,9 +122,8 @@ function Lista() {
         await atualizarAtividades(idLista);
     };
 
-    // ======= FILTRAR ATIVIDADES =======
     const atividadesFiltradas = atividades.filter((a) =>
-        a.nomeAtividade.toLowerCase().includes(filtro.toLowerCase())
+        (a.nomeAtividade || '').toLowerCase().startsWith(filtro.toLowerCase())
     );
 
     return (
@@ -89,20 +132,8 @@ function Lista() {
                 <Header>
                     <NomeLista>{nomeLista}</NomeLista>
                     <Botoes>
-                        <span
-                            className="material-symbols-outlined"
-                            id="delete"
-                            onClick={handleExcluir}
-                        >
-                            delete
-                        </span>
-                        <span
-                            className="material-symbols-outlined"
-                            id="add"
-                            onClick={() => setMostrarModal(true)}
-                        >
-                            add
-                        </span>
+                        <span className="material-symbols-outlined" id="delete" onClick={handleExcluir}>delete</span>
+                        <span className="material-symbols-outlined" id="add" onClick={() => setMostrarModal(true)}>add</span>
                     </Botoes>
                 </Header>
 
@@ -114,30 +145,19 @@ function Lista() {
                                 <Atividade
                                     key={a.idAtividade || index}
                                     onClick={() => setAtividadeSelecionada(isSelecionada ? null : a)}
-                                    style={{
-                                        backgroundColor: isSelecionada
-                                            ? 'var(--cinza-claro)'
-                                            : 'var(--fundo-menu-ativo)',
-                                    }}
+                                    style={{ backgroundColor: isSelecionada ? 'var(--cinza-claro)' : 'var(--fundo-menu-ativo)' }}
                                 >
                                     <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
                                         <span
                                             className="material-symbols-outlined"
                                             style={{ fontSize: '20px', cursor: 'pointer' }}
-                                            onClick={(e) => {
-                                                e.stopPropagation();
-                                                toggleConcluido(index);
-                                            }}
+                                            onClick={(e) => { e.stopPropagation(); toggleConcluido(index); }}
                                         >
                                             {a.concluido ? 'radio_button_checked' : 'radio_button_unchecked'}
                                         </span>
                                         {a.nomeAtividade}
                                     </div>
-                                    <Prazo>
-                                        {a.prazoAtividade
-                                            ? new Date(a.prazoAtividade.replace(" ", "T")).toLocaleDateString()
-                                            : "Sem prazo"}
-                                    </Prazo>
+                                    <Prazo>{a.prazoAtividade ? new Date(a.prazoAtividade.replace(" ", "T")).toLocaleDateString() : "Sem prazo"}</Prazo>
                                 </Atividade>
                             );
                         })}
@@ -146,26 +166,35 @@ function Lista() {
 
                 <Pesquisar>
                     <span className="material-symbols-outlined">search</span>
-                    <Input
-                        type="text"
-                        placeholder="Pesquisar..."
-                        value={filtro}
-                        onChange={(e) => setFiltro(e.target.value)}
-                    />
+                    <Input type="text" placeholder="Pesquisar..." value={filtro} onChange={(e) => setFiltro(e.target.value)} />
                 </Pesquisar>
             </ContainerLista>
 
-            <ModalCriarAtividade
-                isOpen={mostrarModal}
-                onClose={() => setMostrarModal(false)}
-                listaId={idLista}
-                onAtividadeCriada={handleAtividadeCriada}
-            />
+            <ModalCriarAtividade isOpen={mostrarModal} onClose={() => setMostrarModal(false)} listaId={idLista} onAtividadeCriada={handleAtividadeCriada} />
 
             <Parte2>
                 <AtividadeSelecionada
                     atividade={atividadeSelecionada}
                     onClose={() => setAtividadeSelecionada(null)}
+                    onAtualizarAtividade={(atividadeAtualizada) => {
+                        if (!atividadeAtualizada) {
+                            setAtividadeSelecionada(null);
+                            setAtividades(prev => prev.filter(a => a.idAtividade !== (atividadeSelecionada?.idAtividade)));
+                            return;
+                        }
+
+                        setAtividades(prev => {
+                            if (atividadeAtualizada.ListaAtividades_idLista !== idLista) return prev.filter(a => a.idAtividade !== atividadeAtualizada.idAtividade);
+                            return ordenarAtividades(prev.map(a =>
+                                a.idAtividade === atividadeAtualizada.idAtividade
+                                    ? { ...atividadeAtualizada, concluido: !!atividadeAtualizada.dataConclusao }
+                                    : a
+                            ));
+                        });
+
+                        if (atividadeAtualizada.ListaAtividades_idLista === idLista) setAtividadeSelecionada({ ...atividadeAtualizada, concluido: !!atividadeAtualizada.dataConclusao });
+                        else setAtividadeSelecionada(null);
+                    }}
                 />
             </Parte2>
         </Background>

@@ -133,6 +133,7 @@ export const Atividade = styled.li`
   color: #FFFFFF;
   height: 6vh;
   width: 25.5vw;
+  flex-wrap: wrap;
   border-radius: 1rem;
   flex-shrink: 0;
   overflow: hidden;

@@ -15,7 +15,7 @@ import {
     AdicionarTarefa,
     Icones
 } from "./style.js"
-import { adicionarAtividadeEmMatriz, atualizarAtividadeEmMatriz, listarAtividadesEmMatriz, listarAtividades, atualizarIdEisenAtividade, deletarAtividadeDeMatriz} from "../../services/api.js";
+import { adicionarAtividadeEmMatriz, atualizarAtividadeEmMatriz, listarAtividadesEmMatriz, listarAtividades, atualizarIdEisenAtividade, deletarAtividadeDeMatriz } from "../../services/api.js";
 import ModalTecnicas from "../ModalTecnicas/index.jsx";
 import { showOkToast } from "../../components/showToast.jsx";
 
@@ -28,26 +28,30 @@ function Eisenhower() {
     const [quadranteSelecionado, setQuadranteSelecionado] = useState(null);
     const [carregando, setCarregando] = useState(true);
     const [erro, setErro] = useState('');
-    
+
 
     const buscarAtividades = async () => {
 
         try {
             const todasAtividadesEmMatriz = await listarAtividadesEmMatriz();
-            
+
             const todasAtividades = await listarAtividades();
             console.log(todasAtividadesEmMatriz);
-           const matrizMap = new Map();
-           todasAtividadesEmMatriz.forEach(item => {
-            matrizMap.set(item.idAtividadeEisenhower, item.classificacao)
-           })
-           const atividadesEmMatriz = todasAtividades.filter(atv => matrizMap.has(atv.Eisenhower_idAtividadeEisenhower)).map(atv => ({
-            ...atv,
-            quadrante: atv.Eisenhower_idAtividadeEisenhower,
-            nome: atv.nomeAtividade,
-           }))
-           setAtividades(atividadesEmMatriz);
+            const matrizMap = new Map();
+            todasAtividadesEmMatriz.forEach(item => {
+                matrizMap.set(item.idAtividadeEisenhower, item.classificacao)
+            })
+            const atividadesEmMatriz = todasAtividades.filter(atv => matrizMap.has(atv.Eisenhower_idAtividadeEisenhower)).map(atv => ({
+                ...atv,
+                quadrante: parseInt(matrizMap.get(atv.Eisenhower_idAtividadeEisenhower)),
+                nome: atv.nomeAtividade,
+            }))
+            setAtividades(atividadesEmMatriz);
             setAtividadesAdicionadas(atividadesEmMatriz);
+
+            console.log("todasAtividades:", todasAtividades);
+            console.log("todasAtividadesEmMatriz:", todasAtividadesEmMatriz);
+            console.log("AtividadesEmMatriz:", atividadesEmMatriz);
 
             console.log(atividadesEmMatriz);
         } catch (err) {
@@ -86,10 +90,7 @@ function Eisenhower() {
             const atividadeAtualizada = novaLista.find(t => t.idAtividade === id);
 
 
-            atualizarAtividadeEmMatriz({
-                idAtividadeEisenhower: id,
-                classificacao: atividadeAtualizada.quadrante
-            });
+            atualizaMatriz(atividadeAtualizada.Eisenhower_idAtividadeEisenhower, atividadeAtualizada.quadrante);
 
             return novaLista;
         })
@@ -97,8 +98,8 @@ function Eisenhower() {
 
     const anterior = async (id) => {
         setAtividades(prev => {
-            const novoLista = prev.map(t =>
-                t.idAtividade === id
+            const novaLista = prev.map(t =>
+                t.idAtividade=== id
                     ? {
                         ...t,
                         quadrante:
@@ -113,17 +114,14 @@ function Eisenhower() {
             const atividadeAtualizada = novaLista.find(t => t.idAtividade === id);
 
 
-            atualizarAtividadeEmMatriz({
-                idAtividadeEisenhower: id,
-                classificacao: atividadeAtualizada.quadrante
-            });
+            atualizaMatriz(atividadeAtualizada.Eisenhower_idAtividadeEisenhower, atividadeAtualizada.quadrante);
 
             return novaLista;
         })
     };
 
     const abaixo = async (id) => {
-        setAtividades(prev => {
+        setAtividades (prev => {
             const novaLista = prev.map(t =>
                 t.idAtividade === id
                     ? {
@@ -138,10 +136,7 @@ function Eisenhower() {
             const atividadeAtualizada = novaLista.find(t => t.idAtividade === id);
 
 
-            atualizarAtividadeEmMatriz({
-                idAtividadeEisenhower: id,
-                classificacao: atividadeAtualizada.quadrante
-            });
+            atualizaMatriz(atividadeAtualizada.Eisenhower_idAtividadeEisenhower, atividadeAtualizada.quadrante);
 
             return novaLista;
         })
@@ -149,7 +144,7 @@ function Eisenhower() {
 
     const acima = async (id) => {
         setAtividades(prev => {
-            const novLista = prev.map(t =>
+            const novaLista = prev.map(t =>
                 t.idAtividade === id
                     ? {
                         ...t,
@@ -160,17 +155,22 @@ function Eisenhower() {
                     }
                     : t
             )
-            const atividadeAtualizada = novaLista.find(t => t.idAtividade === id);
+            const atividadeAtualizada = novaLista.find(t => t.idAtividade=== id);
 
-
-            atualizarAtividadeEmMatriz({
-                idAtividadeEisenhower: id,
-                classificacao: atividadeAtualizada.quadrante
-            });
-
-            return novaLista;
+            atualizaMatriz(atividadeAtualizada.Eisenhower_idAtividadeEisenhower, atividadeAtualizada.quadrante);
+            
+             return novaLista;
+           
         })
+        
     };
+
+    const atualizaMatriz = async (id, classificacao) => {
+        console.log(`id: ${id}; classificação: ${classificacao}`)
+        await atualizarAtividadeEmMatriz(id, classificacao);
+        
+    }
+
     const verificaAtividadeEmLista = (atividadeId) => {
 
         return atividadesAdicionadas.some((atividade) => atividade.idAtividade === atividadeId)
@@ -179,9 +179,9 @@ function Eisenhower() {
     const deletar = async (atividadeId) => {
         setAtividades(prev => prev.filter(atividade => atividade.idAtividade !== atividadeId));
         setAtividadesAdicionadas(prev => prev.filter(atividade => atividade.idAtividade !== atividadeId));
-        const atividadeDeletada = atividades.find(a => a.Eisenhower_idAtividadeEisenhower === atividadeId);
-        await deletarAtividadeDeMatriz ({idAtividadeEisenhower: atividadeDeletada.Eisenhower_idAtividadeEisenhower })
-
+        const atividadeDeletada = atividades.find(a => a.idAtividade == atividadeId);
+        console.log(atividadeDeletada.Eisenhower_idAtividadeEisenhower);
+        await deletarAtividadeDeMatriz(atividadeDeletada.Eisenhower_idAtividadeEisenhower);
 
     };
 
@@ -230,21 +230,21 @@ function Eisenhower() {
             return;
         }
 
-        
+
         try {
 
             const res = await adicionarAtividadeEmMatriz({
                 classificacao: quadranteSelecionado
             });
             const idEisen = res.idAtividadeEisenhower;
-            
+
             const novaAtividade = { ...atividade, quadrante: quadranteSelecionado, nome: atividade.nomeAtividade, Eisenhower_idAtividadeEisenhower: idEisen, Usuarios_username: atividade.Usuarios_username };
             console.log(novaAtividade);
-            await atualizarIdEisenAtividade(novaAtividade.idAtividade,{
+            await atualizarIdEisenAtividade(novaAtividade.idAtividade, {
                 Eisenhower_idAtividadeEisenhower: novaAtividade.Eisenhower_idAtividadeEisenhower,
                 Usuarios_username: novaAtividade.Usuarios_username,
                 idAtividade: novaAtividade.idAtividade
-               
+
             })
             setAtividades((prev) => [...prev, novaAtividade]);
             setAtividadesAdicionadas((prev) => [...prev, novaAtividade]);
@@ -253,7 +253,7 @@ function Eisenhower() {
             console.error("Erro ao adicionar ou atualizar atividade: ", err);
         }
 
-        
+
 
         setMostrarModal(false);
     };
@@ -270,7 +270,7 @@ function Eisenhower() {
                         (atividade) =>
 
                             <Atividade key={atividade.idAtividade}>
-                                {atividade.nome}
+                                {atividade.nome|| atividade.nomeAtividade}
 
                                 {renderIcons(`icones${atividade.quadrante}`, atividade.idAtividade)}
                             </Atividade>
@@ -283,7 +283,7 @@ function Eisenhower() {
                             (atividade) =>
 
                                 <Atividade key={atividade.idAtividade}>
-                                    {atividade.nome}
+                                    {atividade.nome|| atividade.nomeAtividade}
 
                                     {renderIcons(`icones${atividade.quadrante}`, atividade.idAtividade)}
                                 </Atividade>
@@ -297,7 +297,7 @@ function Eisenhower() {
                             (atividade) =>
 
                                 <Atividade key={atividade.idAtividade}>
-                                    {atividade.nome}
+                                    {atividade.nome|| atividade.nomeAtividade}
 
                                     {renderIcons(`icones${atividade.quadrante}`, atividade.idAtividade)}
                                 </Atividade>
@@ -311,7 +311,7 @@ function Eisenhower() {
                             (atividade) =>
 
                                 <Atividade key={atividade.idAtividade}>
-                                    {atividade.nome}
+                                    {atividade.nome|| atividade.nomeAtividade}
 
                                     {renderIcons(`icones${atividade.quadrante}`, atividade.idAtividade)}
                                 </Atividade>
