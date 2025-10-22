@@ -7,7 +7,7 @@ function AtividadeSelecionada({ atividade, onAtualizarAtividade }) {
     const LIMITE_DESC = 500;
 
     const [nome, setNome] = useState(atividade.nomeAtividade || '');
-    const [status, setStatus] = useState(atividade.statusAtividade || 0);
+    const [status, setStatus] = useState(Number(atividade.statusAtividade) || 0);
     const [prazo, setPrazo] = useState(atividade.prazoAtividade || '');
     const [conclusao, setConclusao] = useState(atividade.dataConclusao || '');
     const [descricao, setDescricao] = useState(atividade.descricaoAtividade || '');
@@ -52,18 +52,19 @@ function AtividadeSelecionada({ atividade, onAtualizarAtividade }) {
     useEffect(() => {
         if (atividade) {
             setNome(atividade.nomeAtividade || '');
-            setStatus(atividade.status || 'A concluir');
+            setStatus(Number(atividade.statusAtividade) || 0);
             setPrazo(atividade.prazoAtividade || '');
             setConclusao(atividade.dataConclusao || '');
             setDescricao(atividade.descricaoAtividade || '');
         } else {
             setNome('');
-            setStatus('A concluir');
+            setStatus(0);
             setPrazo('');
             setConclusao('');
             setDescricao('');
         }
     }, [atividade]);
+
 
     const formatarDataMySQL = (data) => {
         if (!data) return null;
@@ -168,23 +169,33 @@ function AtividadeSelecionada({ atividade, onAtualizarAtividade }) {
                     <Input
                         type="date"
                         value={prazo ? prazo.slice(0, 10) : ''}
-                        onChange={(e) => setPrazo(e.target.value)}
-                        onBlur={() => atualizarCampo({ prazoAtividade: formatarDataMySQL(prazo) })}
+                        onChange={async (e) => {
+                            const novaData = e.target.value;
+                            setPrazo(novaData);
+                            await atualizarCampo({
+                                prazoAtividade: formatarDataMySQL(novaData),
+                            });
+                        }}
                     />
-
                 </Data>
                 <Data>
                     <span>Conclusão: </span>
                     <Input
                         type="date"
                         value={conclusao ? conclusao.slice(0, 10) : ''}
-                        onChange={(e) => setConclusao(e.target.value)}
-                        onBlur={() => atualizarCampo({ dataConclusao: formatarDataMySQL(conclusao) })}
+                        onChange={async (e) => {
+                            const novaData = e.target.value;
+                            setConclusao(novaData);
+                            const novoStatus = novaData ? 1 : 0;
+                            setStatus(novoStatus);
+                            await atualizarCampo({
+                                dataConclusao: formatarDataMySQL(novaData),
+                                statusAtividade: novoStatus,
+                            });
+                        }}
                     />
-
                 </Data>
             </Datas>
-
             <Desc>
                 Descrição:
                 <DescTextarea
@@ -192,8 +203,6 @@ function AtividadeSelecionada({ atividade, onAtualizarAtividade }) {
                     onChange={(e) => setDescricao(e.target.value)}
                     onBlur={() => atualizarCampo({ descricaoAtividade: descricao })}
                 />
-
-
                 <div style={{
                     textAlign: 'right',
                     fontSize: '12px',
