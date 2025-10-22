@@ -39,6 +39,7 @@ function Login() {
     let emailVal = '';
     let msgVal   = '';
 
+    // 1) Tenta via cookies (flash_email / flash_msg)
     const emailC = getCookie('flash_email');
     const msgC   = getCookie('flash_msg');
 
@@ -46,28 +47,49 @@ function Login() {
       emailVal = safeDecode(emailC);
       msgVal   = safeDecode(msgC);
 
-      document.cookie = 'flash_email=; Max-Age=0; path=/';
-      document.cookie = 'flash_msg=; Max-Age=0; path=/';
+      // limpa os cookies (one-shot)
+      document.cookie = 'flash_email=; Max-Age=0; path=/; SameSite=Lax';
+      document.cookie = 'flash_msg=; Max-Age=0; path=/; SameSite=Lax';
     }
 
+    // 2) Se não veio por cookies, tenta via querystring
     if (!emailVal && !msgVal) {
       const qs = new URLSearchParams(window.location.search);
-      if (qs.get('verified') === '1') {
-        emailVal = safeDecode(qs.get('email') || '');
-        msgVal   = safeDecode(qs.get('toast') || '');
-        if (window.location.search) {
-          window.history.replaceState({}, '', window.location.pathname);
-        }
+
+      // padrão novo (confirmar novo e-mail): ?email=<...>&email_changed=1
+      const qpEmail = qs.get('email');
+      const emailChanged = qs.get('email_changed') === '1';
+
+      // compat anterior (verificação/cadastro): ?verified=1&email=<...>&toast=<...>
+      const verified = qs.get('verified') === '1';
+      const toastMsg = qs.get('toast');
+
+      if (qpEmail) emailVal = safeDecode(qpEmail);
+
+      if (emailChanged) {
+        msgVal = 'Novo e-mail confirmado. Faça login.';
+      } else if (verified) {
+        msgVal = safeDecode(toastMsg) || 'Conta cadastrada. Você já pode acessar.';
+      }
+
+      // remove parâmetros usados
+      if (qpEmail || emailChanged || verified || toastMsg) {
+        qs.delete('email');
+        qs.delete('email_changed');
+        qs.delete('verified');
+        qs.delete('toast');
+        const rest = qs.toString();
+        const cleanUrl = window.location.pathname + (rest ? `?${rest}` : '');
+        window.history.replaceState({}, '', cleanUrl);
       }
     }
 
-    if (emailVal || msgVal) {
-      if (emailVal) setEmail(emailVal);
-      const msg = msgVal || 'Senha redefinida com sucesso. Agora você já pode fazer login.';
-      if (typeof showOkToast === 'function') showOkToast(msg, 'success');
-      else toast.success(msg);
+    if (emailVal) setEmail(emailVal);
+    if (msgVal) {
+      if (typeof showOkToast === 'function') showOkToast(msgVal, 'success');
+      else toast.success(msgVal);
     }
-  }, []); 
+  }, []);
 
   async function handleSubmit(e) {
     e.preventDefault();
@@ -98,7 +120,7 @@ function Login() {
     const tid = toast.loading('Enviando link de redefinição...', { position: 'top-center' });
     try {
       await solicitarResetSenha(emailParaReset);
-      //showOkToast('Se o e-mail existir, enviaremos um link de redefinição.', 'success');
+      // mensagem de sucesso já vem do interceptor, se aplicável
     } catch (err) {
       showOkToast(err?.response?.data?.error || 'Não foi possível enviar o link.', 'error');
     } finally {

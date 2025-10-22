@@ -57,8 +57,9 @@ export const listarAtividadesPorClassificacao = async (req, res) => {
     }
 }
 export const atualizarMatriz = async (req, res) => {
-    const id = req.body.idAtividadeEisenhower;
-    const classificacao = req.body.classificacao;
+    const {id, classificacao}= req.params;
+    console.log("id: "+ id);
+    console.log(`classificação: ${classificacao} `)
 
     try {
         await pool.query(
@@ -74,13 +75,13 @@ export const atualizarMatriz = async (req, res) => {
     }
 }
 export const deletarAtividadeDeMatriz = async (req, res) => {
-    const id = req.body.idAtividadeEisenhower;
-    
+    const {id} = req.params;
+    console.log(id);
 
     try {
-        await pool.query(
-            "SET foreign_key_checks = 0;  DELETE FROM eisenhower WHERE idAtividadeEisenhower = ?;  SET foreign_key_checks = 1;", [id]
-        );
+        await pool.query("SET foreign_key_checks = 0;");
+        await pool.query("DELETE FROM eisenhower WHERE idAtividadeEisenhower = ?", [id]);
+        await pool.query("SET foreign_key_checks = 1;");
         res.json({message: "Atividade deletada"});
     } catch (err) {
         console.error(err);

@@ -108,17 +108,23 @@ export const getPerfil = async () =>
   (await api.get('/me', { __successSilent: true })).data;
 
 
-export const atualizarPerfil = async ({ nome, username, email, senha }) => {
-  const payload = { nome, username, email };
-  if (senha && String(senha).trim()) payload.senha = String(senha).trim();
-
-
-   return (await api.put('/me', payload, { __successSilent: true })).data;
-
-
+export const atualizarPerfil = async (dados, opts = {}) => {
+  const cfg = opts.silentSuccess ? {__successSilent: true} : {};
+   return (await api.put('/me', dados, cfg)).data;
 
 }
 
+export const enviarIcone = async (file) => {
+  const fd = new FormData();
+  fd.append('icon', file);
+  return (await api.put('/me/icon', fd, {
+    headers: { 'Content-Type': 'multipart/form-data' },
+     
+  })).data;
+};
+
+export const removerIcone = async () =>
+  (await api.delete('/me/icon', { __successSilent: true })).data;
 
 
 
@@ -201,28 +207,18 @@ export const listarAtividadesEmMatriz = async () => {
     return response.data;
 };
 export const deletarAtividadeDeMatriz = async (idAtividadeEisenhower) => {
-  const response = await api.delete('/eisenhower/', idAtividadeEisenhower);
+  const response = await api.delete(`/eisenhower/${idAtividadeEisenhower}`);
   return response.data;
 };
 export const adicionarAtividadeEmMatriz = async (dados) => {
   const response = await api.post('/eisenhower/',dados);
   return response.data;
 };
-export const atualizarAtividadeEmMatriz = async (dados) => {
-  const response = await api.put('/eisenhower/', dados);
+export const atualizarAtividadeEmMatriz = async (id, classificacao) => {
+  const response = await api.put(`/eisenhower/${id}/${classificacao}`);
   return response.data;
 };
 
-export const enviarIcone = async (file) => {
-  const fd = new FormData();
-  fd.append('icon', file);
-  return (await api.put('/usuarios/me/icon', fd, {
-    headers: { 'Content-Type': 'multipart/form-data' }
-  })).data;
-};
-
-export const removerIcone = async () =>
-  (await api.delete('/usuarios/me/icon')).data;
 
 export default api;
 
