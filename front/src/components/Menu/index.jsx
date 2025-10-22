@@ -33,7 +33,7 @@ import ModalLista from '../../containers/ModalLista/index.jsx';
 function Menu() {
   const navigate = useNavigate();
 
-  const [usuario, setUsuario] = useState({ nome: '', username: '' });
+  const [usuario, setUsuario] = useState({ nome: localStorage.getItem('user_nome') || '', username: '' });
   const [iconUrl, setIconUrl] = useState(null);
 
   const [modalListaAberto, setModalListaAberto] = useState(false);
@@ -59,19 +59,18 @@ function Menu() {
   }, []);
 
   useEffect(() => {
-    const handler = (e) => {
-      const url = e?.detail?.iconUrl || null;
-      setIconUrl(url);
-      if (url) localStorage.setItem('user_icon_url', url);
-      else localStorage.removeItem('user_icon_url');
-    };
-    window.addEventListener('user:icon', handler);
-
-    const saved = localStorage.getItem('user_icon_url');
-    if (saved) setIconUrl(saved);
-
-    return () => window.removeEventListener('user:icon', handler);
-  }, []);
+   const onProfile = (e) => {
+     const d = e?.detail || {};
+     setUsuario((u) => ({
+       nome: d.nome ?? u.nome,
+       username: d.username ?? u.username,
+     }));
+     if ('icon' in d) setIconUrl(d.icon || null);
+     if (d.nome !== undefined) localStorage.setItem('user_nome', d.nome || '');
+   };
+   window.addEventListener('user:profile', onProfile);
+  return () => window.removeEventListener('user:profile', onProfile);
+ }, []);
 
   const handleClick = (item, temRota = true) => {
     if (submenuAberto === item) {
