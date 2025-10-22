@@ -26,6 +26,8 @@ function Pomodoro() {
     const abrirModal = () => setModalAberto(true);
     const fecharModal = () => setModalAberto(false);
 
+    const [hoverAtividade, setHoverAtividade] = useState({});
+
     useEffect(() => {
         const carregarAtividades = async () => {
             try {
@@ -106,6 +108,7 @@ function Pomodoro() {
             setModo("foco");
         }
     };
+
     const reiniciar = () => {
         setAtivo(true);
         setTempo(config[modo]);
@@ -150,7 +153,6 @@ function Pomodoro() {
             console.error("Erro ao excluir atividade da sessão:", err);
         }
     };
-
 
     return (
         <Background>
@@ -246,17 +248,61 @@ function Pomodoro() {
                     <h1>Atividades</h1>
                     <Lista>
                         {atividadesSelecionadas.map((a, index) => (
-                            <Atividade key={a?.idAtividade || index}>
+                            <Atividade
+                                key={a.idAtividade || index}
+                                onMouseEnter={() =>
+                                    setHoverAtividade(prev => ({ ...prev, [a.idAtividade]: true }))
+                                }
+                                onMouseLeave={() =>
+                                    setHoverAtividade(prev => ({ ...prev, [a.idAtividade]: false }))
+                                }
+                            >
                                 <span
                                     className="material-symbols-outlined"
                                     style={{ fontSize: '20px', cursor: 'pointer' }}
                                     onClick={(e) => e.stopPropagation()}
                                 >
-                                    {a?.concluido ? 'radio_button_checked' : 'radio_button_unchecked'}
+                                    {a.concluido ? 'radio_button_checked' : 'radio_button_unchecked'}
                                 </span>
-                                {a?.nomeAtividade || "Sem nome"}
+                                {a.nomeAtividade || "Sem nome"}
 
-                                {/* Botão de excluir */}
+                                {hoverAtividade[a.idAtividade] && (
+                                    <div style={{ display: 'inline-flex', gap: '0.5rem', marginLeft: '1rem' }}>
+                                        <input
+                                            type="number"
+                                            min="1"
+                                            name="foco"
+                                            value={a.foco || 25}
+                                            onChange={(e) => {
+                                                const { name, value } = e.target;
+                                                setAtividadesSelecionadas(prev =>
+                                                    prev.map(ativ =>
+                                                        ativ.idAtividade === a.idAtividade
+                                                            ? { ...ativ, [name]: parseInt(value) || 1 }
+                                                            : ativ
+                                                    )
+                                                );
+                                            }}
+                                        />
+                                        <input
+                                            type="number"
+                                            min="1"
+                                            name="ciclos"
+                                            value={a.ciclos || 1}
+                                            onChange={(e) => {
+                                                const { name, value } = e.target;
+                                                setAtividadesSelecionadas(prev =>
+                                                    prev.map(ativ =>
+                                                        ativ.idAtividade === a.idAtividade
+                                                            ? { ...ativ, [name]: parseInt(value) || 1 }
+                                                            : ativ
+                                                    )
+                                                );
+                                            }}
+                                        />
+                                    </div>
+                                )}
+
                                 <span
                                     className="material-symbols-outlined btn-excluir"
                                     onClick={() => handleExcluirAtividade(a.idAtividade)}
@@ -265,8 +311,6 @@ function Pomodoro() {
                                 </span>
                             </Atividade>
                         ))}
-
-
                     </Lista>
 
                     <Adicionar onClick={abrirModal}>

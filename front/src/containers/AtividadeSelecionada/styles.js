@@ -54,7 +54,6 @@ export const Data = styled.div`
   display: flex;
   align-items: center;
   border-radius: 20px;
-  gap: 1vh;
   cursor: pointer;
 `;
 
@@ -64,22 +63,18 @@ export const Input = styled.input`
   background-color: transparent;
   width: 100%;
   text-align: right;
-  &:focus {
-    outline: none;
-  }
 `;
 
 export const Desc = styled.div`
   display: flex;
   width: 100%;
-  height: 28vh;
+  height: 27vh;
   background-color: var(--fundo-menu-ativo);
   padding: 2vh;
   border-radius: 20px;
   font-size: 18px;
   flex-direction: column;
 `;
-
 
 export const DescTextarea = styled.textarea`
   width: 100%;
@@ -111,15 +106,95 @@ export const DescTextarea = styled.textarea`
 
 export const Lista = styled.div`
   display: flex;
-  width: 100vh;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
   height: 7vh;
   background-color: var(--fundo-menu-ativo);
   border-radius: 20px;
   margin: 2vh 0;
+  position: relative;
+  box-sizing: border-box;
+
+  select {
+    width: 100%;
+    height: 100%;
+    background-color: transparent;
+    border: none;
+    border-radius: 20px;
+    font-size: 18px;
+    color: var(--texto);
+    outline: none;
+    cursor: pointer;
+    padding: 0 2vh;
+    appearance: none;
+    text-align: center;
+    text-align-last: center;
+
+    option {
+      background-color: var(--fundo-menu-ativo);
+      color: var(--texto);
+      text-align: left;
+    }
+  }
+
+  &::after {
+    content: "▾";
+    position: absolute;
+    right: 2vh;
+    color: var(--texto);
+    font-size: 20px;
+    pointer-events: none;
+  }
 `;
 
 export const Tecnicas = styled.div`
+  font-size: 20px;
+  font-weight: bold;
+  margin-bottom: 2vh;
+  border: none;
+  background: transparent;
+  width: 100%;
 `;
 
 export const Tecnica = styled.div`
+  font-size: 18px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+  height: 7vh;
+  background-color: var(--fundo-menu-ativo);
+  margin-bottom: 2vh;
+  border-radius: 20px;
+  cursor: pointer;
+  background-color: ${({ ativo, tipo }) => {
+    if (!ativo) return "var(--fundo-menu-ativo)";
+    switch (tipo) {
+      case "pomodoro":
+        return "var(--Importante-Urgente)";
+      case "kanban":
+        return "var(--NaoImportante-Urgente)";
+      case "eisenhower":
+        return "var(--Importante-NaoUrgente)";
+      default:
+        return "var(--fundo-menu-ativo)";
+    }
+  }};
+  color: ${({ ativo }) => (ativo ? "var(--texto)" : "var(--texto-claro)")};
+
+  &:hover {
+    background-color: ${({ tipo }) => {
+      switch (tipo) {
+        case "pomodoro":
+          return "var(--Importante-Urgente)";
+        case "kanban":
+          return "var(--NaoImportante-Urgente)";
+        case "eisenhower":
+          return "var(--Importante-NaoUrgente)";
+        default:
+          return "var(--fundo-menu-ativo)";
+      }
+    }};
+  }
 `;
