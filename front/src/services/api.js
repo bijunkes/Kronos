@@ -193,7 +193,10 @@ export const atualizarIdEisenAtividade = async (id, dados) => {
   return response.data;
 };
 
-
+export const atualizarIdKanbanAtividade = async (id, dados) => {
+  const response = await api.put(`/atividades/kanban/${id}`, dados);
+  return response.data;
+};
 
 
 export const listarAtividadesEmMatriz = async () => {
@@ -210,6 +213,23 @@ export const adicionarAtividadeEmMatriz = async (dados) => {
 };
 export const atualizarAtividadeEmMatriz = async (id, classificacao) => {
   const response = await api.put(`/eisenhower/${id}/${classificacao}`);
+  return response.data;
+};
+
+export const listarAtividadesEmKanban = async () => {
+    const response = await api.get('/kanban/idAtividadeKanban');
+    return response.data;
+};
+export const deletarAtividadeDeKanban = async (idAtividadeKanban) => {
+  const response = await api.delete(`/kanban/${idAtividadeKanban}`);
+  return response.data;
+};
+export const adicionarAtividadeEmKanban = async (dados) => {
+  const response = await api.post('/kanban/',dados);
+  return response.data;
+};
+export const atualizarAtividadeEmKanban = async (id, classificacao) => {
+  const response = await api.put(`/kanban/${id}/${classificacao}`);
   return response.data;
 };
 

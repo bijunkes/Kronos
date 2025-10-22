@@ -70,6 +70,27 @@ export const atualizarIdEisenAtividade = async (req, res) => {
         res.status(500).json({ error: "Erro ao atualizar atividade" });
     }
 }
+export const atualizarIdKanbanAtividade = async (req, res) => {
+    const usuario = req.body.Usuarios_username;
+    const idAtividade = req.body.idAtividade;
+    const idKanban = req.body.Kanban_idAtividadeKanban;
+    console.log(usuario);
+    console.log(idAtividade);
+    console.log(idKanban);
+
+    try {
+        await pool.query(
+            `UPDATE atividades SET
+            Kanban_idAtividadeKanban = ?
+            WHERE idAtividade = ? AND Usuarios_username = ?`,
+            [idKanban, idAtividade, usuario]
+        );
+        res.json({ message: "Atividade atualizada" });
+    } catch (err) {
+        console.error(err);
+        res.status(500).json({ error: "Erro ao atualizar atividade" });
+    }
+}
 export const criarAtividadeAtividades = async (req, res) => {
     const {
         nomeAtividade,

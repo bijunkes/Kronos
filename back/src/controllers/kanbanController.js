@@ -14,73 +14,74 @@ export const adicionarAtividade = async (req, res) => {
     try {
 
         const [resultado] = await pool.query(
-            `INSERT INTO eisenhower
+            `INSERT INTO kanban
                 (classificacao)
                 VALUES (?)`,
             [
                 classificacao
             ]
         );
-        const idAtividadeEisenhower = resultado.insertId;
+        const idAtividadeKanban = resultado.insertId;
         
-        res.status(201).json({idAtividadeEisenhower, message: "Atividade adicionada ao Eisenhower"});
+        res.status(201).json({idAtividadeKanban, message: "Atividade adicionada ao Kanban"});
     } catch (err) {
         console.error(err);
-        res.status(500).json({ error: "Erro ao adicionar atividade ao Eisenhower" });
+        res.status(500).json({ error: "Erro ao adicionar atividade ao Kanban" });
     }
 }
-export const listarAtividadesNaMatriz = async (req, res) => {
+export const listarAtividadesNoKanban = async (req, res) => {
    
     try {
         const [linhas] = await pool.query(
-            `SELECT * FROM eisenhower ORDER BY classificacao ASC`
+            `SELECT * FROM kanban ORDER BY classificacao ASC`
         );
-         console.log('Dados da matriz:', linhas);
+         console.log('Dados do kanban:', linhas);
         res.json(linhas);
     } catch (err) {
         console.error(err);
-        res.status(500).json({ error: "Erro ao listar matriz" });
+        res.status(500).json({ error: "Erro ao listar kanban" });
     }
+
 }
 export const listarAtividadesPorClassificacao = async (req, res) => {
-    const id = req.params.idAtividadeEisenhower;
+    const id = req.params.idAtividadeKanban;
     const classificacao = req.params.classificacao;
 
     try {
         const [atividades] = await pool.query(
-            `SELECT * FROM eisenhower WHERE idAtividadeEisenhower = ? AND classificacao= ? ORDER BY idAtividadeEisenhower ASC`, [id, classificacao]
+            `SELECT * FROM kanban WHERE idAtividadeKanban = ? AND classificacao= ? ORDER BY idAtividadeKanban ASC`, [id, classificacao]
         );
         res.json(atividades);
     } catch (err) {
         console.error(err);
-        res.status(500).json({ error: "Erro ao listar atividades do quadrante" });
+        res.status(500).json({ error: "Erro ao listar atividades do quadro" });
     }
 }
-export const atualizarMatriz = async (req, res) => {
+export const atualizarKanban = async (req, res) => {
     const {id, classificacao}= req.params;
     console.log("id: "+ id);
     console.log(`classificação: ${classificacao} `)
 
     try {
         await pool.query(
-            `UPDATE eisenhower SET
+            `UPDATE kanban SET
             classificacao = ?
-            WHERE idAtividadeEisenhower = ? `,
+            WHERE idAtividadeKanban = ? `,
             [classificacao, id]
         );
-        res.json({ message: "Matriz atualizada" });
+        res.json({ message: "Kanban atualizado" });
     } catch (err) {
         console.error(err);
-        res.status(500).json({ error: "Erro ao atualizar matriz" });
+        res.status(500).json({ error: "Erro ao atualizar Kanban" });
     }
 }
-export const deletarAtividadeDeMatriz = async (req, res) => {
+export const deletarAtividadeDeKanban = async (req, res) => {
     const {id} = req.params;
     console.log(id);
 
     try {
         await pool.query("SET foreign_key_checks = 0;");
-        await pool.query("DELETE FROM eisenhower WHERE idAtividadeEisenhower = ?", [id]);
+        await pool.query("DELETE FROM kanban WHERE idAtividadeKanban = ?", [id]);
         await pool.query("SET foreign_key_checks = 1;");
         res.json({message: "Atividade deletada"});
     } catch (err) {
