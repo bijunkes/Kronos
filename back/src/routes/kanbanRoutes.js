@@ -8,7 +8,7 @@ const router = express.Router();
 router.post("/", verificarToken, adicionarAtividade);
 router.get("/idAtividadeKanban", verificarToken, listarAtividadesNoKanban);
 router.get("/:idAtividadeKanban/:classificacao", verificarToken, listarAtividadesPorClassificacao);
-router.put("/:id/:classificacao", verificarToken, atualizarKanban);
+router.put("/:id/:classificacao/:dataAlteracao", verificarToken, atualizarKanban);
 router.delete("/:id", verificarToken, deletarAtividadeDeKanban);
 
 export default router;
