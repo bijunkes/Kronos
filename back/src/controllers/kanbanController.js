@@ -4,6 +4,7 @@ export const adicionarAtividade = async (req, res) => {
     const {
         
         classificacao,
+        dataAlteracao
     } = req.body;
 
 
@@ -15,10 +16,10 @@ export const adicionarAtividade = async (req, res) => {
 
         const [resultado] = await pool.query(
             `INSERT INTO kanban
-                (classificacao)
-                VALUES (?)`,
+                (classificacao, dataAlteracao)
+                VALUES (?, ?)`,
             [
-                classificacao
+                classificacao, dataAlteracao
             ]
         );
         const idAtividadeKanban = resultado.insertId;
@@ -58,16 +59,17 @@ export const listarAtividadesPorClassificacao = async (req, res) => {
     }
 }
 export const atualizarKanban = async (req, res) => {
-    const {id, classificacao}= req.params;
+    const {id, classificacao, dataAlteracao}= req.params;
     console.log("id: "+ id);
     console.log(`classificação: ${classificacao} `)
 
     try {
         await pool.query(
             `UPDATE kanban SET
-            classificacao = ?
+            classificacao = ?,
+            dataAlteracao = ?
             WHERE idAtividadeKanban = ? `,
-            [classificacao, id]
+            [classificacao, dataAlteracao, id]
         );
         res.json({ message: "Kanban atualizado" });
     } catch (err) {

@@ -31,6 +31,18 @@ function Eisenhower() {
     const [carregando, setCarregando] = useState(true);
     const [erro, setErro] = useState('');
 
+    const capturaData = () => {
+        const dataAtual = new Date();
+
+        let min = dataAtual.getMinutes();
+        let seg = dataAtual.getSeconds();
+        let h = dataAtual.getHours();
+        const dia = String(dataAtual.getDate()).padStart(2, '0');
+        const mes = String(dataAtual.getMonth() + 1).padStart(2, '0');
+        let ano = dataAtual.getFullYear();
+
+        return `${ano}-${mes}-${dia} ${h}:${min}:${seg}`
+    }
 
     const buscarAtividades = async () => {
 
@@ -92,7 +104,7 @@ function Eisenhower() {
             const atividadeAtualizada = novaLista.find(t => t.idAtividade === id);
 
 
-            atualizaMatriz(atividadeAtualizada.Eisenhower_idAtividadeEisenhower, atividadeAtualizada.quadrante);
+            atualizaMatriz(atividadeAtualizada.Eisenhower_idAtividadeEisenhower, atividadeAtualizada.quadrante, capturaData());
 
             return novaLista;
         })
@@ -116,7 +128,7 @@ function Eisenhower() {
             const atividadeAtualizada = novaLista.find(t => t.idAtividade === id);
 
 
-            atualizaMatriz(atividadeAtualizada.Eisenhower_idAtividadeEisenhower, atividadeAtualizada.quadrante);
+            atualizaMatriz(atividadeAtualizada.Eisenhower_idAtividadeEisenhower, atividadeAtualizada.quadrante, capturaData());
 
             return novaLista;
         })
@@ -138,7 +150,7 @@ function Eisenhower() {
             const atividadeAtualizada = novaLista.find(t => t.idAtividade === id);
 
 
-            atualizaMatriz(atividadeAtualizada.Eisenhower_idAtividadeEisenhower, atividadeAtualizada.quadrante);
+           atualizaMatriz(atividadeAtualizada.Eisenhower_idAtividadeEisenhower, atividadeAtualizada.quadrante, capturaData());
 
             return novaLista;
         })
@@ -159,7 +171,7 @@ function Eisenhower() {
             )
             const atividadeAtualizada = novaLista.find(t => t.idAtividade=== id);
 
-            atualizaMatriz(atividadeAtualizada.Eisenhower_idAtividadeEisenhower, atividadeAtualizada.quadrante);
+            atualizaMatriz(atividadeAtualizada.Eisenhower_idAtividadeEisenhower, atividadeAtualizada.quadrante, capturaData());
             
              return novaLista;
            
@@ -167,9 +179,9 @@ function Eisenhower() {
         
     };
 
-    const atualizaMatriz = async (id, classificacao) => {
+    const atualizaMatriz = async (id, classificacao, dataAlteracao) => {
         console.log(`id: ${id}; classificação: ${classificacao}`)
-        await atualizarAtividadeEmMatriz(id, classificacao);
+        await atualizarAtividadeEmMatriz(id, classificacao, dataAlteracao);
         
     }
 
@@ -236,11 +248,12 @@ function Eisenhower() {
         try {
 
             const res = await adicionarAtividadeEmMatriz({
-                classificacao: quadranteSelecionado
+                classificacao: quadranteSelecionado,
+                dataAlteracao: capturaData()
             });
             const idEisen = res.idAtividadeEisenhower;
 
-            const novaAtividade = { ...atividade, quadrante: quadranteSelecionado, nome: atividade.nomeAtividade, Eisenhower_idAtividadeEisenhower: idEisen, Usuarios_username: atividade.Usuarios_username };
+            const novaAtividade = { ...atividade, quadrante: quadranteSelecionado, nome: atividade.nomeAtividade, Eisenhower_idAtividadeEisenhower: idEisen, Usuarios_username: atividade.Usuarios_username, dataAlteracao: capturaData()};
             console.log(novaAtividade);
             await atualizarIdEisenAtividade(novaAtividade.idAtividade, {
                 Eisenhower_idAtividadeEisenhower: novaAtividade.Eisenhower_idAtividadeEisenhower,

@@ -204,11 +204,15 @@ export const adicionarAtividadeEmMatriz = async (dados) => {
   const response = await api.post('/eisenhower/',dados);
   return response.data;
 };
-export const atualizarAtividadeEmMatriz = async (id, classificacao) => {
-  const response = await api.put(`/eisenhower/${id}/${classificacao}`);
+export const atualizarAtividadeEmMatriz = async (id, classificacao, dataAlteracao) => {
+  const response = await api.put(`/eisenhower/${id}/${classificacao}/${dataAlteracao}`);
   return response.data;
 };
 
+export const contaEmMatrizPorClassificacao = async (classificacao, dataAlteracao) => {
+  const response = await api.get(`/eisenhower/${classificacao}/${dataAlteracao}`);
+  return response.data;
+};
 
 export const listarAtividadesEmKanban = async () => {
     const response = await api.get('/kanban/idAtividadeKanban');
@@ -222,8 +226,8 @@ export const adicionarAtividadeEmKanban = async (dados) => {
   const response = await api.post('/kanban/',dados);
   return response.data;
 };
-export const atualizarAtividadeEmKanban = async (id, classificacao) => {
-  const response = await api.put(`/kanban/${id}/${classificacao}`);
+export const atualizarAtividadeEmKanban = async (id, classificacao, dataAlteracao) => {
+  const response = await api.put(`/kanban/${id}/${classificacao}/${dataAlteracao}`);
   return response.data;
 };
 

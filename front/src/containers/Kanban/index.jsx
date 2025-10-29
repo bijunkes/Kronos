@@ -15,6 +15,19 @@ function Kanban() {
     const [carregando, setCarregando] = useState(true);
     const [erro, setErro] = useState('');
 
+    const capturaData = () => {
+        const dataAtual = new Date();
+
+        let min = dataAtual.getMinutes();
+        let seg = dataAtual.getSeconds();
+        let h = dataAtual.getHours();
+        const dia = String(dataAtual.getDate()).padStart(2, '0');
+        const mes = String(dataAtual.getMonth() + 1).padStart(2, '0');
+        let ano = dataAtual.getFullYear();
+
+        return `${ano}-${mes}-${dia} ${h}:${min}:${seg}`
+    }
+
     const buscarAtividades = async () => {
     
             try {
@@ -36,7 +49,7 @@ function Kanban() {
     
                 console.log("todasAtividades:", todasAtividades);
                 console.log("todasAtividadesEmMatriz:", todasAtividadesEmKanban);
-                console.log("AtividadesEmMatriz:", atividadesEmKanban);
+                console.log("AtividadesEmKanban:", atividadesEmKanban);
     
                 console.log(atividadesEmKanban);
             } catch (err) {
@@ -51,9 +64,9 @@ function Kanban() {
                 buscarAtividades();
             }, []);
 
-            const atualizaKanban = async (id, classificacao) => {
+            const atualizaKanban = async (id, classificacao, dataAlteracao) => {
                     console.log(`id: ${id}; classificação: ${classificacao}`)
-                    await atualizarAtividadeEmKanban(id, classificacao);
+                    await atualizarAtividadeEmKanban(id, classificacao, dataAlteracao);
                     
                 }
 
@@ -100,7 +113,7 @@ function Kanban() {
             const atividadeAtualizada = novaLista.find(t => t.idAtividade === atividadeId);
 
 
-            atualizaKanban(atividadeAtualizada.Kanban_idAtividadeKanban, atividadeAtualizada.coluna);
+            atualizaKanban(atividadeAtualizada.Kanban_idAtividadeKanban, atividadeAtualizada.coluna, capturaData());
 
             return novaLista;
     });
@@ -125,7 +138,7 @@ function Kanban() {
                     const atividadeAtualizada = novaLista.find(t => t.idAtividade === atividadeId);
 
 
-            atualizaKanban(atividadeAtualizada.Kanban_idAtividadeKanban, atividadeAtualizada.coluna);
+            atualizaKanban(atividadeAtualizada.Kanban_idAtividadeKanban, atividadeAtualizada.coluna, capturaData());
 
             return novaLista;
      })
@@ -184,11 +197,12 @@ function Kanban() {
             try {
             
                     const res = await adicionarAtividadeEmKanban({
-                        classificacao: colunaSelecionada
+                        classificacao: colunaSelecionada,
+                        dataAlteracao: capturaData()
                     });
                     const idKanban = res.idAtividadeKanban;
     
-                    const novaAtividade = { ...atividade, coluna: colunaSelecionada, nome: atividade.nomeAtividade, Kanban_idAtividadeKanban: idKanban, Usuarios_username: atividade.Usuarios_username};
+                    const novaAtividade = { ...atividade, coluna: colunaSelecionada, nome: atividade.nomeAtividade, Kanban_idAtividadeKanban: idKanban, Usuarios_username: atividade.Usuarios_username, dataAlteracao: capturaData()};
                         
                     console.log(novaAtividade);
                                 await atualizarIdKanbanAtividade(novaAtividade.idAtividade, {

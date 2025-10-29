@@ -4,6 +4,7 @@ export const adicionarAtividade = async (req, res) => {
     const {
         
         classificacao,
+        dataAlteracao
     } = req.body;
 
 
@@ -15,10 +16,10 @@ export const adicionarAtividade = async (req, res) => {
 
         const [resultado] = await pool.query(
             `INSERT INTO eisenhower
-                (classificacao)
-                VALUES (?)`,
+                (classificacao, dataAlteracao)
+                VALUES (?, ?)`,
             [
-                classificacao
+                classificacao, dataAlteracao
             ]
         );
         const idAtividadeEisenhower = resultado.insertId;
@@ -57,16 +58,17 @@ export const listarAtividadesPorClassificacao = async (req, res) => {
     }
 }
 export const atualizarMatriz = async (req, res) => {
-    const {id, classificacao}= req.params;
+    const {id, classificacao, dataAlteracao}= req.params;
     console.log("id: "+ id);
     console.log(`classificação: ${classificacao} `)
 
     try {
         await pool.query(
             `UPDATE eisenhower SET
-            classificacao = ?
+            classificacao = ?,
+            dataAlteracao = ?
             WHERE idAtividadeEisenhower = ? `,
-            [classificacao, id]
+            [classificacao, dataAlteracao, id]
         );
         res.json({ message: "Matriz atualizada" });
     } catch (err) {
@@ -86,5 +88,21 @@ export const deletarAtividadeDeMatriz = async (req, res) => {
     } catch (err) {
         console.error(err);
         res.status(500).json({error: "Erro ao deletar atividade"});
+    }
+}
+export const contaPorClassificacao = async (req, res) => {
+    const {classificacao, dataAlteracao}= req.params;
+    console.log(`classificação: ${classificacao} `)
+    console.log(dataAlteracao)
+
+    try {
+        await pool.query(
+            `SELECT COUNT(*) FROM eisenhower WHERE classificacao = ? AND DATE(dataAlteracao) = ?`,
+            [classificacao, dataAlteracao]
+        );
+        res.json({ message: "Contagem feita!" });
+    } catch (err) {
+        console.error(err);
+        res.status(500).json({ error: "Erro ao contar elementos!" });
     }
 }
