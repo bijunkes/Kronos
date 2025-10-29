@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 
 import {
@@ -23,8 +23,7 @@ import defaultUserImage from '../../assets/defaultUserImage.jpg';
 import {
   criarLista,
   listarListas,
-  deletarLista, 
-  
+  deletarLista,
   getPerfil
 } from '../../services/api.js';
 
@@ -33,44 +32,122 @@ import ModalLista from '../../containers/ModalLista/index.jsx';
 function Menu() {
   const navigate = useNavigate();
 
-  const [usuario, setUsuario] = useState({ nome: localStorage.getItem('user_nome') || '', username: '' });
-  const [iconUrl, setIconUrl] = useState(null);
+  const [usuario, setUsuario] = useState({
+    nome: localStorage.getItem('user_nome') || '',
+    username: ''
+  });
+  
+  const [iconUrl, setIconUrl] = useState(localStorage.getItem('user_icon_url') || null);
+
+  const [imgVer, setImgVer] = useState(0);
+
+  const [displaySrc, setDisplaySrc] = useState(iconUrl || defaultUserImage);
+
+  const objectUrlRef = useRef(null);
 
   const [modalListaAberto, setModalListaAberto] = useState(false);
   const [listas, setListas] = useState([]);
-
   const [submenuAberto, setSubmenuAberto] = useState('');
   const [submenuSelecionado, setSubmenuSelecionado] = useState({ pai: '', item: '' });
+
+  const withVersion = (url, ver) => {
+    if (!url) return null;
+    return `${url}${url.includes('?') ? '&' : '?'}v=${ver}`;
+  };
 
   useEffect(() => {
     (async () => {
       try {
-        const perfil = await getPerfil(); 
+        const perfil = await getPerfil();
         setUsuario({ nome: perfil.nome || '', username: perfil.username || '' });
-        setIconUrl(perfil.icon || null);
 
-        if (perfil.icon) localStorage.setItem('user_icon_url', perfil.icon);
-        else localStorage.removeItem('user_icon_url');
+        if (perfil.icon) {
+          setIconUrl(perfil.icon);
+          localStorage.setItem('user_icon_url', perfil.icon);
+        } else {
+          setIconUrl(null);
+          localStorage.removeItem('user_icon_url');
+        }
+        setImgVer((v) => v + 1); 
       } catch (err) {
-       
         console.error('Erro ao buscar usuário no menu:', err?.response?.data || err);
       }
     })();
   }, []);
 
   useEffect(() => {
-   const onProfile = (e) => {
-     const d = e?.detail || {};
-     setUsuario((u) => ({
-       nome: d.nome ?? u.nome,
-       username: d.username ?? u.username,
-     }));
-     if ('icon' in d) setIconUrl(d.icon || null);
-     if (d.nome !== undefined) localStorage.setItem('user_nome', d.nome || '');
-   };
-   window.addEventListener('user:profile', onProfile);
-  return () => window.removeEventListener('user:profile', onProfile);
- }, []);
+    const onProfile = (e) => {
+      const d = e?.detail || {};
+      setUsuario((u) => ({
+        nome: d.nome ?? u.nome,
+        username: d.username ?? u.username
+      }));
+
+      if ('icon' in d) {
+        if (d.icon) {
+          setIconUrl(d.icon);
+          localStorage.setItem('user_icon_url', d.icon);
+        } else {
+          setIconUrl(null);
+          localStorage.removeItem('user_icon_url');
+        }
+        setImgVer((v) => v + 1);
+      }
+
+      if (d.nome !== undefined) localStorage.setItem('user_nome', d.nome || '');
+    };
+
+    window.addEventListener('user:profile', onProfile);
+    return () => window.removeEventListener('user:profile', onProfile);
+  }, []);
+
+  useEffect(() => {
+    const onStorage = (e) => {
+      if (e.key === 'user_icon_url') {
+        setIconUrl(e.newValue || null);
+        setImgVer((v) => v + 1);
+      }
+      if (e.key === 'user_nome') {
+        setUsuario((u) => ({ ...u, nome: e.newValue || '' }));
+      }
+    };
+    window.addEventListener('storage', onStorage);
+    return () => window.removeEventListener('storage', onStorage);
+  }, []);
+
+  useEffect(() => {
+    if (objectUrlRef.current) {
+      URL.revokeObjectURL(objectUrlRef.current);
+      objectUrlRef.current = null;
+    }
+
+    if (!iconUrl) {
+      setDisplaySrc(defaultUserImage);
+      return;
+    }
+
+    const cacheBusted = withVersion(iconUrl, imgVer);
+    setDisplaySrc(cacheBusted);
+
+    (async () => {
+      try {
+        const resp = await fetch(cacheBusted, { cache: 'reload' });
+        if (!resp.ok) throw new Error(`HTTP ${resp.status}`);
+        const blob = await resp.blob();
+        const objUrl = URL.createObjectURL(blob);
+        objectUrlRef.current = objUrl;
+        setDisplaySrc(objUrl);
+      } catch (e) {     
+      }
+    })();
+
+    return () => {
+      if (objectUrlRef.current) {
+        URL.revokeObjectURL(objectUrlRef.current);
+        objectUrlRef.current = null;
+      }
+    };
+  }, [iconUrl, imgVer]);
 
   const handleClick = (item, temRota = true) => {
     if (submenuAberto === item) {
@@ -160,8 +237,12 @@ function Menu() {
           }}
         >
           <img
-            src={iconUrl || defaultUserImage}
+            key={displaySrc}        
+            src={displaySrc}
             alt="Icon usuário"
+            onError={() => {
+              setDisplaySrc(defaultUserImage);
+            }}
             style={{
               width: '100%',
               height: '100%',

@@ -146,68 +146,79 @@ function Usuario() {
   }
 
   async function onSalvar(e) {
-    e?.preventDefault?.();
-    setSaving(true);
+  e?.preventDefault?.();
+  setSaving(true);
 
-    const mudouNome  = orig && nome !== orig.nome;
-    const mudouEmail = orig && email !== orig.email;
-    const temSenha   = !!(senha && String(senha).trim());
-    const mudouIcon  = !!tempIconFile;
+  const mudouNome  = orig && nome !== orig.nome;
+  const mudouEmail = orig && email !== orig.email;
+  const temSenha   = !!(senha && String(senha).trim());
+  const mudouIcon  = !!tempIconFile;
 
-    const payload = {};
-    if (mudouNome)  payload.nome  = nome;
-    if (mudouEmail) payload.email = email;
-    if (temSenha)   payload.senha = String(senha).trim();
+  const payload = {};
+  if (mudouNome)  payload.nome  = nome;
+  if (mudouEmail) payload.email = email;
+  if (temSenha)   payload.senha = String(senha).trim();
 
-    if (!mudouIcon && Object.keys(payload).length === 0) {
-      setEditando(false);
-      setSenha('');
-      setMostraSenha(false);
-      setSaving(false);
-      return;
-    }
-
-    try {
-      if (Object.keys(payload).length > 0) {
-        const resp = await atualizarPerfil(payload, { silentSuccess: true });
-        if (resp?.message) showOkToast(resp.message, 'success');
-      }
-
-      if (mudouIcon) {
-        setUploading(true);
-        const { iconUrl } = await enviarIcone(tempIconFile);
-        setIcon(iconUrl || null);
-        setOrig((o) => ({ ...(o || {}), icon: iconUrl || null }));
-
-        window.dispatchEvent(new CustomEvent('user:icon', { detail: { iconUrl: iconUrl || null } }));
-        if (iconUrl) localStorage.setItem('user_icon_url', iconUrl);
-        else localStorage.removeItem('user_icon_url');
-
-        if (tempIconUrl) URL.revokeObjectURL(tempIconUrl);
-        setTempIconUrl(null);
-        setTempIconFile(null);
-      }
-
-      setOrig({ nome, username, email, icon: mudouIcon ? (icon || null) : (orig?.icon || null) });
-
-      // Perfil (cache + broadcast) após salvar -> Sidebar atualiza imediatamente
-      localStorage.setItem('user_nome', nome || '');
-      window.dispatchEvent(
-        new CustomEvent('user:profile', {
-          detail: { nome, username, email, icon: mudouIcon ? (icon || null) : (orig?.icon || null) }
-        })
-      );
-
-      setEditando(false);
-      setSenha('');
-      setMostraSenha(false);
-    } catch (err) {
-      console.error('Falha ao salvar perfil', err);
-    } finally {
-      setUploading(false);
-      setSaving(false);
-    }
+  if (!mudouIcon && Object.keys(payload).length === 0) {
+    setEditando(false);
+    setSenha('');
+    setMostraSenha(false);
+    setSaving(false);
+    return;
   }
+
+  try {
+    if (Object.keys(payload).length > 0) {
+      const resp = await atualizarPerfil(payload, { silentSuccess: true });
+      if (resp?.message) showOkToast(resp.message, 'success');
+    }
+
+    let newIcon = orig?.icon || null;
+
+    if (mudouIcon) {
+      setUploading(true);
+
+      const resp = await enviarIcone(tempIconFile);
+      const iconUrl =
+        resp?.iconUrl ?? resp?.icon ?? resp?.url ?? null;
+
+      newIcon = iconUrl; 
+     
+      setIcon(newIcon);
+      setOrig((o) => ({ ...(o || {}), icon: newIcon }));
+
+      if (newIcon) localStorage.setItem('user_icon_url', newIcon);
+      else localStorage.removeItem('user_icon_url');
+      window.dispatchEvent(new CustomEvent('user:icon', { detail: { iconUrl: newIcon } }));
+      window.dispatchEvent(new CustomEvent('user:profile', { detail: { icon: newIcon } }));
+
+      if (tempIconUrl) URL.revokeObjectURL(tempIconUrl);
+      setTempIconUrl(null);
+      setTempIconFile(null);
+    } else {     
+      newIcon = icon ?? orig?.icon ?? null;
+    }
+
+    setOrig({ nome, username, email, icon: newIcon });
+
+    localStorage.setItem('user_nome', nome || '');
+    window.dispatchEvent(
+      new CustomEvent('user:profile', {
+        detail: { nome, username, email, icon: newIcon }
+      })
+    );
+
+    setEditando(false);
+    setSenha('');
+    setMostraSenha(false);
+  } catch (err) {
+    console.error('Falha ao salvar perfil', err);
+  } finally {
+    setUploading(false);
+    setSaving(false);
+  }
+}
+
 
   async function onExcluir() {
     const ok = await showConfirmToast(
