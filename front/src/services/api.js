@@ -209,6 +209,10 @@ export const atualizarAtividadeEmMatriz = async (id, classificacao, dataAlteraca
   return response.data;
 };
 
+export const contaEmMatrizPorClassificacao = async (classificacao, dataAlteracao) => {
+  const response = await api.get(`/eisenhower/${classificacao}/${dataAlteracao}`);
+  return response.data;
+};
 
 export const listarAtividadesEmKanban = async () => {
     const response = await api.get('/kanban/idAtividadeKanban');

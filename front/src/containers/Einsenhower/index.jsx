@@ -37,8 +37,8 @@ function Eisenhower() {
         let min = dataAtual.getMinutes();
         let seg = dataAtual.getSeconds();
         let h = dataAtual.getHours();
-        let dia = dataAtual.getDay();
-        let mes = dataAtual.getMonth();
+        const dia = String(dataAtual.getDate()).padStart(2, '0');
+        const mes = String(dataAtual.getMonth() + 1).padStart(2, '0');
         let ano = dataAtual.getFullYear();
 
         return `${ano}-${mes}-${dia} ${h}:${min}:${seg}`

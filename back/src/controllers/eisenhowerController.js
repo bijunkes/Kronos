@@ -90,3 +90,19 @@ export const deletarAtividadeDeMatriz = async (req, res) => {
         res.status(500).json({error: "Erro ao deletar atividade"});
     }
 }
+export const contaPorClassificacao = async (req, res) => {
+    const {classificacao, dataAlteracao}= req.params;
+    console.log(`classificação: ${classificacao} `)
+    console.log(dataAlteracao)
+
+    try {
+        await pool.query(
+            `SELECT COUNT(*) FROM eisenhower WHERE classificacao = ? AND DATE(dataAlteracao) = ?`,
+            [classificacao, dataAlteracao]
+        );
+        res.json({ message: "Contagem feita!" });
+    } catch (err) {
+        console.error(err);
+        res.status(500).json({ error: "Erro ao contar elementos!" });
+    }
+}
