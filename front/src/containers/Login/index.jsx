@@ -140,7 +140,7 @@ function Login() {
           <Negrito>Não possui<br />um cadastro?</Negrito>
           <Opaco>Cadastre-se clicando logo abaixo.</Opaco>
         </LeftAlign>
-        <ButtonEntrar onClick={handleVoltar}>VOLTAR</ButtonEntrar>
+        <ButtonEntrar onClick={handleVoltar}>CADASTRAR</ButtonEntrar>
       </Parte1>
 
       <Parte2>

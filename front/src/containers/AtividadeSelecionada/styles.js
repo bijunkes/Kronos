@@ -12,6 +12,7 @@ export const Container = styled.div`
 `;
 
 export const Excluir = styled.div`
+  &:hover{color: #B3261E};
 `;
 
 export const Header = styled.div`

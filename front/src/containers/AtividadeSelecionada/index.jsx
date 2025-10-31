@@ -87,7 +87,7 @@ function AtividadeSelecionada({ atividade, onAtualizarAtividade }) {
         if (!atividade) return;
 
         const ok = await showConfirmToast(
-        'Tem certeza que deseja excluir esta atividade? Essa ação não pode ser desfeita.',
+        'Tem certeza que deseja excluir esta atividade? Ela não será contabilizada nos relatórios',
         { confirmLabel: 'Excluir', cancelLabel: 'Cancelar' }
      );
 
@@ -164,7 +164,7 @@ function AtividadeSelecionada({ atividade, onAtualizarAtividade }) {
                     }}
                     onBlur={() => atualizarCampo({ nomeAtividade: nome })}
                 />
-                <Excluir
+                <Excluir 
                     className="material-symbols-outlined"
                     onClick={handleExcluir}
                 >

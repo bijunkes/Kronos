@@ -71,7 +71,7 @@ export const atualizarKanban = async (req, res) => {
             WHERE idAtividadeKanban = ? `,
             [classificacao, dataAlteracao, id]
         );
-        res.json({ message: "Kanban atualizado" });
+       
     } catch (err) {
         console.error(err);
         res.status(500).json({ error: "Erro ao atualizar Kanban" });
