@@ -210,7 +210,7 @@ export const atualizarAtividadeEmMatriz = async (id, classificacao, dataAlteraca
 };
 
 export const contaEmMatrizPorClassificacao = async (classificacao, dataAlteracao) => {
-  const response = await api.get(`/eisenhower/${classificacao}/${dataAlteracao}`);
+  const response = await api.get(`/eisenhower/contagem/${classificacao}/${dataAlteracao}`);
   return response.data;
 };
 

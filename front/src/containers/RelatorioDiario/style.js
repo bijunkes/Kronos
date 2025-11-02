@@ -192,7 +192,9 @@ export const QuadroEisen = styled.div`
     position: relative;
     display: flex;
     padding: 1rem;
+    align-items: center;
     justify-content: flex-end;
+    left: 0;
     color: #FFFFFF;
 `;
 export const ImportanteUrgente = styled(QuadroEisen)`
@@ -201,7 +203,7 @@ export const ImportanteUrgente = styled(QuadroEisen)`
 
 export const ImportanteNaoUrgente = styled(QuadroEisen)`
   background-color: #FFCC00;
-  color: black;
+  
 `;
 
 export const NaoImportanteUrgente = styled(QuadroEisen)`

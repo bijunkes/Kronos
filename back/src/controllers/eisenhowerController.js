@@ -96,11 +96,12 @@ export const contaPorClassificacao = async (req, res) => {
     console.log(dataAlteracao)
 
     try {
-        await pool.query(
-            `SELECT COUNT(*) FROM eisenhower WHERE classificacao = ? AND DATE(dataAlteracao) = ?`,
+        const contagem = await pool.query(
+            `SELECT COUNT(*) AS total FROM eisenhower WHERE classificacao = ? AND DATE(dataAlteracao) = ?`,
             [classificacao, dataAlteracao]
         );
-        res.json({ message: "Contagem feita!" });
+        console.log("Contagem: "+ contagem[0])
+        res.json(contagem[0]);
     } catch (err) {
         console.error(err);
         res.status(500).json({ error: "Erro ao contar elementos!" });
