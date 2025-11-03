@@ -6,4 +6,5 @@ const router = express.Router();
 router.post("/:id/atividades", salvarAtividadesSessao);
 router.get("/:id/atividades", listarAtividadesSessao);
 
+
 export default router;

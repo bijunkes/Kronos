@@ -35,9 +35,10 @@ export const criarAtividade = async (req, res) => {
                 VALUES (?, ?, ?, ?, ?, ?, ?, ?)`,
             [
                 nomeAtividade,
-                statusAtividade, descricaoAtividade,
+                statusAtividade, 
+                descricaoAtividade,
                 prazoAtividade,
-                dataConclusao,
+                null,
                 listaAtual,
                 usuario,
                 usuario

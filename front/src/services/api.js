@@ -219,7 +219,6 @@ export const atualizarAtividadeEmMatriz = async (id, classificacao) => {
   return response.data;
 };
 
-
 export default api;
 
 
