@@ -3,7 +3,8 @@ import {
     Container, Titulo, Data, Progresso, Pomodoro, Pendente, Andamento, Concluido, Classificacao, ProgressoCirculo, BoxTitulo, BoxTarefas, BoxNomeTarefa, NomeTarefa, NaoImportanteUrgente,
     NaoImportanteNaoUrgente,
     ImportanteNaoUrgente,
-    ImportanteUrgente
+    ImportanteUrgente,
+    RelatorioKanban
 } from './style'
 import { listarAtividadesEmKanban, listarAtividades, contaEmMatrizPorClassificacao } from "../../services/api.js";
 
@@ -30,7 +31,9 @@ function RelatorioDiario() {
             console.log(todasAtividadesEmKanban);
             const matrizMap = new Map();
             todasAtividadesEmKanban.forEach(item => {
+                if(item.dataAlteracao.substring(0,10) == capturaData()){
                 matrizMap.set(item.idAtividadeKanban, item.classificacao)
+                }
             })
             const atividadesEmKanban = todasAtividades.filter(atv => matrizMap.has(atv.Kanban_idAtividadeKanban)).map(atv => ({
                 ...atv,
@@ -90,7 +93,7 @@ function RelatorioDiario() {
 
         console.log(`Total de atividades: ${quantAtvs}`);
         console.log(`Atividades concluidas: ${cont}`);
-        const porcentagem = calculaPorcentagem(quantAtvs, cont);
+        const porcentagem = Math.round(calculaPorcentagem(quantAtvs, cont));
         console.log(`Porcentagem: ${porcentagem}`);
         if(  porcentagem !== 0 && porcentagem < 10){
             return `0${porcentagem}%`;
@@ -116,18 +119,7 @@ function RelatorioDiario() {
 
         return `${ano}-${mes}-${dia}`;
     }
-    const capturaDataSQL = () => {
-        const dataAtual = new Date();
-
-        let min = dataAtual.getMinutes();
-        let seg = dataAtual.getSeconds();
-        let h = dataAtual.getHours();
-        const dia = String(dataAtual.getDate()).padStart(2, '0');
-        const mes = String(dataAtual.getMonth() + 1).padStart(2, '0');
-        let ano = dataAtual.getFullYear();
-
-        return `${ano}-${mes}-${dia} ${h}:${min}:${seg}.000Z`
-    }
+    
     const defineTamanho = async (classificacao) => {
         console.log(classificacao)
         console.log(`${capturaData()}`);
@@ -154,6 +146,7 @@ function RelatorioDiario() {
         <>
             <Container>
                 <Titulo>Relatório Diário</Titulo>
+                <RelatorioKanban>Atividades do Kanban (somente as alteradas hoje)</RelatorioKanban>
                 <Data>{dataFormatada()}</Data>
                 <Progresso>
                     Progresso
@@ -176,11 +169,11 @@ function RelatorioDiario() {
                     </BoxTarefas>
                 ))}</Concluido>
                 <Classificacao>
-                    Classificação
-                    <ImportanteUrgente style={{ width: `${tamanhos[1]}vw` }}>{tamanhos[1]/5}</ImportanteUrgente>
-                    <ImportanteNaoUrgente style={{ width: `${tamanhos[2]}vw` }}>{tamanhos[2]/5}</ImportanteNaoUrgente>
-                    <NaoImportanteUrgente style={{ width: `${tamanhos[3]}vw` }}>{tamanhos[3]/5}</NaoImportanteUrgente>
-                    <NaoImportanteNaoUrgente style={{ width: `${tamanhos[4]}vw` }}>{tamanhos[4]/5}</NaoImportanteNaoUrgente>
+                    Atividades em Eisenhower
+                    <ImportanteUrgente style={{ width: `${tamanhos[1]}vw` }} title='Importante e Urgente'>{tamanhos[1]/5}</ImportanteUrgente>
+                    <ImportanteNaoUrgente style={{ width: `${tamanhos[2]}vw` }} title='Importante e Não urgente'>{tamanhos[2]/5}</ImportanteNaoUrgente>
+                    <NaoImportanteUrgente style={{ width: `${tamanhos[3]}vw` }} title='Não importante e Urgente'>{tamanhos[3]/5}</NaoImportanteUrgente>
+                    <NaoImportanteNaoUrgente style={{ width: `${tamanhos[4]}vw` }} title='Não importante e Não urgente'>{tamanhos[4]/5}</NaoImportanteNaoUrgente>
                 </Classificacao>
             </Container>
         </>

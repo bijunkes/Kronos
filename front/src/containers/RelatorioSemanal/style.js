@@ -6,7 +6,7 @@ export const Container = styled.div`
   left: 58.5%;
   top: 50%;
   transform: translate(-50%, -50%);
-  grid-template-areas: "titulo relaKanban relaKanban relaKanban" 
+  grid-template-areas: "titulo . . ." 
   "data pendente andamento concluido"
   "progresso pendente andamento concluido"
   "pomodoro classificacao classificacao classificacao";
@@ -23,20 +23,6 @@ export const Container = styled.div`
 export const Titulo = styled.h2`
     grid-area: titulo;
     font-size: 33px;
-    color: #FFFFFF;
-    font-family: "Roboto", sans-serif;
-    font-optical-sizing: auto;
-    font-weight: bold;
-    font-style: normal;
-    font-variation-settings:
-    "wdth" 100;
-`;
-
-export const RelatorioKanban = styled.h2`
-    grid-area: relaKanban;
-    font-size: 27px;
-    display: flex;
-    justify-content: center;
     color: #FFFFFF;
     font-family: "Roboto", sans-serif;
     font-optical-sizing: auto;
@@ -100,7 +86,7 @@ export const QuadroKanban = styled.div`
     flex-direction: column;
     align-items: center;
     padding: 1%;
-    gap: 5%;
+    gap: 10%;
     justify-content: flex-start;
 `;
 export const Pendente = styled(QuadroKanban)`
@@ -167,7 +153,6 @@ export const BoxTitulo= styled.div`
     border-radius: 1rem;
     top: 1rem;
     font-weight: 1%;
-    margin-bottom: 5%;
     color: rgba(255, 255, 255, 1);
 `;
 export const BoxTarefas = styled.div`
@@ -179,7 +164,7 @@ export const BoxTarefas = styled.div`
     position: relative;
     display: flex;
     padding: 1rem;
-    margin: 1px;
+    justify-content: space-around;
     flex-wrap: wrap;
 `;
 export const BoxNomeTarefa = styled.div`
