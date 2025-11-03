@@ -5,6 +5,7 @@ export const criarAtividade = async (req, res) => {
     const {
         nomeAtividade,
         prazoAtividade,
+        dataConclusao,
         descricaoAtividade = '', statusAtividade = 0,
         listaId
     } = req.body;
@@ -37,7 +38,7 @@ export const criarAtividade = async (req, res) => {
                 nomeAtividade,
                 statusAtividade, descricaoAtividade,
                 prazoAtividade,
-                dataConclusao,
+                dataConclusao || null,
                 listaAtual,
                 usuario,
                 usuario
@@ -95,6 +96,7 @@ export const criarAtividadeAtividades = async (req, res) => {
     const {
         nomeAtividade,
         prazoAtividade,
+        dataConclusao,
         descricaoAtividade = '',
         statusAtividade = 0
     } = req.body;
@@ -125,8 +127,8 @@ export const criarAtividadeAtividades = async (req, res) => {
                 statusAtividade,
                 descricaoAtividade,
                 prazoAtividade,
-                dataConclusao,
-                listaPadrao.idLista,  // sempre vai pra lista "Atividades"
+                dataConclusao || null,
+                listaPadrao.idLista,  
                 usuario,
                 usuario
             ]
@@ -155,7 +157,7 @@ export const listarAtividades = async (req, res) => {
     const usuario = req.usuarioUsername;
     try {
         const [atividades] = await pool.query(
-            `SELECT * FROM atividades WHERE Usuarios_username = ? ORDER BY dataConclusao ASC`, [usuario]
+            `SELECT *, DATE(dataConclusao) as dataDeConclusao FROM atividades WHERE Usuarios_username = ? ORDER BY dataConclusao ASC`, [usuario]
         );
         res.json(atividades);
     } catch (err) {
@@ -250,7 +252,7 @@ export const listarTodasAtividades = async (req, res) => {
 
     try {
         const [atividades] = await pool.query(
-            `SELECT a.*, l.nomeLista 
+            `SELECT a.*, 
              FROM atividades a
              JOIN listaatividades l ON a.ListaAtividades_idLista = l.idLista
              WHERE a.Usuarios_username = ?

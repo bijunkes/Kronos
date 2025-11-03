@@ -20,6 +20,7 @@ function RelatorioDiario() {
         3: 0,
         4: 0
     });
+    const [contAtvs, setContAtvs] = useState('');
     const buscarAtividadesKanban = async () => {
 
         try {
@@ -63,16 +64,48 @@ function RelatorioDiario() {
             setTamanhos(novoTamanho);
         };
 
+        setContAtvs(contagemAtividadesConcluidas())
+
         buscarAtividadesKanban();
         carregarTamanhos();
 
     }, []);
+    const contagemAtividadesConcluidas = async () => {
+        const todasAtividades = await listarAtividades();
+        let cont =0;
+        let quantAtvs =0;
+
+        const calculaPorcentagem = (total, parcial) => {
+            const resultado = (parcial*100) /total;
+            return resultado;
+        }
+
+        todasAtividades.forEach(atv => {
+            if(atv.statusAtividade == "1" && atv.dataConclusao.substring(0,10) == capturaData()){
+                 console.log(`Atividade Dentro do if: ${atv}`);
+                cont++;
+            }
+            quantAtvs++;
+        })
+
+        console.log(`Total de atividades: ${quantAtvs}`);
+        console.log(`Atividades concluidas: ${cont}`);
+        const porcentagem = calculaPorcentagem(quantAtvs, cont);
+        console.log(`Porcentagem: ${porcentagem}`);
+        if(  porcentagem !== 0 && porcentagem < 10){
+            return `0${porcentagem}%`;
+        }
+
+        return `${porcentagem}%`;
+
+    }
     const dataFormatada = () => {
         const dataAtual = new Date();
         const dia = String(dataAtual.getDate()).padStart(2, '0');
         const mes = String(dataAtual.getMonth() + 1).padStart(2, '0');
         const ano = dataAtual.getFullYear();
 
+        
         return `Data:   ${dia}/${mes}/${ano}`;
     }
     const capturaData = () => {
@@ -82,6 +115,18 @@ function RelatorioDiario() {
         const ano = dataAtual.getFullYear();
 
         return `${ano}-${mes}-${dia}`;
+    }
+    const capturaDataSQL = () => {
+        const dataAtual = new Date();
+
+        let min = dataAtual.getMinutes();
+        let seg = dataAtual.getSeconds();
+        let h = dataAtual.getHours();
+        const dia = String(dataAtual.getDate()).padStart(2, '0');
+        const mes = String(dataAtual.getMonth() + 1).padStart(2, '0');
+        let ano = dataAtual.getFullYear();
+
+        return `${ano}-${mes}-${dia} ${h}:${min}:${seg}.000Z`
     }
     const defineTamanho = async (classificacao) => {
         console.log(classificacao)
@@ -112,7 +157,7 @@ function RelatorioDiario() {
                 <Data>{dataFormatada()}</Data>
                 <Progresso>
                     Progresso
-                    <ProgressoCirculo>20%</ProgressoCirculo>
+                    <ProgressoCirculo>{contAtvs}</ProgressoCirculo>
                 </Progresso>
                 <Pomodoro></Pomodoro>
                 <Pendente><BoxTitulo>Pendente</BoxTitulo>{atividades.filter(atividade => atividade.coluna === 1).map(atividade => (
