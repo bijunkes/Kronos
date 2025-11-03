@@ -63,6 +63,11 @@ export const Botoes = styled.div`
       color: rgba(255, 255, 255, 0.4);
     }
   }
+  #delete{
+    &:hover{
+      color:  #B3261E;
+    }
+  }
 `;
 
 export const AreaAtividades = styled.div`

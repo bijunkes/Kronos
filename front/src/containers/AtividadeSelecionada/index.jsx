@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Container, Excluir, Header, NomeAtividade, Status, Datas, Data, Input, Desc, DescTextarea, Lista, Tecnicas, Tecnica } from './styles.js';
 import { atualizarAtividade, deletarAtividade, listarListas } from '../../services/api';
+import { showConfirmToast } from '../../components/showToast.jsx';
 
 function AtividadeSelecionada({ atividade, onAtualizarAtividade }) {
     if (!atividade) return null;
@@ -85,11 +86,19 @@ function AtividadeSelecionada({ atividade, onAtualizarAtividade }) {
     const handleExcluir = async () => {
         if (!atividade) return;
 
-        try {
-            await deletarAtividade(atividade.idAtividade);
-            onAtualizarAtividade?.(null);
-        } catch (err) {
-        }
+        const ok = await showConfirmToast(
+        'Tem certeza que deseja excluir esta atividade? Ela não será contabilizada nos relatórios',
+        { confirmLabel: 'Excluir', cancelLabel: 'Cancelar' }
+     );
+
+     if (!ok) return;
+
+    try {
+        await deletarAtividade(atividade.idAtividade);
+        onAtualizarAtividade?.(null);
+    } catch (err) {
+         console.error('Erro ao excluir atividade', err);
+    }
     };
 
     const handleMoverLista = async (e) => {
@@ -155,7 +164,7 @@ function AtividadeSelecionada({ atividade, onAtualizarAtividade }) {
                     }}
                     onBlur={() => atualizarCampo({ nomeAtividade: nome })}
                 />
-                <Excluir
+                <Excluir 
                     className="material-symbols-outlined"
                     onClick={handleExcluir}
                 >

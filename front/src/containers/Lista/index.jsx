@@ -17,6 +17,7 @@ import {
 import { deletarLista, listarAtividadesPorLista, listarListas, atualizarAtividade } from '../../services/api.js';
 import ModalCriarAtividade from '../ModalCriarAtividade/index.jsx';
 import AtividadeSelecionada from '../AtividadeSelecionada/index.jsx';
+import { showConfirmToast } from '../../components/showToast.jsx';
 
 function Lista() {
     const navigate = useNavigate();
@@ -73,14 +74,22 @@ function Lista() {
 
     const handleExcluir = async () => {
         if (!idLista) return;
-        try {
-            await deletarLista(idLista);
-            window.dispatchEvent(new Event('listasAtualizadas'));
-            navigate('/home');
-        } catch (err) {
-            console.error('Erro ao deletar lista', err);
-            alert('Não foi possível deletar a lista');
-        }
+
+        const ok = await showConfirmToast(
+        'Tem certeza que deseja excluir esta lista? As atividades dentro da lista também serão excluídas e não serão contabilizadas nos relatórios ',
+         { confirmLabel: 'Excluir', cancelLabel: 'Cancelar' }
+    );
+
+    if (!ok) return;
+
+    try {
+        await deletarLista(idLista);
+        window.dispatchEvent(new Event('listasAtualizadas'));
+        navigate('/home');
+    } catch (err) {
+        console.error('Erro ao deletar lista', err);
+        alert('Não foi possível deletar a lista');
+     }
     };
 
     const toggleConcluido = async (index) => {

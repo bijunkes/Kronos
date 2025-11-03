@@ -128,8 +128,6 @@ export const Atividade = styled.li`
   align-items: flex-start;
   margin-top: 0.3rem;
   margin-left: 1rem;
-  padding-left: 1rem;
-  padding-top: 1rem;
   color: #FFFFFF;
   height: 6vh;
   width: 25.5vw;
@@ -138,6 +136,7 @@ export const Atividade = styled.li`
   flex-shrink: 0;
   overflow: hidden;
   flex-direction: row;
+  justify-content: space-around;
   
 `;
 export const AdicionarTarefa = styled.button`
@@ -171,4 +170,24 @@ export const Icones = styled.button`
     left: 30%;
     color: rgba(255, 255, 255, 1);
 
+`;
+export const BoxNomeTarefa = styled.div`
+    position: relative;
+    align-self: center;
+    width: 15vw;
+    left: 0;
+    color: rgba(255, 255, 255, 1);
+    display: flex;
+    justify-content: flex-start;
+    flex-wrap: wrap;
+`;
+export const BoxIcones = styled.div`
+    position: relative;
+    align-self: center;
+    width: 5vw;
+    right: 1rem;
+    color: rgba(255, 255, 255, 1);
+    display: flex;
+    justify-content: center;
+    
 `;

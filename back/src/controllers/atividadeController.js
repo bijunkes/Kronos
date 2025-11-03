@@ -5,6 +5,7 @@ export const criarAtividade = async (req, res) => {
     const {
         nomeAtividade,
         prazoAtividade,
+        dataConclusao,
         descricaoAtividade = '', statusAtividade = 0,
         listaId
     } = req.body;
@@ -71,10 +72,32 @@ export const atualizarIdEisenAtividade = async (req, res) => {
         res.status(500).json({ error: "Erro ao atualizar atividade" });
     }
 }
+export const atualizarIdKanbanAtividade = async (req, res) => {
+    const usuario = req.body.Usuarios_username;
+    const idAtividade = req.body.idAtividade;
+    const idKanban = req.body.Kanban_idAtividadeKanban;
+    console.log(usuario);
+    console.log(idAtividade);
+    console.log(idKanban);
+
+    try {
+        await pool.query(
+            `UPDATE atividades SET
+            Kanban_idAtividadeKanban = ?
+            WHERE idAtividade = ? AND Usuarios_username = ?`,
+            [idKanban, idAtividade, usuario]
+        );
+        res.json({ message: "Atividade atualizada" });
+    } catch (err) {
+        console.error(err);
+        res.status(500).json({ error: "Erro ao atualizar atividade" });
+    }
+}
 export const criarAtividadeAtividades = async (req, res) => {
     const {
         nomeAtividade,
         prazoAtividade,
+        dataConclusao,
         descricaoAtividade = '',
         statusAtividade = 0
     } = req.body;
@@ -105,8 +128,8 @@ export const criarAtividadeAtividades = async (req, res) => {
                 statusAtividade,
                 descricaoAtividade,
                 prazoAtividade,
-                dataConclusao,
-                listaPadrao.idLista,  // sempre vai pra lista "Atividades"
+                dataConclusao || null,
+                listaPadrao.idLista,  
                 usuario,
                 usuario
             ]
@@ -135,7 +158,7 @@ export const listarAtividades = async (req, res) => {
     const usuario = req.usuarioUsername;
     try {
         const [atividades] = await pool.query(
-            `SELECT * FROM atividades WHERE Usuarios_username = ? ORDER BY dataConclusao ASC`, [usuario]
+            `SELECT *, DATE(dataConclusao) as dataDeConclusao FROM atividades WHERE Usuarios_username = ? ORDER BY dataConclusao ASC`, [usuario]
         );
         res.json(atividades);
     } catch (err) {
@@ -230,7 +253,7 @@ export const listarTodasAtividades = async (req, res) => {
 
     try {
         const [atividades] = await pool.query(
-            `SELECT a.*, l.nomeLista 
+            `SELECT a.*, 
              FROM atividades a
              JOIN listaatividades l ON a.ListaAtividades_idLista = l.idLista
              WHERE a.Usuarios_username = ?

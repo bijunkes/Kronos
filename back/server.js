@@ -13,6 +13,7 @@ import listRoutes from './src/routes/listRoutes.js';
 import atividadeRoutes from "./src/routes/atividadeRoutes.js";
 import pomodoroRouter from './src/routes/pomodoroRoutes.js';
 import eisenRoutes from "./src/routes/eisenRoutes.js";
+import kanbanRoutes from "./src/routes/kanbanRoutes.js"
 
 const app = express();
 
@@ -51,6 +52,7 @@ app.use('/listas', listRoutes);
 app.use('/atividades', atividadeRoutes);
 app.use('/pomodoro', pomodoroRouter);
 app.use('/eisenhower', eisenRoutes);
+app.use('/kanban', kanbanRoutes);
 
 app.use((req, res) => {
   res.status(404).json({ error: 'Rota não encontrada' });

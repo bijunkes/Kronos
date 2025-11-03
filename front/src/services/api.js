@@ -114,19 +114,6 @@ export const atualizarPerfil = async (dados, opts = {}) => {
 
 }
 
-export const enviarIcone = async (file) => {
-  const fd = new FormData();
-  fd.append('icon', file);
-  return (await api.put('/me/icon', fd, {
-    headers: { 'Content-Type': 'multipart/form-data' },
-     
-  })).data;
-};
-
-export const removerIcone = async () =>
-  (await api.delete('/me/icon', { __successSilent: true })).data;
-
-
 
 export const excluirConta = async () =>
   (await api.delete('/usuarios/me')).data;
@@ -199,7 +186,10 @@ export const atualizarIdEisenAtividade = async (id, dados) => {
   return response.data;
 };
 
-
+export const atualizarIdKanbanAtividade = async (id, dados) => {
+  const response = await api.put(`/atividades/kanban/${id}`, dados);
+  return response.data;
+};
 
 
 export const listarAtividadesEmMatriz = async () => {
@@ -214,10 +204,44 @@ export const adicionarAtividadeEmMatriz = async (dados) => {
   const response = await api.post('/eisenhower/',dados);
   return response.data;
 };
-export const atualizarAtividadeEmMatriz = async (id, classificacao) => {
-  const response = await api.put(`/eisenhower/${id}/${classificacao}`);
+export const atualizarAtividadeEmMatriz = async (id, classificacao, dataAlteracao) => {
+  const response = await api.put(`/eisenhower/${id}/${classificacao}/${dataAlteracao}`);
   return response.data;
 };
+
+export const contaEmMatrizPorClassificacao = async (classificacao, dataAlteracao) => {
+  const response = await api.get(`/eisenhower/contagem/${classificacao}/${dataAlteracao}`);
+  return response.data;
+};
+
+export const listarAtividadesEmKanban = async () => {
+    const response = await api.get('/kanban/idAtividadeKanban');
+    return response.data;
+};
+export const deletarAtividadeDeKanban = async (idAtividadeKanban) => {
+  const response = await api.delete(`/kanban/${idAtividadeKanban}`);
+  return response.data;
+};
+export const adicionarAtividadeEmKanban = async (dados) => {
+  const response = await api.post('/kanban/',dados);
+  return response.data;
+};
+export const atualizarAtividadeEmKanban = async (id, classificacao, dataAlteracao) => {
+  const response = await api.put(`/kanban/${id}/${classificacao}/${dataAlteracao}`);
+  return response.data;
+};
+
+export const enviarIcone = async (file) => {
+  const fd = new FormData();
+  fd.append('icon', file);
+  return (await api.put('/usuarios/me/icon', fd, {
+    headers: { 'Content-Type': 'multipart/form-data' }
+  })).data;
+};
+
+export const removerIcone = async () =>
+  (await api.delete('/usuarios/me/icon')).data;
+
 
 export default api;
 
