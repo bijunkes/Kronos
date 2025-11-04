@@ -1,6 +1,9 @@
 import styled from 'styled-components';
 
 export const Background = styled.div`
-  flex: 1; 
   background-color: var(--fundo);
+  min-height: 100vh;
+  width: 100%;
+  box-sizing: border-box;
+  
 `;

@@ -14,9 +14,10 @@
   },
   "dependencies": {
     "@vitejs/plugin-react": "^4.7.0",
-    "axios": "^1.12.2",
+    "axios": "^1.13.1",
     "cookie-parser": "^1.4.7",
     "dayjs": "^1.11.18",
+    "days": "^1.1.1",
     "react": "^19.1.0",
     "react-dom": "^19.1.0",
     "react-hot-toast": "^2.6.0",
