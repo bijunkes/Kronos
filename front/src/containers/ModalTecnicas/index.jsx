@@ -11,8 +11,15 @@ function ModalTecnicas({ onClose, onAdicionar}) {
     const buscarAtividades = async () => {
         setCarregando(true);
         try {
-            const todasAtividades = await listarAtividades(); 
-            setAtividades(todasAtividades);
+            
+            const atvsNaoConcluidas = []
+            const todasAtividades = await listarAtividades();
+            todasAtividades.forEach(atividade => {
+                if (atividade.statusAtividade !== 1) {
+                    atvsNaoConcluidas.push(atividade);
+                }
+            }); 
+            setAtividades(atvsNaoConcluidas);
         } catch (err) {
             console.error('Erro ao carregar todas as atividades', err);
             setErro('Erro ao carregar as atividades.');
