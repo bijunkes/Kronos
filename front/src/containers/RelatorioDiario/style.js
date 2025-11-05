@@ -229,3 +229,10 @@ export const NaoImportanteNaoUrgente = styled(QuadroEisen)`
   background-color: #34C759;
 
 `;
+export const Icones = styled.span`
+    position: relative;
+    left: 30%;
+    color: rgba(255, 255, 255, 1);
+    left: 1rem;
+
+`;

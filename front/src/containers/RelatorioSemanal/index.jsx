@@ -30,8 +30,8 @@ function RelatorioSemanal() {
             console.log(todasAtividadesEmKanban);
             const matrizMap = new Map();
             todasAtividadesEmKanban.forEach(item => {
-                if(atv.statusAtividade == "1" && atv.dataConclusao.substring(0,10) == capturaData()){
-                matrizMap.set(item.idAtividadeKanban, item.classificacao)
+                if (atv.statusAtividade == "1" && atv.dataConclusao.substring(0, 10) == capturaData()) {
+                    matrizMap.set(item.idAtividadeKanban, item.classificacao)
                 }
             })
             const atividadesEmKanban = todasAtividades.filter(atv => matrizMap.has(atv.Kanban_idAtividadeKanban)).map(atv => ({
@@ -74,17 +74,17 @@ function RelatorioSemanal() {
     }, []);
     const contagemAtividadesConcluidas = async () => {
         const todasAtividades = await listarAtividades();
-        let cont =0;
-        let quantAtvs =0;
+        let cont = 0;
+        let quantAtvs = 0;
 
         const calculaPorcentagem = (total, parcial) => {
-            const resultado = (parcial*100) /total;
+            const resultado = (parcial * 100) / total;
             return resultado;
         }
 
         todasAtividades.forEach(atv => {
-            if(atv.statusAtividade == "1" && atv.dataConclusao.substring(0,10) == capturaData()){
-                 console.log(`Atividade Dentro do if: ${atv}`);
+            if (atv.statusAtividade == "1" && atv.dataConclusao.substring(0, 10) == capturaData()) {
+                console.log(`Atividade Dentro do if: ${atv}`);
                 cont++;
             }
             quantAtvs++;
@@ -94,35 +94,59 @@ function RelatorioSemanal() {
         console.log(`Atividades concluidas: ${cont}`);
         const porcentagem = calculaPorcentagem(quantAtvs, cont);
         console.log(`Porcentagem: ${porcentagem}`);
-        if(  porcentagem !== 0 && porcentagem < 10){
+        if (porcentagem !== 0 && porcentagem < 10) {
             return `0${porcentagem}%`;
         }
 
         return `${porcentagem}%`;
 
     }
-    
+
     const dataIntervalo = () => {
 
         const meses31 = [1, 3, 5, 7, 8, 10, 12];
         const meses30 = [4, 6, 9, 11]
-        const meses29 = 2;
+
         const dataAtual = new Date();
-        
-        const dia = String(dataAtual.getDate() - 7).padStart(2, '0');
-        if(dia < 0){
-            const diminuir = -dia;
-            const mes = String(dataAtual.getMonth() + 1).padStart(2, '0');
 
-        }else{
-            const mes = String(dataAtual.getMonth() + 1).padStart(2, '0');
-            const ano = dataAtual.getFullYear();
+
+        let diaInicial = dataAtual.getDate() - 7;
+        let mesInicial = dataAtual.getMonth() + 1;
+        let anoInicial = dataAtual.getFullYear();
+        const dia = String(dataAtual.getDate()).padStart(2, '0');
+        const mes = String(dataAtual.getMonth() + 1).padStart(2, '0');
+        const ano = dataAtual.getFullYear();
+
+        if (diaInicial <= 0) {
+            const diminuir = -diaInicial;
+            mesInicial = mesInicial - 1;
+            if (mesInicial == 2) {
+                diaInicial = 28 - diminuir;
+            }
+            else if (mesInicial == 0) {
+                mesInicial = 12;
+                anoInicial = anoInicial - 1
+            }
+            meses30.forEach(mes30 => {
+                if (mes30 == mesInicial) {
+                    diaInicial = 30 - diminuir;
+                    console.log("mes30: " +diaInicial.valueOf)
+                }
+            })
+            meses31.forEach(mes31 => {
+                if (mes31 == mesInicial) {
+                    diaInicial = 31 - diminuir;
+                }
+            })
         }
-        
-        
+        diaInicial = String(diaInicial).padStart(2, '0');
+        mesInicial = String(mesInicial).padStart(2, '0');
 
-        
-        return `Data:   ${dia}/${mes}/${ano}`;
+
+
+
+
+        return `${diaInicial}/${mesInicial}/${anoInicial} - ${dia}/${mes}/${ano}`;
     }
     const capturaData = () => {
         const dataAtual = new Date();
@@ -131,7 +155,7 @@ function RelatorioSemanal() {
         const ano = dataAtual.getFullYear();
 
         return `${ano}-${mes}-${dia}`;
-    } 
+    }
     const defineTamanho = async (classificacao) => {
         console.log(classificacao)
         console.log(`${capturaData()}`);
@@ -181,10 +205,10 @@ function RelatorioSemanal() {
                 ))}</Concluido>
                 <Classificacao>
                     Classificação
-                    <ImportanteUrgente style={{ width: `${tamanhos[1]}vw` }}>{tamanhos[1]/5}</ImportanteUrgente>
-                    <ImportanteNaoUrgente style={{ width: `${tamanhos[2]}vw` }}>{tamanhos[2]/5}</ImportanteNaoUrgente>
-                    <NaoImportanteUrgente style={{ width: `${tamanhos[3]}vw` }}>{tamanhos[3]/5}</NaoImportanteUrgente>
-                    <NaoImportanteNaoUrgente style={{ width: `${tamanhos[4]}vw` }}>{tamanhos[4]/5}</NaoImportanteNaoUrgente>
+                    <ImportanteUrgente style={{ width: `${tamanhos[1]}vw` }}>{tamanhos[1] / 5}</ImportanteUrgente>
+                    <ImportanteNaoUrgente style={{ width: `${tamanhos[2]}vw` }}>{tamanhos[2] / 5}</ImportanteNaoUrgente>
+                    <NaoImportanteUrgente style={{ width: `${tamanhos[3]}vw` }}>{tamanhos[3] / 5}</NaoImportanteUrgente>
+                    <NaoImportanteNaoUrgente style={{ width: `${tamanhos[4]}vw` }}>{tamanhos[4] / 5}</NaoImportanteNaoUrgente>
                 </Classificacao>
             </Container>
         </>
