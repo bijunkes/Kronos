@@ -126,9 +126,19 @@ function Lista() {
         }
     };
 
-    const handleAtividadeCriada = async () => {
-        if (!idLista) return;
-        await atualizarAtividades(idLista);
+    const handleAtividadeCriada = async (novaAtividade) => {
+        if (!novaAtividade) return;
+
+        if (novaAtividade.ListaAtividades_idLista === idLista) {
+            setAtividades(prev =>
+            ordenarAtividades([
+                ...prev,
+                { ...novaAtividade, concluido: novaAtividade.statusAtividade === 1 }
+            ])
+            );
+        } else {
+            await atualizarAtividades(idLista);
+        }
     };
 
     const atividadesFiltradas = atividades.filter((a) =>
@@ -179,7 +189,13 @@ function Lista() {
                 </Pesquisar>
             </ContainerLista>
 
-            <ModalCriarAtividade isOpen={mostrarModal} onClose={() => setMostrarModal(false)} listaId={idLista} onAtividadeCriada={handleAtividadeCriada} />
+            <ModalCriarAtividade 
+                isOpen={mostrarModal}
+                onClose={() => setMostrarModal(false)}
+                onAtividadeCriada={handleAtividadeCriada}
+                origem="lista"
+                listaId={idLista}
+            />
 
             <Parte2>
                 <AtividadeSelecionada

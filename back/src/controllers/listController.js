@@ -1,6 +1,5 @@
 import pool from '../db.js';
 
-
 export const criarLista = async (req, res) => {
     const { nome } = req.body;
     const usuarioUsername = req.usuarioUsername;
