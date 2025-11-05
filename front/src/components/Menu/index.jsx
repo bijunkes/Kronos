@@ -160,27 +160,24 @@ function Menu() {
   };
 
   const handleSubmenuClick = (pai, item, idLista = null) => {
-    if (submenuSelecionado.pai === pai && submenuSelecionado.item === item) {
-      setSubmenuSelecionado({ pai: '', item: '' });
+  if (submenuSelecionado.pai === pai && submenuSelecionado.item === item) {
+    setSubmenuSelecionado({ pai: '', item: '' });
+    return;
+  }
 
-      if (pai === 'listas') {
-        setSubmenuAberto('listas');
-        navigate('/listas');
-      } else if (pai === 'tecnicas') {
-        setSubmenuAberto('tecnicas');
-        navigate('/tecnicas');
-      } else if (pai === 'relatorios') {
-        setSubmenuAberto('relatorios');
-        navigate('/relatorios');
-      }
-      return;
-    }
-    setSubmenuSelecionado({ pai, item });
-    if (pai === 'listas') {
-      const listaSlug = encodeURIComponent(item);
-      navigate(`/listas/${listaSlug}`);
-    }
-  };
+  setSubmenuSelecionado({ pai, item });
+
+  if (pai === 'listas') {
+    setSubmenuAberto('listas');
+    const listaSlug = encodeURIComponent(item);
+    navigate(`/listas/${listaSlug}`);
+  } else if (pai === 'tecnicas') {
+    navigate(`/${item.toLowerCase()}`);
+  } else if (pai === 'relatorios') {
+    navigate(`/relatorio${item.toLowerCase()}`);
+  }
+};
+
 
   const abrirModal = () => setModalListaAberto(true);
   const fecharModal = () => setModalListaAberto(false);
@@ -293,9 +290,19 @@ function Menu() {
 
       <Lista>
         <ItemMaior
-          style={{ color: submenuAberto === 'listas' ? '#AF52DE' : '' }}
-          onClick={() => handleClick('listas', false)}
-        >
+  style={{
+    color:
+      submenuAberto === 'listas' && submenuSelecionado.pai !== 'listas'
+        ? '#AF52DE'
+        : submenuSelecionado.pai === 'listas' && submenuSelecionado.item
+        ? ''
+        : submenuAberto === 'listas'
+        ? '#AF52DE'
+        : ''
+  }}
+  onClick={() => handleClick('listas', false)}
+>
+
           <ListasHeader>
             Listas
             {submenuAberto === 'listas' && (
