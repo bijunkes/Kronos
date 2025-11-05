@@ -79,28 +79,26 @@ function RelatorioDiario() {
         let cont = 0;
         let quantAtvs = 0;
 
-        const calculaPorcentagem = (total, parcial) => {
-            const resultado = (parcial * 100) / total;
-            return resultado;
-        }
+
 
         todasAtividades.forEach(atv => {
-            if (atv.statusAtividade == "1" && atv.dataConclusao.substring(0, 10) == capturaData()) {
-                console.log(`Atividade Dentro do if: ${atv}`);
-                cont++;
+            if (atv.statusAtividade == "1") {
+                if (atv.dataConclusao.substring(0, 10) == capturaData()) {
+                    console.log(`Atividade Dentro do if: ${atv}`);
+                    cont++;
+                }
+                
+            }else{
+                quantAtvs++;
             }
-            quantAtvs++;
+
         })
 
         console.log(`Total de atividades: ${quantAtvs}`);
         console.log(`Atividades concluidas: ${cont}`);
-        const porcentagem = Math.round(calculaPorcentagem(quantAtvs, cont));
-        console.log(`Porcentagem: ${porcentagem}`);
-        if (porcentagem !== 0 && porcentagem < 10) {
-            return `0${porcentagem}%`;
-        }
 
-        return `${porcentagem}%`;
+
+        return `${cont}/${quantAtvs}`;
 
     }
     const dataFormatada = () => {
@@ -144,7 +142,8 @@ function RelatorioDiario() {
 
     }
     const textoKanban = 'Aqui estão organizadas as\natividades do Kanban modificadas hoje'
-    const textoClassificacao = 'Aqui estão organizadas as\natividades presentes na matriz de Eisenhower. Elas estão dispostas na seguinte ordem:\nImportante e Urgente;\nImportante e Não Urgente;\nNão Importante e Urgente;\ne Não Imortante e Não Urgente'
+    const textoClassificacao = 'Aqui estão organizadas as\natividades presentes na matriz de Eisenhower\nque foram modificadas hoje'
+    const textoProgresso = 'Aqui são consideradas as atividades terminadas hoje e as ainda não concluídas\nConcluídas hoje/Não Concluídas'
     return (
         <>
             <Container>
@@ -154,7 +153,9 @@ function RelatorioDiario() {
                 </Icones></RelatorioKanban>
                 <Data>{dataFormatada()}</Data>
                 <Progresso>
-                    Progresso
+                    <span style={{ display: 'flex' }}>Progresso <Icones className="material-symbols-outlined" title={textoProgresso}>
+                        info
+                    </Icones></span>
                     <ProgressoCirculo>{contAtvs}</ProgressoCirculo>
                 </Progresso>
                 <Pomodoro></Pomodoro>
@@ -174,7 +175,7 @@ function RelatorioDiario() {
                     </BoxTarefas>
                 ))}</Concluido>
                 <Classificacao>
-                    <span>Classificação <Icones className="material-symbols-outlined" title={textoClassificacao}>
+                    <span style={{ display: 'flex' }}>Classificação <Icones className="material-symbols-outlined" title={textoClassificacao}>
                         info
                     </Icones></span>
                     <ImportanteUrgente style={{ width: `${tamanhos[1]}vw` }} title='Importante e Urgente'>{tamanhos[1] / 5}</ImportanteUrgente>

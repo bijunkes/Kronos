@@ -5,7 +5,7 @@ import {
     ImportanteNaoUrgente,
     ImportanteUrgente
 } from './style'
-import { listarAtividadesEmKanban, listarAtividades, contaEmMatrizPorClassificacao } from "../../services/api.js";
+import { listarAtividadesEmKanban, listarAtividades, contaEmMatrizPorClassificacao, listarAtividadesEisenPorClassificacao} from "../../services/api.js";
 
 function RelatorioSemanal() {
 
@@ -30,7 +30,9 @@ function RelatorioSemanal() {
             console.log(todasAtividadesEmKanban);
             const matrizMap = new Map();
             todasAtividadesEmKanban.forEach(item => {
-                if (atv.statusAtividade == "1" && atv.dataConclusao.substring(0, 10) == capturaData()) {
+                if (verificaDataNoIntervalo(item.dataAlteracao.substring(0, 10))) {
+
+                    console.log("TESTE FOR EACH!!!!!!")
                     matrizMap.set(item.idAtividadeKanban, item.classificacao)
                 }
             })
@@ -77,31 +79,41 @@ function RelatorioSemanal() {
         let cont = 0;
         let quantAtvs = 0;
 
-        const calculaPorcentagem = (total, parcial) => {
-            const resultado = (parcial * 100) / total;
-            return resultado;
-        }
+
 
         todasAtividades.forEach(atv => {
-            if (atv.statusAtividade == "1" && atv.dataConclusao.substring(0, 10) == capturaData()) {
-                console.log(`Atividade Dentro do if: ${atv}`);
-                cont++;
+            if (atv.statusAtividade == "1") {
+                if (verificaDataNoIntervalo(atv.dataConclusao.substring(0, 10))) {
+                    console.log(`Atividade Dentro do if: ${atv}`);
+                    cont++;
+                }
+
+            } else {
+                quantAtvs++;
             }
-            quantAtvs++;
+
         })
 
         console.log(`Total de atividades: ${quantAtvs}`);
         console.log(`Atividades concluidas: ${cont}`);
-        const porcentagem = calculaPorcentagem(quantAtvs, cont);
-        console.log(`Porcentagem: ${porcentagem}`);
-        if (porcentagem !== 0 && porcentagem < 10) {
-            return `0${porcentagem}%`;
-        }
 
-        return `${porcentagem}%`;
+
+        return `${cont}/${quantAtvs}`;
 
     }
 
+    const verificaDataNoIntervalo = (dataAlteracao) => {
+
+        const dataAtual = new Date();
+        const dataSetada = new Date(dataAlteracao);
+
+
+        const dataInicial = new Date();
+        dataInicial.setDate(dataAtual.getDate() - 7);
+
+
+        return dataSetada >= dataInicial && dataSetada <= dataAtual;
+    }
     const dataIntervalo = () => {
 
         const meses31 = [1, 3, 5, 7, 8, 10, 12];
@@ -130,7 +142,7 @@ function RelatorioSemanal() {
             meses30.forEach(mes30 => {
                 if (mes30 == mesInicial) {
                     diaInicial = 30 - diminuir;
-                    console.log("mes30: " +diaInicial.valueOf)
+                    console.log("mes30: " + diaInicial.valueOf)
                 }
             })
             meses31.forEach(mes31 => {
@@ -146,7 +158,7 @@ function RelatorioSemanal() {
 
 
 
-        return `${diaInicial}/${mesInicial}/${anoInicial} - ${dia}/${mes}/${ano}`;
+        return `Data: ${diaInicial}/${mesInicial}/${anoInicial} - ${dia}/${mes}/${ano}`;
     }
     const capturaData = () => {
         const dataAtual = new Date();
@@ -159,25 +171,24 @@ function RelatorioSemanal() {
     const defineTamanho = async (classificacao) => {
         console.log(classificacao)
         console.log(`${capturaData()}`);
-        const quadrante = await contaEmMatrizPorClassificacao(classificacao, capturaData());
+        let quantidade = 0;
+        const listaMatriz = await listarAtividadesEisenPorClassificacao(classificacao);
 
-        const extraiValor = (valor) => {
-            if (!valor) return 0;
-            if (Array.isArray(valor)) {
-                const primeiro = valor[0];
-                if (typeof primeiro === 'number') return primeiro;
-                if (typeof primeiro === 'object') return Object.values(primeiro)[0];
+        listaMatriz.forEach(atv => {
+            if (verificaDataNoIntervalo(atv.dataAlteracao.substring(0, 10))) {
+
+                quantidade++;
+
             }
-            if (typeof valor === 'object') return Object.values(valor)[0];
-            return valor;
-        };
-
-        const quantidade = extraiValor(quadrante);
+        })
         const tamanho = quantidade * 5;
         console.log("Tamanho do quadrante " + classificacao + ": " + tamanho);
         return tamanho;
 
     }
+    const textoKanban = 'Aqui estão organizadas as\natividades do Kanban modificadas na semana'
+    const textoClassificacao = 'Aqui estão organizadas as\natividades presentes na matriz de Eisenhower\nque foram modificadas na semana'
+    const textoProgresso = 'Aqui são consideradas as atividades terminadas na semana e as ainda não concluídas\nConcluídas na semana/Não Concluídas'
     return (
         <>
             <Container>
