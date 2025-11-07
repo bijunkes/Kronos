@@ -223,6 +223,10 @@ function Menu() {
     window.location.href = '/login';
   };
 
+  const handleCronometro = () => {
+    navigate('/cronometro');
+  };
+
   return (
     <MenuWrapper>
       <Usuario>
@@ -290,18 +294,18 @@ function Menu() {
 
       <Lista>
         <ItemMaior
-  style={{
-    color:
-      submenuAberto === 'listas' && submenuSelecionado.pai !== 'listas'
-        ? '#AF52DE'
-        : submenuSelecionado.pai === 'listas' && submenuSelecionado.item
-        ? ''
-        : submenuAberto === 'listas'
-        ? '#AF52DE'
-        : ''
-  }}
-  onClick={() => handleClick('listas', false)}
->
+            style={{
+              color:
+                submenuAberto === 'listas' && submenuSelecionado.pai !== 'listas'
+                  ? '#AF52DE'
+                  : submenuSelecionado.pai === 'listas' && submenuSelecionado.item
+                  ? ''
+                  : submenuAberto === 'listas'
+                  ? '#AF52DE'
+                  : ''
+            }}
+            onClick={() => handleClick('listas', false)}
+        >
 
           <ListasHeader>
             Listas
@@ -396,7 +400,7 @@ function Menu() {
 
       <OpcoesAbaixo>
         <OpcoesAbaixo1>
-          <span className="material-symbols-outlined" id="sino">
+          <span className="material-symbols-outlined" id="sino" onClick={handleCronometro}>
             schedule
           </span>
           <span className="material-symbols-outlined" id="notificacao">

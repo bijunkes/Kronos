@@ -20,7 +20,6 @@ function Padrao() {
 
   return (
     <>
-      {/* Menu fixo no canto esquerdo */}
       <div
         style={{
           position: 'fixed',
@@ -34,7 +33,6 @@ function Padrao() {
         <Menu />
       </div>
 
-      {/* Conteúdo com margem para não ficar embaixo do menu */}
       <div
         style={{
           marginLeft: '34vh',

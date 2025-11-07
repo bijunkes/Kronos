@@ -174,7 +174,6 @@ export const Aviso = styled.p`
   text-align: center;
   max-width: 60vh;
 `;
-// --- estilos específicos do modal (ADICIONE AO FINAL DO ARQUIVO) ---
 
 export const Overlay = styled.div`
   position: fixed;

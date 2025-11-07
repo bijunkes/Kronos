@@ -1,4 +1,3 @@
-// src/components/showToast.jsx
 import React from 'react';
 import toast from 'react-hot-toast';
 
@@ -96,7 +95,7 @@ export function showOkToast(message, type = 'success', opts = {}) {
   const rowStyle = {
     display: 'flex',
     gap: 10,
-    justifyContent: 'center', // <<< centralizado
+    justifyContent: 'center', 
     alignItems: 'center',
   };
 

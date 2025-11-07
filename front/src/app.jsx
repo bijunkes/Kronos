@@ -17,6 +17,7 @@ import Eisenhower from './containers/Einsenhower';
 import RelatorioDiario from './containers/RelatorioDiario';
 import RelatorioSemanal from './containers/RelatorioSemanal';
 import NotFound from './containers/NotFound'
+import CronometroTemporizador from "./containers/CronometroTemporizador";
 
 function App() {
     return (
@@ -42,6 +43,8 @@ function App() {
                     <Route path="/eisenhower" element={<Eisenhower />} />
                     <Route path="/relatoriodiario" element={<RelatorioDiario />} />
                     <Route path="/relatoriosemanal" element={<RelatorioSemanal />} />
+                    <Route path="/cronometro" element={<CronometroTemporizador />} />
+
                 </Route>
             </Routes>
         </BrowserRouter>

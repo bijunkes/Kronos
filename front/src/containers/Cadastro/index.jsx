@@ -28,11 +28,9 @@ function Cadastro() {
   });
   const [loading, setLoading] = useState(false);
 
-  // guarda o id do setInterval para limpar no unmount
   const pollTimerRef = useRef(null);
 
   useEffect(() => {
-    // cleanup ao desmontar
     return () => {
       if (pollTimerRef.current) {
         clearInterval(pollTimerRef.current);
@@ -48,9 +46,6 @@ function Cadastro() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-
-    //sem toasts no front
-
     try {
       setLoading(true);
 
@@ -68,7 +63,7 @@ function Cadastro() {
       pollTimerRef.current = setInterval(async () => {
         try {
           tentativas++;
-          const data = await usuarioExiste(emailParaChecar); // { exists: true/false }
+          const data = await usuarioExiste(emailParaChecar); 
           if (data?.exists) {
             clearInterval(pollTimerRef.current);
             pollTimerRef.current = null;
@@ -141,7 +136,7 @@ function Cadastro() {
     placeholder="Senha"
     value={form.senha}
     onChange={handleChange}
-    style={{ width: "100%", paddingRight: "0px" }} // espaço pro ícone
+    style={{ width: "100%", paddingRight: "0px" }} 
   />
   <ToggleEye
     src={showPassword ? olhoAberto : olhoFechado}

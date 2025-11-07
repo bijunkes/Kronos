@@ -190,7 +190,7 @@ export const BoxNomeTarefa = styled.div`
     color: rgba(255, 255, 255, 1);
     display: flex;
     justify-content: center;
-    flex wrap: wrap;
+    flex-wrap: wrap;
 `;
 
 export const NomeTarefa = styled.h2`
