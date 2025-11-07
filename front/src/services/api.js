@@ -191,9 +191,12 @@ export const atualizarIdKanbanAtividade = async (id, dados) => {
   return response.data;
 };
 
-
+export const listarAtividadesEisenPorClassificacao = async (classificacao) => {
+  const response = await api.get(`/eisenhower/contagem/${classificacao}`);
+  return response.data;
+};
 export const listarAtividadesEmMatriz = async () => {
-    const response = await api.get('/eisenhower/idAtividadeEisenhower');
+    const response = await api.get('/eisenhower/');
     return response.data;
 };
 export const deletarAtividadeDeMatriz = async (idAtividadeEisenhower) => {
