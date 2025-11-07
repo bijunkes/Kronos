@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Container, Excluir, Header, NomeAtividade, Status, Datas, Data, Input, Desc, DescTextarea, Lista, Tecnicas, Tecnica } from './styles.js';
-import { atualizarAtividade, deletarAtividade, listarListas } from '../../services/api';
+import { atualizarAtividade, deletarAtividade, listarListas, listarAtividadesEmMatriz, listarAtividadesEmKanban, deletarAtividadeDeKanban, deletarAtividadeDeMatriz } from '../../services/api';
 import { showConfirmToast } from '../../components/showToast.jsx';
 
 function AtividadeSelecionada({ atividade, onAtualizarAtividade }) {
@@ -66,6 +66,29 @@ function AtividadeSelecionada({ atividade, onAtualizarAtividade }) {
         }
     }, [atividade]);
 
+    const excluirDeKanban = async (atividade) => {
+        const listaKanban = await listarAtividadesEmKanban();
+        console.log(listaKanban);
+        const atividadeDeletada = listaKanban.find(a => a.idAtividadeKanban == atividade.Kanban_idAtividadeKanban);
+        if (!atividadeDeletada) {
+            console.warn("Atividade não encontrada no Kanban:", atividade.Kanban_idAtividadeKanban);
+            return;
+        }
+        console.log("Excluindo do Kanban:", atividadeDeletada.idAtividadeKanban);
+        await deletarAtividadeDeKanban(atividadeDeletada.idAtividadeKanban);
+
+    }
+    const excluirDeMatriz = async (atividade) => {
+        const listaMatriz = await listarAtividadesEmMatriz();
+        console.log(listaMatriz);
+        const atividadeDeletada = listaMatriz.find(a => a.idAtividadeEisenhower == atividade.Eisenhower_idAtividadeEisenhower);
+        if (!atividadeDeletada) {
+            console.warn("Atividade não encontrada na Matriz:", atividade.Eisenhower_idAtividadeEisenhower);
+            return;
+        }
+        console.log("Excluindo da Matriz:", atividadeDeletada.idAtividadeEisenhower);
+        await deletarAtividadeDeMatriz(atividadeDeletada.idAtividadeEisenhower);
+    };
 
     const formatarDataMySQL = (data) => {
         if (!data) return null;
@@ -87,18 +110,25 @@ function AtividadeSelecionada({ atividade, onAtualizarAtividade }) {
         if (!atividade) return;
 
         const ok = await showConfirmToast(
-        'Tem certeza que deseja excluir esta atividade? Ela não será contabilizada nos relatórios',
-        { confirmLabel: 'Excluir', cancelLabel: 'Cancelar' }
-     );
+            'Tem certeza que deseja excluir esta atividade? Ela não será contabilizada nos relatórios',
+            { confirmLabel: 'Excluir', cancelLabel: 'Cancelar' }
+        );
 
-     if (!ok) return;
+        if (!ok) return;
 
-    try {
-        await deletarAtividade(atividade.idAtividade);
-        onAtualizarAtividade?.(null);
-    } catch (err) {
-         console.error('Erro ao excluir atividade', err);
-    }
+        try {
+
+            if (atividade.Kanban_idAtividadeKanban !== null) {
+                await excluirDeKanban(atividade)
+            }
+            if (atividade.Eisenhower_idAtividadeEisenhower !== null) {
+                await excluirDeMatriz(atividade)
+            }
+            await deletarAtividade(atividade.idAtividade);
+            onAtualizarAtividade?.(null);
+        } catch (err) {
+            console.error('Erro ao excluir atividade', err);
+        }
     };
 
     const handleMoverLista = async (e) => {
@@ -164,7 +194,7 @@ function AtividadeSelecionada({ atividade, onAtualizarAtividade }) {
                     }}
                     onBlur={() => atualizarCampo({ nomeAtividade: nome })}
                 />
-                <Excluir 
+                <Excluir
                     className="material-symbols-outlined"
                     onClick={handleExcluir}
                 >
@@ -257,5 +287,4 @@ function AtividadeSelecionada({ atividade, onAtualizarAtividade }) {
         </Container>
     );
 }
-
 export default AtividadeSelecionada;

@@ -63,3 +63,30 @@ export const Icones = styled.button`
     color: rgba(255, 255, 255, 1);
 
 `;
+export const Prazo = styled.div`
+  font-size: 16px;
+  margin-left: auto;
+`;
+
+export const Pesquisar = styled.div`
+  padding: 0 2vh;
+  width: calc(100% - 6vh);
+  background-color: var(--fundo-menu-ativo);
+  font-size: 18px;
+  display: flex;
+  align-items: center;
+  border-radius: 20px;
+  gap: 1vh;
+  height: 7vh;
+  margin: 2vh;
+  flex-shrink: 0;
+`;
+export const Input = styled.input`
+  font-size: 16px;
+  flex: 1;
+  height: 100%;
+  border: none;
+  background: transparent;
+  color: var(--cor-texto);
+  outline: none;
+`;

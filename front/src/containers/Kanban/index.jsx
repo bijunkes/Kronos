@@ -209,18 +209,20 @@ function Kanban() {
         switch (coluna) {
             case 1:
                 return (
-                    <>
+                    <BoxIcones>
                         <Icones className="material-symbols-outlined" onClick={() => deletar(atividadeId)}>
                             delete
                         </Icones>
                         <Icones className="material-symbols-outlined" onClick={() => proximo(atividadeId)}>
                             arrow_forward
                         </Icones>
-                    </>
+                    </BoxIcones>
+                        
+              
                 );
             case 2:
                 return (
-                    <>
+                     <BoxIcones>
                         <Icones className="material-symbols-outlined" onClick={() => deletar(atividadeId)}>
                             delete
                         </Icones>
@@ -230,18 +232,18 @@ function Kanban() {
                         <Icones className="material-symbols-outlined" onClick={() => proximo(atividadeId)}>
                             arrow_forward
                         </Icones>
-                    </>
+                    </BoxIcones>
                 );
             case 3:
                 return (
-                    <>
+                     <BoxIcones>
                         <Icones className="material-symbols-outlined" onClick={() => deletar(atividadeId)}>
                             delete
                         </Icones>
                         <Icones className="material-symbols-outlined" onClick={() => anterior(atividadeId)}>
                             arrow_left_alt
                         </Icones>
-                    </>
+                    </BoxIcones>
                 );
             default:
                 return null;
@@ -289,7 +291,7 @@ function Kanban() {
                     {atividades.filter(atividade => atividade.coluna === 1).map(atividade => (
                         <BoxTarefas key={atividade.idAtividade} id={atividade.idAtividade}>
                             <BoxNomeTarefa><NomeTarefa>{atividade.nome}</NomeTarefa></BoxNomeTarefa>
-                            <BoxIcones>{renderIcons(atividade.coluna, atividade.idAtividade)}</BoxIcones>
+                            {renderIcons(atividade.coluna, atividade.idAtividade)}
                         </BoxTarefas>
                     ))}
                     <BoxAdicionar onClick={handleClick(1)} id="Adicionar">Adicionar Tarefa</BoxAdicionar></Painel>
