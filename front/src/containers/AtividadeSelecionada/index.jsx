@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Container, Excluir, Header, NomeAtividade, Status, Datas, Data, Input, Desc, DescTextarea, Lista, Tecnicas, Tecnica } from './styles.js';
-import { atualizarAtividade, deletarAtividade, listarListas, listarAtividadesEmMatriz, listarAtividadesEmKanban, deletarAtividadeDeKanban, deletarAtividadeDeMatriz } from '../../services/api';
-import { showConfirmToast } from '../../components/showToast.jsx';
+import { atualizarIdEisenAtividade, adicionarAtividadeEmKanban, adicionarAtividadeEmMatriz, atualizarAtividade, deletarAtividade, listarListas, listarAtividadesEmMatriz, listarAtividadesEmKanban, deletarAtividadeDeKanban, deletarAtividadeDeMatriz } from '../../services/api';
+import { showConfirmToast, showOkToast } from '../../components/showToast.jsx';
 
 function AtividadeSelecionada({ atividade, onAtualizarAtividade }) {
     if (!atividade) return null;
@@ -14,6 +14,7 @@ function AtividadeSelecionada({ atividade, onAtualizarAtividade }) {
     const [descricao, setDescricao] = useState(atividade.descricaoAtividade || '');
     const [listas, setListas] = useState([]);
     const [listaSelecionada, setListaSelecionada] = useState(atividade.ListaAtividades_idLista || '');
+    const [err, setErr] = useState('');
 
     const listaAtual = listaSelecionada || atividade.ListaAtividades_idLista || listas[0]?.idLista;
 
@@ -26,17 +27,17 @@ function AtividadeSelecionada({ atividade, onAtualizarAtividade }) {
 
     const toggleTecnica = async (tipo) => {
         const novoEstado = { ...tecnicasAtivas, [tipo]: !tecnicasAtivas[tipo] };
+        const atv = atividade
         setTecnicasAtivas(novoEstado);
 
-        try {
-            await atualizarAtividade(atividade.idAtividade, {
-                Pomodoro_idStatus: novoEstado.pomodoro ? 1 : null,
-                Kanban_idAtividadeKanban: novoEstado.kanban ? 1 : null,
-                Eisenhower_idAtividadeEisenhower: novoEstado.eisenhower ? 1 : null,
-            });
-        } catch (err) {
-            console.error("Erro ao atualizar técnicas:", err);
-        }
+        const botao = document.getElementById("Eisenhower");
+
+        botao.addEventListener("click", () => {
+            adicionarAtividadeEmEisenhower(atv);
+        })
+
+
+
     };
 
     useEffect(() => {
@@ -78,6 +79,51 @@ function AtividadeSelecionada({ atividade, onAtualizarAtividade }) {
         await deletarAtividadeDeKanban(atividadeDeletada.idAtividadeKanban);
 
     }
+    const capturaData = () => {
+        const dataAtual = new Date();
+
+        let min = dataAtual.getMinutes();
+        let seg = dataAtual.getSeconds();
+        let h = dataAtual.getHours();
+        const dia = String(dataAtual.getDate()).padStart(2, '0');
+        const mes = String(dataAtual.getMonth() + 1).padStart(2, '0');
+        let ano = dataAtual.getFullYear();
+
+        return `${ano}-${mes}-${dia} ${h}:${min}:${seg}`
+    }
+
+    const adicionarAtividadeEmEisenhower = async (atividad) => {
+
+        if (atividad.Eisenhower_idAtividadeEisenhower == null) {
+            try {
+
+                console.log("O PROBLEMA ESTÁ AQUI")
+                const res = await adicionarAtividadeEmMatriz({
+                    classificacao: 4,
+                    dataAlteracao: capturaData()
+                });
+                const idEisen = res.idAtividadeEisenhower;
+                await atualizarIdEisenAtividade(atividad.idAtividade, {
+                    Eisenhower_idAtividadeEisenhower: idEisen,
+                    Usuarios_username: atividad.Usuarios_username,
+                    idAtividade: atividad.idAtividade
+
+                })
+                showOkToast('Atividade adicionada em Não importante e Não urgente')
+
+            } catch (err) {
+                console.error("Erro ao adicionar ou atualizar atividade: ", err);
+            }
+            return;
+
+        }
+        else {
+            showOkToast("Atividade já inserida na matriz!", "error");
+            console.log("NÃO, ESTÁ AQUI")
+            return;
+        }
+    };
+
     const excluirDeMatriz = async (atividade) => {
         const listaMatriz = await listarAtividadesEmMatriz();
         console.log(listaMatriz);
@@ -278,13 +324,18 @@ function AtividadeSelecionada({ atividade, onAtualizarAtividade }) {
             </Tecnica>
             <Tecnica
                 tipo="eisenhower"
+                id='Eisenhower'
                 ativo={tecnicasAtivas.eisenhower}
                 onClick={() => toggleTecnica("eisenhower")}
+
+
             >
                 Eisenhower
             </Tecnica>
 
+           
         </Container>
+
     );
 }
 export default AtividadeSelecionada;

@@ -113,7 +113,7 @@ function Eisenhower() {
     const anterior = async (id) => {
         setAtividades(prev => {
             const novaLista = prev.map(t =>
-                t.idAtividade=== id
+                t.idAtividade === id
                     ? {
                         ...t,
                         quadrante:
@@ -135,7 +135,7 @@ function Eisenhower() {
     };
 
     const abaixo = async (id) => {
-        setAtividades (prev => {
+        setAtividades(prev => {
             const novaLista = prev.map(t =>
                 t.idAtividade === id
                     ? {
@@ -150,7 +150,7 @@ function Eisenhower() {
             const atividadeAtualizada = novaLista.find(t => t.idAtividade === id);
 
 
-           atualizaMatriz(atividadeAtualizada.Eisenhower_idAtividadeEisenhower, atividadeAtualizada.quadrante, capturaData());
+            atualizaMatriz(atividadeAtualizada.Eisenhower_idAtividadeEisenhower, atividadeAtualizada.quadrante, capturaData());
 
             return novaLista;
         })
@@ -169,20 +169,20 @@ function Eisenhower() {
                     }
                     : t
             )
-            const atividadeAtualizada = novaLista.find(t => t.idAtividade=== id);
+            const atividadeAtualizada = novaLista.find(t => t.idAtividade === id);
 
             atualizaMatriz(atividadeAtualizada.Eisenhower_idAtividadeEisenhower, atividadeAtualizada.quadrante, capturaData());
-            
-             return novaLista;
-           
+
+            return novaLista;
+
         })
-        
+
     };
 
     const atualizaMatriz = async (id, classificacao, dataAlteracao) => {
         console.log(`id: ${id}; classificação: ${classificacao}`)
         await atualizarAtividadeEmMatriz(id, classificacao, dataAlteracao);
-        
+
     }
 
     const verificaAtividadeEmLista = (atividadeId) => {
@@ -190,10 +190,29 @@ function Eisenhower() {
         return atividadesAdicionadas.some((atividade) => atividade.idAtividade === atividadeId)
 
     }
+    const nulaId = async (atv) => {
+
+
+        await atualizarIdEisenAtividade(atv.idAtividade, {
+            Eisenhower_idAtividadeEisenhower: null,
+            Usuarios_username: atv.Usuarios_username,
+            idAtividade: atv.idAtividade
+
+
+        })
+
+    }
     const deletar = async (atividadeId) => {
         setAtividades(prev => prev.filter(atividade => atividade.idAtividade !== atividadeId));
         setAtividadesAdicionadas(prev => prev.filter(atividade => atividade.idAtividade !== atividadeId));
         const atividadeDeletada = atividades.find(a => a.idAtividade == atividadeId);
+        const listaAtividades = await listarAtividades()
+        listaAtividades.forEach(atv => {
+            console.log("Funcionandowyt09")
+            if (atv.idAtividade == atividadeId) {
+                nulaId(atv)
+            }
+        })
         console.log(atividadeDeletada.Eisenhower_idAtividadeEisenhower);
         await deletarAtividadeDeMatriz(atividadeDeletada.Eisenhower_idAtividadeEisenhower);
 
@@ -253,7 +272,7 @@ function Eisenhower() {
             });
             const idEisen = res.idAtividadeEisenhower;
 
-            const novaAtividade = { ...atividade, quadrante: quadranteSelecionado, nome: atividade.nomeAtividade, Eisenhower_idAtividadeEisenhower: idEisen, Usuarios_username: atividade.Usuarios_username, dataAlteracao: capturaData()};
+            const novaAtividade = { ...atividade, quadrante: quadranteSelecionado, nome: atividade.nomeAtividade, Eisenhower_idAtividadeEisenhower: idEisen, Usuarios_username: atividade.Usuarios_username, dataAlteracao: capturaData() };
             console.log(novaAtividade);
             await atualizarIdEisenAtividade(novaAtividade.idAtividade, {
                 Eisenhower_idAtividadeEisenhower: novaAtividade.Eisenhower_idAtividadeEisenhower,
@@ -285,9 +304,9 @@ function Eisenhower() {
                         (atividade) =>
 
                             <Atividade key={atividade.idAtividade}>
-                                <BoxNomeTarefa>{atividade.nome|| atividade.nomeAtividade}</BoxNomeTarefa>
+                                <BoxNomeTarefa>{atividade.nome || atividade.nomeAtividade}</BoxNomeTarefa>
                                 <BoxIcones>{renderIcons(`icones${atividade.quadrante}`, atividade.idAtividade)}</BoxIcones>
-                                
+
                             </Atividade>
                     )}</Lista> <AdicionarTarefa onClick={() => handleClick(1)} id="Adicionar">Adicionar Tarefa</AdicionarTarefa></ImportanteUrgente>
 
@@ -298,7 +317,7 @@ function Eisenhower() {
                             (atividade) =>
 
                                 <Atividade key={atividade.idAtividade}>
-                                    <BoxNomeTarefa>{atividade.nome|| atividade.nomeAtividade}</BoxNomeTarefa>
+                                    <BoxNomeTarefa>{atividade.nome || atividade.nomeAtividade}</BoxNomeTarefa>
                                     <BoxIcones>{renderIcons(`icones${atividade.quadrante}`, atividade.idAtividade)}</BoxIcones>
                                 </Atividade>
                         )}</Lista> <AdicionarTarefa onClick={() => handleClick(2)} id="Adicionar">Adicionar Tarefa</AdicionarTarefa>
@@ -311,7 +330,7 @@ function Eisenhower() {
                             (atividade) =>
 
                                 <Atividade key={atividade.idAtividade}>
-                                    <BoxNomeTarefa>{atividade.nome|| atividade.nomeAtividade}</BoxNomeTarefa>
+                                    <BoxNomeTarefa>{atividade.nome || atividade.nomeAtividade}</BoxNomeTarefa>
                                     <BoxIcones>{renderIcons(`icones${atividade.quadrante}`, atividade.idAtividade)}</BoxIcones>
                                 </Atividade>
                         )}</Lista> <AdicionarTarefa onClick={() => handleClick(3)} id="Adicionar">Adicionar Tarefa</AdicionarTarefa>
@@ -324,7 +343,7 @@ function Eisenhower() {
                             (atividade) =>
 
                                 <Atividade key={atividade.idAtividade}>
-                                    <BoxNomeTarefa>{atividade.nome|| atividade.nomeAtividade}</BoxNomeTarefa>
+                                    <BoxNomeTarefa>{atividade.nome || atividade.nomeAtividade}</BoxNomeTarefa>
                                     <BoxIcones>{renderIcons(`icones${atividade.quadrante}`, atividade.idAtividade)}</BoxIcones>
                                 </Atividade>
                         )}</Lista> <AdicionarTarefa onClick={() => handleClick(4)} id="Adicionar">Adicionar Tarefa</AdicionarTarefa>

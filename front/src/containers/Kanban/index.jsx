@@ -106,6 +106,17 @@ function Kanban() {
         setAtividades(prev => prev.filter(atividade => atividade.idAtividade !== atividadeId));
         setAtividadesAdicionadas(prev => prev.filter(atividade => atividade.idAtividade !== atividadeId));
         const atividadeDeletada = atividades.find(a => a.idAtividade == atividadeId);
+        const listaAtividades = await listarAtividades()
+        listaAtividades.forEach(atv => (async () => {
+            if (atv.idAtividade == atividadeId) {
+                await atualizarIdEisenAtividade(atv.idAtividade, {
+                    Kanban_idAtividadeKanban: null,
+                    Usuarios_username: atv.Usuarios_username,
+                    idAtividade: atv.idAtividade
+
+                })
+            }
+        }))
         console.log(atividadeDeletada.Kanban_idAtividadeKanban);
         await deletarAtividadeDeKanban(atividadeDeletada.Kanban_idAtividadeKanban);
 
@@ -217,12 +228,12 @@ function Kanban() {
                             arrow_forward
                         </Icones>
                     </BoxIcones>
-                        
-              
+
+
                 );
             case 2:
                 return (
-                     <BoxIcones>
+                    <BoxIcones>
                         <Icones className="material-symbols-outlined" onClick={() => deletar(atividadeId)}>
                             delete
                         </Icones>
@@ -236,7 +247,7 @@ function Kanban() {
                 );
             case 3:
                 return (
-                     <BoxIcones>
+                    <BoxIcones>
                         <Icones className="material-symbols-outlined" onClick={() => deletar(atividadeId)}>
                             delete
                         </Icones>
@@ -258,7 +269,7 @@ function Kanban() {
         }
         try {
 
-            
+
             const res = await adicionarAtividadeEmKanban({
                 classificacao: colunaSelecionada,
                 dataAlteracao: capturaData()
