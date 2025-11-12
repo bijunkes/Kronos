@@ -1,76 +1,130 @@
-import styled from "styled-components";
+import styled from 'styled-components';
 
+/* ======= ESTRUTURA PRINCIPAL ======= */
 export const Background = styled.div`
-  background-color: var(--fundo);
   width: 100%;
-  height: 100%;
+  min-height: 100vh;
+  background: var(--fundo);
+  overflow: hidden;
   display: flex;
-  justify-content: center;
+`;
+
+export const ListaAtividades = styled.div`
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
   align-items: center;
+  color: #999;
+  margin-top: 1vh;
+  width: calc(100% + 8px);
+  margin-right: -8px;
 `;
 
-export const Conteudo = styled.div`
-  width: 85%;
-  height: 80%;
-  background-color: var(--fundo-parte1);
-  border-radius: 20px;
-  display: flex;
-  flex-direction: column;
-  padding: 2vh;
-  gap: 2vh;
-`;
-
+/* ======= ÁREA DE SCROLL HORIZONTAL (SEMANA) ======= */
 export const SemanaScroll = styled.div`
+  margin-left: var(--sidebar-width);
+  padding: 4vh 4vh 2vh 4vh;
+  box-sizing: border-box;
   display: flex;
-  flex: 1;
-  gap: 2vh;
-  overflow-x: auto;
+  align-items: flex-start;
+  gap: 2.5vh;
+  height: calc(100vh - 4vh);
+  scroll-behavior: smooth;
+  overflow: hidden; /* rolagem nativa desativada */
+  position: relative;
+`;
+
+/* ======= SCROLL CUSTOMIZADO HORIZONTAL ======= */
+export const ScrollArea = styled.div`
+  display: flex;
+  gap: 2.5vh;
+  overflow-x: scroll;
   overflow-y: hidden;
-  padding-bottom: 1vh;
-  scrollbar-gutter: stable both-edges; /* evita alargamento */
-
-  /* Scroll horizontal (sem setas, igual ao das listas) */
+  scroll-behavior: smooth;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
   &::-webkit-scrollbar {
-    height: 6px;
-  }
-
-  &::-webkit-scrollbar-thumb {
-    background-color: rgba(255, 255, 255, 0.15);
-    border-radius: 10px;
-  }
-
-  &::-webkit-scrollbar-thumb:hover {
-    background-color: rgba(255, 255, 255, 0.25);
-  }
-
-  &::-webkit-scrollbar-track {
-    background: transparent;
+    display: none;
   }
 `;
 
+export const ScrollBarX = styled.div`
+  position: absolute;
+  bottom: 6px;
+  left: 4vh;
+  right: 4vh;
+  height: 6px;
+  background: rgba(255, 255, 255, 0.08);
+  border-radius: 10px;
+`;
+
+export const ScrollThumbX = styled.div`
+  position: absolute;
+  bottom: 6px;
+  left: ${({ pos }) => pos || 0}%;
+  width: ${({ size }) => size || 20}%;
+  height: 6px;
+  background: var(--cor-primaria);
+  border-radius: 10px;
+  transition: left 0.2s linear;
+`;
+
+/* ======= COLUNA DE DIA ======= */
 export const DiaColuna = styled.div`
-  flex: 1;
-  min-width: 260px;
-  max-width: 260px;
-  background-color: var(--fundo-parte2);
+  flex: 0 0 50vh;
+  min-width: 52vh;
   border-radius: 20px;
-  padding: 1.5vh;
+  background-color: var(--fundo-menu);
   display: flex;
   flex-direction: column;
-  gap: 1vh;
+  padding: 3vh;
+  box-sizing: border-box;
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.35);
+  flex-shrink: 0;
+  gap: 2vh;
+  height: 92vh;
+  position: relative;
 `;
 
+/* ======= HEADER DO DIA ======= */
 export const DiaHeader = styled.div`
   display: flex;
-  align-items: center;
   justify-content: space-between;
-  padding: 1vh;
+  align-items: center;
 `;
 
-export const DiaTitulo = styled.div`
-  font-weight: bold;
-  font-size: 18px;
+export const DiaTitulo = styled.h3`
   color: var(--cor-texto);
+  margin: 0;
+  font-size: 20px;
+  font-weight: 700;
+`;
+
+export const BotaoAdd = styled.span`
+  background: transparent;
+  color: var(--cor-texto);
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  border-radius: 4px;
+  transition: color 0.18s ease, background 0.18s ease;
+  user-select: none;
+
+  &:hover {
+    color: rgba(255, 255, 255, 0.4);
+  }
+`;
+
+/* ======= LISTA DE ATIVIDADES (SCROLL CUSTOM VERTICAL) ======= */
+export const ScrollWrapper = styled.div`
+  position: relative;
+  flex: 1;
+  width: 100%;
+  height: 100%;
 `;
 
 export const AtividadesDia = styled.div`
@@ -78,59 +132,34 @@ export const AtividadesDia = styled.div`
   display: flex;
   flex-direction: column;
   gap: 1.5vh;
-  overflow-y: auto;
-  overflow-x: hidden;
-  scrollbar-gutter: stable;
-  padding: 0 0.5vh 0 0.5vh;
-
+  padding-right: 8px;
+  width: calc(100% + 8px);
+  margin-right: -8px;
+  overflow-y: scroll;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
   &::-webkit-scrollbar {
-    width: 6px;
-  }
-
-  &::-webkit-scrollbar-thumb {
-    background-color: rgba(255, 255, 255, 0.15);
-    border-radius: 10px;
-  }
-
-  &::-webkit-scrollbar-thumb:hover {
-    background-color: rgba(255, 255, 255, 0.25);
-  }
-
-  &::-webkit-scrollbar-track {
-    background: transparent;
+    display: none;
   }
 `;
 
-export const Atividade = styled.div`
-  background-color: var(--fundo-menu-ativo);
-  border-radius: 20px;
-  padding: 1vh 2vh;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  color: var(--cor-texto);
-  font-size: 16px;
-  cursor: pointer;
-  flex-shrink: 0;
-
-  &:hover {
-    background-color: var(--fundo-campo);
-  }
+export const ScrollBarY = styled.div`
+  position: absolute;
+  top: 0;
+  right: 2px;
+  width: 6px;
+  height: 100%;
+  background: rgba(255, 255, 255, 0.08);
+  border-radius: 10px;
 `;
 
-export const Prazo = styled.div`
-  font-size: 15px;
-  color: #bbb;
-`;
-
-export const BotaoAdd = styled.button`
-  background: none;
-  color: var(--cor-texto);
-  font-size: 22px;
-  cursor: pointer;
-  transition: 0.2s;
-
-  &:hover {
-    color: var(--Importante-NaoUrgente);
-  }
+export const ScrollThumbY = styled.div`
+  position: absolute;
+  top: ${({ pos }) => pos || 0}%;
+  right: 2px;
+  width: 6px;
+  height: ${({ size }) => size || 20}%;
+  background: var(--cor-primaria);
+  border-radius: 10px;
+  transition: top 0.2s linear;
 `;

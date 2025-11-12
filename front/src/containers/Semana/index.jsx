@@ -5,7 +5,8 @@ import {
   DiaColuna,
   DiaHeader,
   DiaTitulo,
-  BotaoAdd
+  BotaoAdd, 
+  ListaAtividades
 } from "./styles.js";
 import { listarTodasAtividades, listarListas } from "../../services/api.js";
 import api from "../../services/api.js";
@@ -128,7 +129,7 @@ function Semana() {
   const atividadesPorDia = (iso) =>
     atividades.filter((a) => a.prazoIso === iso);
 
- return (
+  return (
   <Background>
     <SemanaScroll ref={scrollRef}>
       {dias.map((d) => (
@@ -151,42 +152,70 @@ function Semana() {
             </BotaoAdd>
           </DiaHeader>
 
-          {/* Scroll vertical interno da coluna */}
-          <AtividadesDia>
+          <div
+            style={{
+              flex: 1,
+              display: "flex",
+              flexDirection: "column",
+              justifyContent: "flex-start",
+              alignItems: "center",
+              color: "#999",
+              marginTop: "1vh",
+              overflowY: "auto",
+              width: "100%",
+              paddingRight: "6px",
+            }}
+          >
             {atividadesPorDia(d.iso).length === 0 ? (
-              <div style={{ color: "#999", textAlign: "center", marginTop: "1vh" }}>
+              <div style={{ color: "#999", textAlign: "center" }}>
                 Sem atividades
               </div>
             ) : (
               atividadesPorDia(d.iso).map((a) => (
-                <Atividade
+                <div
                   key={a.idAtividade}
-                  onClick={() => concluirAtividade(a)}
+                  style={{
+                    width: "100%",
+                    marginBottom: 12,
+                    flexShrink: 0,
+                  }}
                 >
                   <div
                     style={{
                       display: "flex",
+                      justifyContent: "space-between",
                       alignItems: "center",
-                      gap: "10px",
+                      background: "var(--fundo-menu-ativo)",
+                      padding: "12px 16px",
+                      borderRadius: 10,
+                      cursor: "pointer",
                     }}
                   >
-                    <span className="material-symbols-outlined">
-                      {a.statusAtividade === 1
-                        ? "radio_button_checked"
-                        : "radio_button_unchecked"}
-                    </span>
-                    <span>{a.nomeAtividade}</span>
+                    <div
+                      style={{
+                        display: "flex",
+                        gap: 10,
+                        alignItems: "center",
+                      }}
+                      onClick={() => concluirAtividade(a)}
+                    >
+                      <span className="material-symbols-outlined">
+                        {a.statusAtividade === 1
+                          ? "radio_button_checked"
+                          : "radio_button_unchecked"}
+                      </span>
+                      <span>{a.nomeAtividade}</span>
+                    </div>
+                    <div style={{ color: "#bbb" }}>
+                      {a.prazoIso
+                        ? a.prazoIso.split("-").reverse().join("/")
+                        : "Sem prazo"}
+                    </div>
                   </div>
-
-                  <Prazo>
-                    {a.prazoIso
-                      ? a.prazoIso.split("-").reverse().join("/")
-                      : "Sem prazo"}
-                  </Prazo>
-                </Atividade>
+                </div>
               ))
             )}
-          </AtividadesDia>
+          </div>
         </DiaColuna>
       ))}
     </SemanaScroll>
@@ -206,7 +235,6 @@ function Semana() {
     )}
   </Background>
 );
-
 
 }
 
