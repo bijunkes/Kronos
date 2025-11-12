@@ -85,9 +85,7 @@ export async function gerarLembretesAtividadesProximas() {
           await enviarEmailNovoLembrete({
             nome: usuario[0].nome,
             email: usuario[0].email,
-            titulo: "Atividades próximas!",
-            descricao:
-              "Você possui atividades com prazo para amanhã. Acesse o Kronos e confira seus lembretes.",
+            tipo: 'proximo',
             data: amanha,
           });
           usuariosNotificados.add(atividade.Usuarios_username);
@@ -145,9 +143,7 @@ export async function gerarLembretesExpirados() {
           await enviarEmailNovoLembrete({
             nome: usuario[0].nome,
             email: usuario[0].email,
-            titulo: "Atividades expiradas!",
-            descricao:
-              "Algumas de suas atividades expiraram ontem. Acesse o Kronos e veja o que perdeu.",
+            tipo: 'expirado',
             data: ontem,
           });
           usuariosNotificados.add(atividade.Usuarios_username);
@@ -176,7 +172,7 @@ export async function excluirLembretes(req, res) {
 }
 
 cron.schedule(
-  "0 21 * * *",
+  "0 9 * * *",
   async () => {
     console.log("Gerando lembretes de atividades próximas (21h)...");
     await gerarLembretesAtividadesProximas();

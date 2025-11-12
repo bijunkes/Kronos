@@ -88,20 +88,29 @@ const token = localStorage.getItem("token");
         ) : erro ? (
           <Vazio>{erro}</Vazio>
         ) : lembretes.length > 0 ? (
-          <ListaLembretes>
-            {lembretes.map((lembrete) => (
-              <Lembrete key={lembrete.idLembrete}>
-                <h3>{lembrete.tituloLembrete}</h3>
-                <p>{lembrete.descricao}</p>
-                <small>
-                  {new Date(lembrete.dhLembrete).toLocaleString("pt-BR", {
-                    dateStyle: "short",
-                    timeStyle: "short",
-                  })}
-                </small>
-              </Lembrete>
-            ))}
+         <ListaLembretes>
+            {lembretes.map((lembrete) => {
+              let tipo = "";
+
+              if (lembrete.statusLembrete === 2) tipo = "expirado";
+              else if (lembrete.statusLembrete === 1) tipo = "proximo";
+
+              return (
+                <Lembrete key={lembrete.idLembrete} tipo={tipo}>
+                  <h3>{lembrete.tituloLembrete}</h3>
+                  <p>{lembrete.descricao}</p>
+                  <small>
+                    {new Date(lembrete.dhLembrete).toLocaleString("pt-BR", {
+                      dateStyle: "short",
+                      timeStyle: "short",
+                    })}
+                  </small>
+                </Lembrete>
+              );
+            })}
           </ListaLembretes>
+
+
         ) : (
           <Vazio>Nenhum lembrete no momento.</Vazio>
         )}

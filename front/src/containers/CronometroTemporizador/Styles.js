@@ -14,7 +14,7 @@ export const Container = styled.div`
 export const Card = styled.div`
   width: calc(100% - 320px);
   max-width: 1100px;
-  height: 84vh;
+  height: 90vh;
   background: var(--fundo-menu);
   border-radius: 18px;
   box-shadow: 0 8px 28px rgba(0, 0, 0, 0.45);

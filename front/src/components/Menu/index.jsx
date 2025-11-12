@@ -38,17 +38,16 @@ function Menu() {
   });
   
   const [iconUrl, setIconUrl] = useState(localStorage.getItem('user_icon_url') || null);
-
   const [imgVer, setImgVer] = useState(0);
-
   const [displaySrc, setDisplaySrc] = useState(iconUrl || defaultUserImage);
-
   const objectUrlRef = useRef(null);
-
   const [modalListaAberto, setModalListaAberto] = useState(false);
   const [listas, setListas] = useState([]);
   const [submenuAberto, setSubmenuAberto] = useState('');
   const [submenuSelecionado, setSubmenuSelecionado] = useState({ pai: '', item: '' });
+
+  // 🔔 novo estado para controlar notificações não lidas
+  const [temNotificacoes, setTemNotificacoes] = useState(false);
 
   const withVersion = (url, ver) => {
     if (!url) return null;
@@ -160,24 +159,23 @@ function Menu() {
   };
 
   const handleSubmenuClick = (pai, item, idLista = null) => {
-  if (submenuSelecionado.pai === pai && submenuSelecionado.item === item) {
-    setSubmenuSelecionado({ pai: '', item: '' });
-    return;
-  }
+    if (submenuSelecionado.pai === pai && submenuSelecionado.item === item) {
+      setSubmenuSelecionado({ pai: '', item: '' });
+      return;
+    }
 
-  setSubmenuSelecionado({ pai, item });
+    setSubmenuSelecionado({ pai, item });
 
-  if (pai === 'listas') {
-    setSubmenuAberto('listas');
-    const listaSlug = encodeURIComponent(item);
-    navigate(`/listas/${listaSlug}`);
-  } else if (pai === 'tecnicas') {
-    navigate(`/${item.toLowerCase()}`);
-  } else if (pai === 'relatorios') {
-    navigate(`/relatorio${item.toLowerCase()}`);
-  }
-};
-
+    if (pai === 'listas') {
+      setSubmenuAberto('listas');
+      const listaSlug = encodeURIComponent(item);
+      navigate(`/listas/${listaSlug}`);
+    } else if (pai === 'tecnicas') {
+      navigate(`/${item.toLowerCase()}`);
+    } else if (pai === 'relatorios') {
+      navigate(`/relatorio${item.toLowerCase()}`);
+    }
+  };
 
   const abrirModal = () => setModalListaAberto(true);
   const fecharModal = () => setModalListaAberto(false);
@@ -209,6 +207,9 @@ function Menu() {
       atualizarListas();
       window.dispatchEvent(new Event('listasAtualizadas'));
       navigate(`/listas/${encodeURIComponent(novaLista.nomeLista)}`);
+
+      // 🔔 sempre que criar algo novo, marcar notificações não lidas
+      setTemNotificacoes(true);
     } catch (err) {
       const msg = err?.response?.data?.error || 'Erro inesperado ao criar lista';
       console.error('Erro ao criar lista:', msg);
@@ -228,6 +229,8 @@ function Menu() {
   };
 
   const handleLembretes = () => {
+    // 🔔 ao abrir lembretes, marca notificações como lidas
+    setTemNotificacoes(false);
     navigate('/lembretes');
   };
 
@@ -408,7 +411,7 @@ function Menu() {
             schedule
           </span>
           <span className="material-symbols-outlined" id="notificacao" onClick={handleLembretes}>
-            notifications
+            {temNotificacoes ? "notifications_unread" : "notifications"}
           </span>
         </OpcoesAbaixo1>
         <span className="material-symbols-outlined" id="logout" onClick={handleLogout}>
