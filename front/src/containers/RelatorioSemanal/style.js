@@ -1,6 +1,7 @@
 import styled from "styled-components";
 
 
+
 export const Container = styled.div`
   display: grid;
   left: 58.5%;
@@ -88,6 +89,19 @@ export const QuadroKanban = styled.div`
     padding: 1%;
     gap: 10%;
     justify-content: flex-start;
+     &::-webkit-scrollbar {
+    width: 5px;
+  }
+
+  &::-webkit-scrollbar-track {
+    background: var(--fundo-menu);
+    border-radius: 10px;
+  }
+
+  &::-webkit-scrollbar-thumb {
+    background-color: var(--fundo-menu-ativo);
+    border-radius: 10px;
+  }
 `;
 export const Pendente = styled(QuadroKanban)`
     grid-area: pendente;

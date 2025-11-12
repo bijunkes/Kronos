@@ -5,7 +5,7 @@ import {
     ImportanteNaoUrgente,
     ImportanteUrgente
 } from './style'
-import { listarAtividadesEmKanban, listarAtividades,  listarAtividadesEisenPorClassificacao} from "../../services/api.js";
+import { listarAtividadesEmKanban, listarAtividades, listarAtividadesEisenPorClassificacao } from "../../services/api.js";
 
 function RelatorioSemanal() {
 
@@ -109,7 +109,8 @@ function RelatorioSemanal() {
 
 
         const dataInicial = new Date();
-        dataInicial.setDate(dataAtual.getDate() - 7);
+        dataInicial.setDate(dataAtual.getDate() - 8);
+        console.log("Data Inicial: " + dataInicial)
 
 
         return dataSetada >= dataInicial && dataSetada <= dataAtual;

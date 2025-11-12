@@ -220,7 +220,7 @@ export const contaEmMatrizPorClassificacao = async (classificacao, dataAlteracao
 };
 
 export const listarAtividadesEmKanban = async () => {
-    const response = await api.get('/kanban/idAtividadeKanban');
+    const response = await api.get('/kanban/');
     return response.data;
 };
 export const deletarAtividadeDeKanban = async (idAtividadeKanban) => {

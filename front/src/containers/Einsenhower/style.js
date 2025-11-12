@@ -20,7 +20,6 @@ export const Quadrante = styled.div`
   justify-content: left;
   align-items: flex-start;
   border-radius: 1rem;
-  font-weight: bold;
   color: white;
   font-size: 1.2rem;
   height: 34.92vh; 
@@ -50,7 +49,6 @@ export const LabelVertical = styled.h2`
   transform: rotate(270deg) translateY(-50%);
   transform-origin: center;
   font-size: 2rem;
-  font-weight: bold;
   color: #FFFFFF;
   padding: 0.3rem 0.6rem;
   border-radius: 0.5rem;
@@ -72,7 +70,6 @@ export const LabelHorizontal = styled.h2`
   position: absolute;
   top: 1rem;
   font-size: 2rem;
-  font-weight: bold;
   color: #FFFFFF;
   padding: 0.3rem 0.6rem;
   border-radius: 0.5rem;
@@ -103,21 +100,17 @@ export const Lista = styled.ul`
   width: 27.3vw;
   scroll-behavior: smooth;
 
-  &::-webkit-scrollbar-track{
-  
-   background-color: rgba(27, 27, 27, 0.2);
-  
-  }
-  &::-webkit-scrollbar-thumb{
-  
-    background-color: rgba(255, 255, 255, 1);
-    border-radius: 50%;
-  
-  }
-  &::-webkit-scrollbar{
-  
+   &::-webkit-scrollbar {
     width: 6px;
-  
+  }
+
+  &::-webkit-scrollbar-thumb {
+    background-color: rgba(255, 255, 255, 0.15);
+    border-radius: 10px;
+  }
+
+  &::-webkit-scrollbar-thumb:hover {
+    background-color: rgba(255, 255, 255, 0.25);
   }
 
 `;
