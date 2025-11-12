@@ -48,7 +48,6 @@ function Eisenhower() {
 
         try {
             const todasAtividadesEmMatriz = await listarAtividadesEmMatriz();
-
             const todasAtividades = await listarAtividades();
             console.log(todasAtividadesEmMatriz);
             const matrizMap = new Map();
@@ -355,7 +354,7 @@ function Eisenhower() {
                 <LabelNaoUrgente>Não Urgente</LabelNaoUrgente>
 
                 {mostrarModal && <ModalTecnicas onClose={handleFecharModal}
-                    onAdicionar={adicionarAtividade}
+                    onAdicionar={adicionarAtividade} onTecnica={"eisenhower"}
                 />}
             </Container>
 

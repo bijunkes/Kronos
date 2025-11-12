@@ -1,13 +1,13 @@
 import { React, useState, useEffect } from 'react';
 import {
-    Container, Titulo, Data, Progresso, Pomodoro, Pendente, Andamento, Concluido, Classificacao, ProgressoCirculo, BoxTitulo, BoxTarefas, BoxNomeTarefa, NomeTarefa, NaoImportanteUrgente,
+    Container, Titulo, Data, Progresso, Pomodoro, Pendente, Andamento, Concluido, Classificacao, ProgressoBox, BoxTitulo, BoxTarefas, BoxNomeTarefa, NomeTarefa, NaoImportanteUrgente,
     NaoImportanteNaoUrgente,
     ImportanteNaoUrgente,
     ImportanteUrgente,
     RelatorioKanban,
     Icones
 } from './style'
-import { listarAtividadesEmKanban, listarAtividades, contaEmMatrizPorClassificacao } from "../../services/api.js";
+import { listarAtividadesEmKanban, listarAtividades, listarAtividadesEisenPorClassificacao} from "../../services/api.js";
 
 function RelatorioDiario() {
 
@@ -87,8 +87,8 @@ function RelatorioDiario() {
                     console.log(`Atividade Dentro do if: ${atv}`);
                     cont++;
                 }
-                
-            }else{
+
+            } else {
                 quantAtvs++;
             }
 
@@ -98,7 +98,7 @@ function RelatorioDiario() {
         console.log(`Atividades concluidas: ${cont}`);
 
 
-        return `${cont}/${quantAtvs}`;
+        return `${cont}|${quantAtvs}`;
 
     }
     const dataFormatada = () => {
@@ -122,20 +122,17 @@ function RelatorioDiario() {
     const defineTamanho = async (classificacao) => {
         console.log(classificacao)
         console.log(`${capturaData()}`);
-        const quadrante = await contaEmMatrizPorClassificacao(classificacao, capturaData());
+        const listaMatriz = await listarAtividadesEisenPorClassificacao(classificacao);
+        let quantidade = 0;
+        listaMatriz.forEach(atv => {
+            if (atv.dataAlteracao.substring(0, 10) == capturaData()) {
 
-        const extraiValor = (valor) => {
-            if (!valor) return 0;
-            if (Array.isArray(valor)) {
-                const primeiro = valor[0];
-                if (typeof primeiro === 'number') return primeiro;
-                if (typeof primeiro === 'object') return Object.values(primeiro)[0];
+                console.log(`contando...`);
+                quantidade++;
+
             }
-            if (typeof valor === 'object') return Object.values(valor)[0];
-            return valor;
-        };
+        })
 
-        const quantidade = extraiValor(quadrante);
         const tamanho = quantidade * 5;
         console.log("Tamanho do quadrante " + classificacao + ": " + tamanho);
         return tamanho;
@@ -156,7 +153,7 @@ function RelatorioDiario() {
                     <span style={{ display: 'flex' }}>Progresso <Icones className="material-symbols-outlined" title={textoProgresso}>
                         info
                     </Icones></span>
-                    <ProgressoCirculo>{contAtvs}</ProgressoCirculo>
+                    <ProgressoBox>{contAtvs}</ProgressoBox>
                 </Progresso>
                 <Pomodoro></Pomodoro>
                 <Pendente><BoxTitulo>Pendente</BoxTitulo>{atividades.filter(atividade => atividade.coluna === 1).map(atividade => (

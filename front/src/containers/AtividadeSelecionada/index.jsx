@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Container, Excluir, Header, NomeAtividade, Status, Datas, Data, Input, Desc, DescTextarea, Lista, Tecnicas, Tecnica } from './styles.js';
-import { atualizarIdEisenAtividade, adicionarAtividadeEmKanban, adicionarAtividadeEmMatriz, atualizarAtividade, deletarAtividade, listarListas, listarAtividadesEmMatriz, listarAtividadesEmKanban, deletarAtividadeDeKanban, deletarAtividadeDeMatriz } from '../../services/api';
+import { atualizarIdKanbanAtividade, atualizarIdEisenAtividade, adicionarAtividadeEmKanban, adicionarAtividadeEmMatriz, atualizarAtividade, deletarAtividade, listarListas, listarAtividadesEmMatriz, listarAtividadesEmKanban, deletarAtividadeDeKanban, deletarAtividadeDeMatriz } from '../../services/api';
 import { showConfirmToast, showOkToast } from '../../components/showToast.jsx';
 
 function AtividadeSelecionada({ atividade, onAtualizarAtividade }) {
@@ -25,18 +25,24 @@ function AtividadeSelecionada({ atividade, onAtualizarAtividade }) {
         eisenhower: !!atividade.Eisenhower_idAtividadeEisenhower,
     });
 
+    const botaoTecnicas = (tipo) => {
+        // toggleTecnica(tipo);
+        adicionarAtividadeEmTecnica(tipo, atividade);
+    }
+
     const toggleTecnica = async (tipo) => {
         const novoEstado = { ...tecnicasAtivas, [tipo]: !tecnicasAtivas[tipo] };
         const atv = atividade
         setTecnicasAtivas(novoEstado);
-
-        const botao = document.getElementById("Eisenhower");
-
-        botao.addEventListener("click", () => {
-            adicionarAtividadeEmEisenhower(atv);
-        })
-
-
+        try {
+            await atualizarAtividade(atividade.idAtividade, {
+                Pomodoro_idStatus: novoEstado.pomodoro ? 1 : null,
+                Kanban_idAtividadeKanban: novoEstado.kanban ? 1 : null,
+                Eisenhower_idAtividadeEisenhower: novoEstado.eisenhower ? 1 : null,
+            });
+        } catch (err) {
+            console.error("Erro ao atualizar técnicas:", err);
+        }
 
     };
 
@@ -67,18 +73,7 @@ function AtividadeSelecionada({ atividade, onAtualizarAtividade }) {
         }
     }, [atividade]);
 
-    const excluirDeKanban = async (atividade) => {
-        const listaKanban = await listarAtividadesEmKanban();
-        console.log(listaKanban);
-        const atividadeDeletada = listaKanban.find(a => a.idAtividadeKanban == atividade.Kanban_idAtividadeKanban);
-        if (!atividadeDeletada) {
-            console.warn("Atividade não encontrada no Kanban:", atividade.Kanban_idAtividadeKanban);
-            return;
-        }
-        console.log("Excluindo do Kanban:", atividadeDeletada.idAtividadeKanban);
-        await deletarAtividadeDeKanban(atividadeDeletada.idAtividadeKanban);
-
-    }
+    
     const capturaData = () => {
         const dataAtual = new Date();
 
@@ -92,48 +87,98 @@ function AtividadeSelecionada({ atividade, onAtualizarAtividade }) {
         return `${ano}-${mes}-${dia} ${h}:${min}:${seg}`
     }
 
-    const adicionarAtividadeEmEisenhower = async (atividad) => {
+    const adicionarAtividadeEmTecnica = async (tipo, atividad) => {
 
-        if (atividad.Eisenhower_idAtividadeEisenhower == null) {
-            try {
+        if (tipo == "eisenhower") {
+            if (atividad.Eisenhower_idAtividadeEisenhower == null) {
+                if (atividad.statusAtividade == 1) {
+                    showOkToast('Não é possível adicionar atividades concluídas em técnicas', err)
+                } else {
+                    try {
 
-                console.log("O PROBLEMA ESTÁ AQUI")
-                const res = await adicionarAtividadeEmMatriz({
-                    classificacao: 4,
-                    dataAlteracao: capturaData()
-                });
-                const idEisen = res.idAtividadeEisenhower;
-                await atualizarIdEisenAtividade(atividad.idAtividade, {
-                    Eisenhower_idAtividadeEisenhower: idEisen,
-                    Usuarios_username: atividad.Usuarios_username,
-                    idAtividade: atividad.idAtividade
+                        const res = await adicionarAtividadeEmMatriz({
+                            classificacao: 4,
+                            dataAlteracao: capturaData()
+                        });
+                        const idEisen = res.idAtividadeEisenhower;
+                        await atualizarIdEisenAtividade(atividad.idAtividade, {
+                            Eisenhower_idAtividadeEisenhower: idEisen,
+                            Usuarios_username: atividad.Usuarios_username,
+                            idAtividade: atividad.idAtividade
 
-                })
-                showOkToast('Atividade adicionada em Não importante e Não urgente')
+                        })
+                        showOkToast('Atividade adicionada em Não importante e Não urgente')
 
-            } catch (err) {
-                console.error("Erro ao adicionar ou atualizar atividade: ", err);
+                    } catch (err) {
+                        console.error("Erro ao adicionar ou atualizar atividade: ", err);
+                    }
+                    return;
+
+                }
             }
-            return;
 
-        }
-        else {
-            showOkToast("Atividade já inserida na matriz!", "error");
-            console.log("NÃO, ESTÁ AQUI")
-            return;
+            else {
+                showOkToast("Atividade já inserida na matriz!", "error");
+                return;
+            }
+        } else if (tipo == "kanban") {
+            if (atividad.Kanban_idAtividadeKanban == null) {
+                if (atividad.statusAtividade == 1) {
+                    showOkToast('Não é possível adicionar atividades concluídas em técnicas', err)
+                } else {
+                    try {
+                        const res = await adicionarAtividadeEmKanban({
+                            classificacao: 1,
+                            dataAlteracao: capturaData()
+                        });
+                        const idKanban = res.idAtividadeKanban;
+
+                        console.log("CHEGOU AQUI")
+                        await atualizarIdKanbanAtividade(atividad.idAtividade, {
+                            Kanban_idAtividadeKanban: idKanban,
+                            Usuarios_username: atividad.Usuarios_username,
+                            idAtividade: atividad.idAtividade
+
+                        })
+                        console.log("PASSOU DALI")
+                    } catch (err) {
+                        console.error("Erro ao adicionar ou atualizar atividade: ", err);
+                    }
+
+                    return;
+
+                }
+            }
+
+            else {
+                showOkToast("Atividade já inserida em Kanban!", "error");
+                return;
+            }
         }
     };
 
-    const excluirDeMatriz = async (atividade) => {
-        const listaMatriz = await listarAtividadesEmMatriz();
-        console.log(listaMatriz);
-        const atividadeDeletada = listaMatriz.find(a => a.idAtividadeEisenhower == atividade.Eisenhower_idAtividadeEisenhower);
-        if (!atividadeDeletada) {
-            console.warn("Atividade não encontrada na Matriz:", atividade.Eisenhower_idAtividadeEisenhower);
-            return;
+    const excluirDeTecnicas = async (tipo, atividade) => {
+        if (tipo == "kanban") {
+            const listaKanban = await listarAtividadesEmKanban();
+            console.log(listaKanban);
+            const atividadeDeletada = listaKanban.find(a => a.idAtividadeKanban == atividade.Kanban_idAtividadeKanban);
+            if (!atividadeDeletada) {
+                console.warn("Atividade não encontrada no Kanban:", atividade.Kanban_idAtividadeKanban);
+                return;
+            }
+            console.log("Excluindo do Kanban:", atividadeDeletada.idAtividadeKanban);
+            await deletarAtividadeDeKanban(atividadeDeletada.idAtividadeKanban);
+        } else if (tipo == "eisenhower") {
+            const listaMatriz = await listarAtividadesEmMatriz();
+            console.log(listaMatriz);
+            const atividadeDeletada = listaMatriz.find(a => a.idAtividadeEisenhower == atividade.Eisenhower_idAtividadeEisenhower);
+            if (!atividadeDeletada) {
+                console.warn("Atividade não encontrada na Matriz:", atividade.Eisenhower_idAtividadeEisenhower);
+                return;
+            }
+            console.log("Excluindo da Matriz:", atividadeDeletada.idAtividadeEisenhower);
+            await deletarAtividadeDeMatriz(atividadeDeletada.idAtividadeEisenhower);
         }
-        console.log("Excluindo da Matriz:", atividadeDeletada.idAtividadeEisenhower);
-        await deletarAtividadeDeMatriz(atividadeDeletada.idAtividadeEisenhower);
     };
 
     const formatarDataMySQL = (data) => {
@@ -165,10 +210,10 @@ function AtividadeSelecionada({ atividade, onAtualizarAtividade }) {
         try {
 
             if (atividade.Kanban_idAtividadeKanban !== null) {
-                await excluirDeKanban(atividade)
+                await excluirDeTecnicas("kanban", atividade)
             }
             if (atividade.Eisenhower_idAtividadeEisenhower !== null) {
-                await excluirDeMatriz(atividade)
+                await excluirDeMatriz("eisenhower",atividade)
             }
             await deletarAtividade(atividade.idAtividade);
             onAtualizarAtividade?.(null);
@@ -311,14 +356,14 @@ function AtividadeSelecionada({ atividade, onAtualizarAtividade }) {
             <Tecnica
                 tipo="pomodoro"
                 ativo={tecnicasAtivas.pomodoro}
-                onClick={() => toggleTecnica("pomodoro")}
+                onClick={() => botaoTecnicas("pomodoro")}
             >
                 Pomodoro
             </Tecnica>
             <Tecnica
                 tipo="kanban"
                 ativo={tecnicasAtivas.kanban}
-                onClick={() => toggleTecnica("kanban")}
+                onClick={() => botaoTecnicas("kanban")}
             >
                 Kanban
             </Tecnica>
@@ -326,14 +371,14 @@ function AtividadeSelecionada({ atividade, onAtualizarAtividade }) {
                 tipo="eisenhower"
                 id='Eisenhower'
                 ativo={tecnicasAtivas.eisenhower}
-                onClick={() => toggleTecnica("eisenhower")}
+                onClick={() => botaoTecnicas("eisenhower")}
 
 
             >
                 Eisenhower
             </Tecnica>
 
-           
+
         </Container>
 
     );

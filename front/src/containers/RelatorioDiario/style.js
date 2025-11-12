@@ -133,7 +133,7 @@ export const Classificacao = styled.div`
     font-variation-settings:
     "wdth" 100;
 `;
-export const ProgressoCirculo = styled.div`
+export const ProgressoBox = styled.div`
     width: 70%;
     height: 70%;
     display:flex;

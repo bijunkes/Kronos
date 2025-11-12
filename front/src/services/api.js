@@ -194,7 +194,7 @@ export const atualizarIdKanbanAtividade = async (id, dados) => {
 };
 
 export const listarAtividadesEisenPorClassificacao = async (classificacao) => {
-  const response = await api.get(`/eisenhower/contagem/${classificacao}`);
+  const response = await api.get(`/eisenhower/listar/${classificacao}`);
   return response.data;
 };
 export const listarAtividadesEmMatriz = async () => {
