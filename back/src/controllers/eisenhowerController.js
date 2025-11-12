@@ -97,7 +97,7 @@ export const contaPorClassificacao = async (req, res) => {
 
     try {
         const contagem = await pool.query(
-            `SELECT COUNT(*) AS total, DATE(dataAlteracao) FROM eisenhower JOIN atividades a ON idAtividadeEisenhower = a.Eisenhower_idAtividadeEisenhower WHERE classificacao = ? AND DATE(dataAlteracao) = ? AND a.statusAtividade = 0`,
+            `SELECT COUNT(*) AS total, DATE(dataAlteracao) FROM eisenhower JOIN atividades a ON idAtividadeEisenhower = a.Eisenhower_idAtividadeEisenhower WHERE classificacao = ? AND DATE(dataAlteracao) = ? AND a.statusAtividade = 0 GROUP BY DATE(dataAlteracao);`,
             [classificacao, dataAlteracao]
         );
         console.log("Contagem: "+ contagem[0])

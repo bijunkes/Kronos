@@ -119,19 +119,18 @@ export const Classificacao = styled.div`
     font-variation-settings:
     "wdth" 100;
 `;
-export const ProgressoCirculo = styled.div`
+export const ProgressoBox = styled.div`
     width: 70%;
     height: 70%;
     display:flex;
     justify-content: center;
     align-items: center;
     background-color: #353535;
-    border-radius: 100%;
     position: relative;
     left: 50%;
     top: 50%;
     transform: translate(-50%, -50%);
-    font-size: 42px;
+    font-size: 60px;
     color: #FFFFFF;
     font-family: "Roboto", sans-serif;
     font-optical-sizing: auto;

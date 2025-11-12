@@ -32,7 +32,6 @@ function Kanban() {
 
         try {
             const todasAtividadesEmKanban = await listarAtividadesEmKanban();
-
             const todasAtividades = await listarAtividades();
             console.log(todasAtividadesEmKanban);
             const matrizMap = new Map();
@@ -49,7 +48,7 @@ function Kanban() {
                     })
                     return 3;
                 }
-                return parseInt(matrizMap.get(atv.Kanban_idAtividadeKanban));
+                return parseInt(matrizMap.get(atividade.Kanban_idAtividadeKanban));
             }
             const atividadesEmKanban = todasAtividades.filter(atv => matrizMap.has(atv.Kanban_idAtividadeKanban)).map(atv => ({
                 ...atv,
@@ -100,6 +99,18 @@ function Kanban() {
 
     }
 
+    const nulaId = async (atv) => {
+    
+    
+            await atualizarIdKanbanAtividade(atv.idAtividade, {
+                    Kanban_idAtividadeKanban: null,
+                    Usuarios_username: atv.Usuarios_username,
+                    idAtividade: atv.idAtividade
+
+                })
+    
+        }
+
 
     const deletar = async (atividadeId) => {
 
@@ -109,12 +120,7 @@ function Kanban() {
         const listaAtividades = await listarAtividades()
         listaAtividades.forEach(atv => (async () => {
             if (atv.idAtividade == atividadeId) {
-                await atualizarIdEisenAtividade(atv.idAtividade, {
-                    Kanban_idAtividadeKanban: null,
-                    Usuarios_username: atv.Usuarios_username,
-                    idAtividade: atv.idAtividade
-
-                })
+                nulaId(atv);
             }
         }))
         console.log(atividadeDeletada.Kanban_idAtividadeKanban);
@@ -299,7 +305,7 @@ function Kanban() {
             <Container>
                 <Painel id='1'>
                     <BoxTitulo>A Fazer</BoxTitulo>
-                    {atividades.filter(atividade => atividade.coluna === 1).map(atividade => (
+                    {atividades.filter(atividade => atividade.coluna == 1).map(atividade => (
                         <BoxTarefas key={atividade.idAtividade} id={atividade.idAtividade}>
                             <BoxNomeTarefa><NomeTarefa>{atividade.nome}</NomeTarefa></BoxNomeTarefa>
                             {renderIcons(atividade.coluna, atividade.idAtividade)}
@@ -307,7 +313,7 @@ function Kanban() {
                     ))}
                     <BoxAdicionar onClick={handleClick(1)} id="Adicionar">Adicionar atividade</BoxAdicionar></Painel>
                 <Painel id='2'><BoxTitulo>Fazendo</BoxTitulo>
-                    {atividades.filter(atividade => atividade.coluna === 2).map(atividade => (
+                    {atividades.filter(atividade => atividade.coluna == 2).map(atividade => (
                         <BoxTarefas key={atividade.idAtividade} id={atividade.idAtividade}>
                             <BoxNomeTarefa><NomeTarefa>{atividade.nome}</NomeTarefa></BoxNomeTarefa>
                             <BoxIcones>{renderIcons(atividade.coluna, atividade.idAtividade)}</BoxIcones>
@@ -317,7 +323,7 @@ function Kanban() {
                     <BoxAdicionar onClick={handleClick(2)} id="Adicionar">Adicionar atividade</BoxAdicionar>
                 </Painel>
                 <Painel id='3'><BoxTitulo>Feito</BoxTitulo>
-                    {atividades.filter(atividade => atividade.coluna === 3).map(atividade => (
+                    {atividades.filter(atividade => atividade.coluna == 3).map(atividade => (
                         <BoxTarefas key={atividade.idAtividade} id={atividade.idAtividade}>
                             <BoxNomeTarefa><NomeTarefa>{atividade.nome}</NomeTarefa></BoxNomeTarefa>
                             <BoxIcones>{renderIcons(atividade.coluna, atividade.idAtividade)}</BoxIcones>
@@ -326,7 +332,7 @@ function Kanban() {
                     <BoxAdicionar onClick={handleClick(3)} id="Adicionar">Adicionar atividade</BoxAdicionar>
                 </Painel>
             </Container>
-            {mostrarModal && <ModalTecnicas onClose={handleFecharModal} onAdicionar={adicionarAtividade} />}
+            {mostrarModal && <ModalTecnicas onClose={handleFecharModal} onAdicionar={adicionarAtividade} onTecnica={"kanban"} />}
 
         </>
     )

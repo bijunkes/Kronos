@@ -1,11 +1,11 @@
 import { React, useState, useEffect } from 'react';
 import {
-    Container, Titulo, Data, Progresso, Pomodoro, Pendente, Andamento, Concluido, Classificacao, ProgressoCirculo, BoxTitulo, BoxTarefas, BoxNomeTarefa, NomeTarefa, NaoImportanteUrgente,
+    Container, Titulo, Data, Progresso, Pomodoro, Pendente, Andamento, Concluido, Classificacao, ProgressoBox, BoxTitulo, BoxTarefas, BoxNomeTarefa, NomeTarefa, NaoImportanteUrgente,
     NaoImportanteNaoUrgente,
     ImportanteNaoUrgente,
     ImportanteUrgente
 } from './style'
-import { listarAtividadesEmKanban, listarAtividades, contaEmMatrizPorClassificacao, listarAtividadesEisenPorClassificacao} from "../../services/api.js";
+import { listarAtividadesEmKanban, listarAtividades,  listarAtividadesEisenPorClassificacao} from "../../services/api.js";
 
 function RelatorioSemanal() {
 
@@ -98,7 +98,7 @@ function RelatorioSemanal() {
         console.log(`Atividades concluidas: ${cont}`);
 
 
-        return `${cont}/${quantAtvs}`;
+        return `${cont}|${quantAtvs}`;
 
     }
 
@@ -196,7 +196,7 @@ function RelatorioSemanal() {
                 <Data>{dataIntervalo()}</Data>
                 <Progresso>
                     Progresso
-                    <ProgressoCirculo>{contAtvs}</ProgressoCirculo>
+                    <ProgressoBox>{contAtvs}</ProgressoBox>
                 </Progresso>
                 <Pomodoro></Pomodoro>
                 <Pendente><BoxTitulo>Pendente</BoxTitulo>{atividades.filter(atividade => atividade.coluna === 1).map(atividade => (
