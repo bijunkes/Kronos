@@ -1,7 +1,10 @@
-import React from "react";
+
+
+ import React from "react";
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import ResetarSenha from "./containers/ResetarSenha/index.jsx";
 import Padrao from './components/Padrao/Padrao.jsx';
+
 
 import Home from './containers/Home';
 import Usuario from './containers/Usuario';
@@ -18,6 +21,8 @@ import RelatorioDiario from './containers/RelatorioDiario';
 import RelatorioSemanal from './containers/RelatorioSemanal';
 import NotFound from './containers/NotFound'
 import CronometroTemporizador from "./containers/CronometroTemporizador";
+import Lembretes from "./containers/Lembretes/index.jsx";
+
 
 function App() {
     return (
@@ -29,14 +34,17 @@ function App() {
                 <Route path="/resetar-senha" element={<ResetarSenha />} />
                 <Route path="*" element={<NotFound />} />
 
-                <Route element={<Padrao />}> 
+
+                <Route element={<Padrao />}>
                     <Route path="/home" element={<Home />} />
                     <Route path="/:username" element={<Usuario />} />
                     <Route path="/hoje" element={<Hoje />} />
                     <Route path="/semana" element={<Semana />} />
                     <Route path="/atividades" element={<Atividades />} />
 
+
                     <Route path="/listas/:nomeLista" element={<Lista />} />
+
 
                     <Route path="/pomodoro" element={<Pomodoro />} />
                     <Route path="/kanban" element={<Kanban />} />
@@ -44,11 +52,14 @@ function App() {
                     <Route path="/relatoriodiario" element={<RelatorioDiario />} />
                     <Route path="/relatoriosemanal" element={<RelatorioSemanal />} />
                     <Route path="/cronometro" element={<CronometroTemporizador />} />
+                     <Route path="/lembretes" element={<Lembretes />} />
+
 
                 </Route>
             </Routes>
         </BrowserRouter>
     )
 }
+
 
 export default App

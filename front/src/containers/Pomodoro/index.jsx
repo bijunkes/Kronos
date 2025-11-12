@@ -210,7 +210,7 @@ function Pomodoro() {
       <Container>
         <Principal>
           <Intervalos>
-            <Intervalo ativo>
+            <Intervalo $ativo>
               {modo === 'foco' && 'Foco'}
               {modo === 'curto' && 'Intervalo Curto'}
               {modo === 'longo' && 'Intervalo Longo'}

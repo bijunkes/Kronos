@@ -20,7 +20,7 @@ export const BoxTitulo= styled.div`
     align-self: center;
     height: 5.29vh;
     width: 24vw;
-    font-size: 24px;
+    font-size: 20px;
     background-color: rgba(255, 255, 255, 0.1);
     border-radius: 1rem;
     top: 1rem;
@@ -58,7 +58,7 @@ export const BoxNomeTarefa = styled.div`
     color: rgba(255, 255, 255, 1);
     display: flex;
     justify-content: center;
-    flex wrap: wrap;
+    flex-wrap: wrap;
 `;
 
 export const NomeTarefa = styled.h2`
@@ -90,11 +90,10 @@ export const BoxAdicionar= styled.button`
     align-self: center;
     height: 5.29vh;
     width: 24vw;
-    font-size: 24px;
+    font-size: 20px;
     background-color: rgba(255, 255, 255, 0.1);
     border-radius: 1rem;
     margin-top: auto;
     bottom: 1rem;
-    font-weight: bold;
     color: rgba(255, 255, 255, 1);
 `;

@@ -227,6 +227,10 @@ function Menu() {
     navigate('/cronometro');
   };
 
+  const handleLembretes = () => {
+    navigate('/lembretes');
+  };
+
   return (
     <MenuWrapper>
       <Usuario>
@@ -403,7 +407,7 @@ function Menu() {
           <span className="material-symbols-outlined" id="sino" onClick={handleCronometro}>
             schedule
           </span>
-          <span className="material-symbols-outlined" id="notificacao">
+          <span className="material-symbols-outlined" id="notificacao" onClick={handleLembretes}>
             notifications
           </span>
         </OpcoesAbaixo1>

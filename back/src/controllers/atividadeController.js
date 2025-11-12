@@ -59,63 +59,7 @@ export const criarAtividade = async (req, res) => {
   }
 };
 
-export const criarAtividadeAtividades = async (req, res) => {
-  const {
-    nomeAtividade,
-    prazoAtividade,
-    dataConclusao,
-    descricaoAtividade = "",
-    statusAtividade = 0,
-  } = req.body;
 
-  const usuario = req.usuarioUsername;
-
-  if (!nomeAtividade?.trim() || !prazoAtividade || !usuario) {
-    return res
-      .status(400)
-      .json({ error: "Nome, prazo e usuário são obrigatórios" });
-  }
-
-  try {
-    const listaPadrao = await garantirListaAtividades(usuario);
-
-    const dataUtc = fromZonedTime(prazoAtividade, TIMEZONE);
-    const dataFormatada = format(dataUtc, "yyyy-MM-dd HH:mm:ss");
-
-    const [resultado] = await pool.query(
-      `INSERT INTO atividades
-        (nomeAtividade, statusAtividade, descricaoAtividade, prazoAtividade, dataConclusao, 
-         ListaAtividades_idLista, ListaAtividades_Usuarios_username, Usuarios_username)
-       VALUES (?, ?, ?, ?, ?, ?, ?, ?)`,
-      [
-        nomeAtividade,
-        statusAtividade,
-        descricaoAtividade,
-        dataFormatada,
-        dataConclusao || null,
-        listaPadrao.idLista,
-        usuario,
-        usuario,
-      ]
-    );
-
-    res.status(201).json({
-      message: "Atividade criada na lista 'Atividades'",
-      atividade: {
-        idAtividade: resultado.insertId,
-        nomeAtividade,
-        descricaoAtividade,
-        prazoAtividade: dataFormatada,
-        statusAtividade,
-        listaId: listaPadrao.idLista,
-        usuario,
-      },
-    });
-  } catch (err) {
-    console.error("Erro ao criar atividade em 'Atividades':", err);
-    res.status(500).json({ error: "Erro ao criar atividade" });
-  }
-};
 
 export const atualizarAtividade = async (req, res) => {
   const usuario = req.usuarioUsername;

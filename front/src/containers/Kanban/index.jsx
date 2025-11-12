@@ -305,7 +305,7 @@ function Kanban() {
                             {renderIcons(atividade.coluna, atividade.idAtividade)}
                         </BoxTarefas>
                     ))}
-                    <BoxAdicionar onClick={handleClick(1)} id="Adicionar">Adicionar Tarefa</BoxAdicionar></Painel>
+                    <BoxAdicionar onClick={handleClick(1)} id="Adicionar">Adicionar atividade</BoxAdicionar></Painel>
                 <Painel id='2'><BoxTitulo>Fazendo</BoxTitulo>
                     {atividades.filter(atividade => atividade.coluna === 2).map(atividade => (
                         <BoxTarefas key={atividade.idAtividade} id={atividade.idAtividade}>
@@ -314,7 +314,7 @@ function Kanban() {
 
                         </BoxTarefas>
                     ))}
-                    <BoxAdicionar onClick={handleClick(2)} id="Adicionar">Adicionar Tarefa</BoxAdicionar>
+                    <BoxAdicionar onClick={handleClick(2)} id="Adicionar">Adicionar atividade</BoxAdicionar>
                 </Painel>
                 <Painel id='3'><BoxTitulo>Feito</BoxTitulo>
                     {atividades.filter(atividade => atividade.coluna === 3).map(atividade => (
@@ -323,7 +323,7 @@ function Kanban() {
                             <BoxIcones>{renderIcons(atividade.coluna, atividade.idAtividade)}</BoxIcones>
                         </BoxTarefas>
                     ))}
-                    <BoxAdicionar onClick={handleClick(3)} id="Adicionar">Adicionar Tarefa</BoxAdicionar>
+                    <BoxAdicionar onClick={handleClick(3)} id="Adicionar">Adicionar atividade</BoxAdicionar>
                 </Painel>
             </Container>
             {mostrarModal && <ModalTecnicas onClose={handleFecharModal} onAdicionar={adicionarAtividade} />}

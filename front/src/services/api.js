@@ -119,6 +119,8 @@ export const excluirConta = async () =>
   (await api.delete('/usuarios/me')).data;
 
 
+export const excluirLembretes = async () =>
+  (await api.delete('/lembretes')).data;
 
 
 export const criarAtividade = async (dados) =>

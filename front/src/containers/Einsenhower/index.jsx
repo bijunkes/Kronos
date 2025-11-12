@@ -308,7 +308,7 @@ function Eisenhower() {
                                 <BoxIcones>{renderIcons(`icones${atividade.quadrante}`, atividade.idAtividade)}</BoxIcones>
 
                             </Atividade>
-                    )}</Lista> <AdicionarTarefa onClick={() => handleClick(1)} id="Adicionar">Adicionar Tarefa</AdicionarTarefa></ImportanteUrgente>
+                    )}</Lista> <AdicionarTarefa onClick={() => handleClick(1)} id="Adicionar">Adicionar atividade</AdicionarTarefa></ImportanteUrgente>
 
                 <ImportanteNaoUrgente>
                     <Lista id="2">{atividades
@@ -320,7 +320,7 @@ function Eisenhower() {
                                     <BoxNomeTarefa>{atividade.nome || atividade.nomeAtividade}</BoxNomeTarefa>
                                     <BoxIcones>{renderIcons(`icones${atividade.quadrante}`, atividade.idAtividade)}</BoxIcones>
                                 </Atividade>
-                        )}</Lista> <AdicionarTarefa onClick={() => handleClick(2)} id="Adicionar">Adicionar Tarefa</AdicionarTarefa>
+                        )}</Lista> <AdicionarTarefa onClick={() => handleClick(2)} id="Adicionar">Adicionar atividade</AdicionarTarefa>
                 </ImportanteNaoUrgente>
 
                 <NaoImportanteUrgente>
@@ -333,7 +333,7 @@ function Eisenhower() {
                                     <BoxNomeTarefa>{atividade.nome || atividade.nomeAtividade}</BoxNomeTarefa>
                                     <BoxIcones>{renderIcons(`icones${atividade.quadrante}`, atividade.idAtividade)}</BoxIcones>
                                 </Atividade>
-                        )}</Lista> <AdicionarTarefa onClick={() => handleClick(3)} id="Adicionar">Adicionar Tarefa</AdicionarTarefa>
+                        )}</Lista> <AdicionarTarefa onClick={() => handleClick(3)} id="Adicionar">Adicionar atividade</AdicionarTarefa>
                 </NaoImportanteUrgente>
 
                 <NaoImportanteNaoUrgente>
