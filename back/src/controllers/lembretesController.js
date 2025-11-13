@@ -172,7 +172,7 @@ export async function excluirLembretes(req, res) {
 }
 
 cron.schedule(
-  "0 11 * * *",
+  "0 12 * * *",
   async () => {
     console.log("Gerando lembretes de atividades próximas (21h)...");
     await gerarLembretesAtividadesProximas();
