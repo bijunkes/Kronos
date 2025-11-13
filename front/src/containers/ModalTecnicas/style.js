@@ -12,34 +12,14 @@ export const Overlay = styled.div`
   align-items: center;
   z-index: 999;
 `;
-export const AtividadeCard = styled.div`
-  padding: 12px;
-  display: flex;
-  margin-bottom: 10px;
-  border: 1px solid #ccc;
-  border-radius: 8px;
-  background-color: #f4f4f4;
-  width: 100%;
-  justify-content: center;
-`;
+
 export const ModalContainer = styled.div`
-  height: 50vh;
-  display: flex;
-  width: 60vh;
+  height: 80vh;
+  width: 50vh;
   color: var(--fundo-menu);
   box-shadow: 0 0 20px rgba(0, 0, 0, 0.3);
   border-radius: 20px;
   background-color: var(--fundo-menu);
-  padding: 2vh;
-  flex-direction: column;
-`;
-export const ModalBody = styled.div`
-  display: flex;
-  width: 90%;
-  align-self: center;
-  height: auto;
-  margin-top: 1rem; 
-  flex-direction: column;
 `;
 
 export const ModalHeader = styled.div`
@@ -47,9 +27,35 @@ export const ModalHeader = styled.div`
     font-size: 22px;
     font-weight: bold;
     color: var(--cor-texto);
-    align-items: flex-start;
-    justify-content: flex-start;
+    padding: 3vh;
+    justify-content: space-between;
+
+    span {
+      cursor: pointer;
+      &:hover{
+        color: var(--cinza-claro);
+      }  
+    }
 `;
+
+export const ModalInput = styled.input`
+    width: 80%;
+    font-size: 18px;
+    color: var(--cor-texto);
+    background-color: var(--fundo-campo);
+    height: 7vh;
+    border-radius: 20px;
+    margin-left: 3vh;
+    margin-right: 3vh;
+    padding: 0 3vh;
+    margin-bottom: 2vh;
+
+    &::placeholder {
+        color: #999;
+        font-size: 18px;
+    }
+`;
+
 export const ModalButton = styled.div`
     display: flex;
     flex-direction: row;
@@ -57,12 +63,97 @@ export const ModalButton = styled.div`
     gap: 1.5vh;
     justify-content: flex-end;
 `;
-export const Icones = styled.button`
-    position: relative;
-    left: 23.1rem;
-    color: rgba(255, 255, 255, 1);
 
+export const Button = styled.button`
+    font-size: 18px;
+    color: var(--cor-texto);
+    background-color: var(--fundo-campo);
+    border-radius: 20px;
+    height: 7vh;
+    padding: 0 3vh;
+    cursor: pointer;
+
+    &#cancelar:hover {
+        background-color: var(--Importante-Urgente);
+    }
+    &#criar:hover {
+        background-color: var(--NaoImportante-NaoUrgente);
+    }
 `;
+
+export const ContainerLista = styled.div`
+  margin: 4vh;
+  height: 92vh;
+  width: 50vh;
+  border-radius: 20px;
+  background-color: var(--fundo-menu);
+  box-sizing: border-box;
+
+  display: flex;
+  flex-direction: column; 
+`;
+
+export const Conteudo = styled.div`
+  display: flex;
+  flex-direction: column;
+  flex: 1;      
+  overflow-y: auto;
+  padding: 0 3vh;
+
+  &::-webkit-scrollbar {
+    width: 5px;
+  }
+
+  &::-webkit-scrollbar-track {
+    background: var(--fundo-menu);
+    border-radius: 10px;
+  }
+
+  &::-webkit-scrollbar-thumb {
+    background-color: var(--fundo-menu-ativo);
+    border-radius: 10px;
+  }
+`;
+
+
+export const Botoes = styled.div`
+  display: flex;
+  gap: 1.5vh;
+  margin-left: auto;
+
+  #add {
+    cursor: pointer;
+    &:hover {
+      color: rgba(255, 255, 255, 0.4);
+    }
+  }
+`;
+
+export const AreaAtividades = styled.div`
+  font-size: 18px;
+  display: flex;
+  flex-direction: column;
+  gap: 1.5vh;
+`;
+
+export const Atividade = styled.div`
+  padding: 0 2vh;
+  width: 100%;
+  background-color: var(--fundo-menu-ativo);
+  font-size: 18px;
+  height: 7vh;
+  display: flex;
+  align-items: center;
+  border-radius: 20px;
+  cursor: pointer;
+  padding: 0 3vh;
+  color: white;
+
+  &:hover {
+    background-color: var(--cinza-claro);
+  }
+`;
+
 export const Prazo = styled.div`
   font-size: 16px;
   margin-left: auto;
@@ -81,6 +172,7 @@ export const Pesquisar = styled.div`
   margin: 2vh;
   flex-shrink: 0;
 `;
+
 export const Input = styled.input`
   font-size: 16px;
   flex: 1;

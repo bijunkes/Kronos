@@ -1,6 +1,16 @@
 import React, { useEffect, useState } from 'react';
 import { listarAtividades, listarListas } from '../../services/api.js';
-import { Overlay, AtividadeCard, ModalContainer, ModalHeader, Icones, ModalBody, Pesquisar, Prazo, Input } from './style.js';
+import {
+    Overlay,
+    AreaAtividades,
+    Atividade,
+    Prazo,
+    Input,
+    ModalHeader,
+    Pesquisar,
+    ContainerLista,
+    Conteudo,
+} from './style.js';
 
 function ModalTecnicas({ onClose, onAdicionar, onTecnica }) {
     const [atividades, setAtividades] = useState([]);
@@ -20,7 +30,7 @@ function ModalTecnicas({ onClose, onAdicionar, onTecnica }) {
                 if (atividade.statusAtividade !== 1) {
                     if (onTecnica == "kanban" && !atividade.Kanban_idAtividadeKanban) {
                         atvsNaoConcluidas.push(atividade)
-                    }else if(onTecnica == "eisenhower" && !atividade.Eisenhower_idAtividadeEisenhower){
+                    } else if (onTecnica == "eisenhower" && !atividade.Eisenhower_idAtividadeEisenhower) {
                         atvsNaoConcluidas.push(atividade)
                     }
 
@@ -59,41 +69,43 @@ function ModalTecnicas({ onClose, onAdicionar, onTecnica }) {
 
     return (
         <Overlay>
-            <ModalContainer>
+            <ContainerLista>
                 <ModalHeader>
                     Atividades
-                    <Icones onClick={onClose} className="material-symbols-outlined">
+                    <span className="material-symbols-outlined" onClick={onClose}>
                         close
-                    </Icones>
+                    </span>
                 </ModalHeader>
-                <ModalBody>
-                    {carregando && <p>Carregando...</p>}
-                    {erro && <p style={{ color: 'red' }}>{erro}</p>}
-                    {atividades.length === 0 && !carregando && !erro && <p>Nenhuma atividade disponível.</p>}
-                    {atividadesFiltradas.length === 0 && (
-                        <div style={{ padding: '1rem', color: '#999' }}>
-                            Nenhuma atividade encontrada.
-                        </div>
-                    )}
+                <Conteudo>
+                    <AreaAtividades>
+                        {carregando && <p>Carregando...</p>}
+                        {erro && <p style={{ color: 'red' }}>{erro}</p>}
+                        {atividades.length === 0 && !carregando && !erro && <p>Nenhuma atividade disponível.</p>}
+                        {atividadesFiltradas.length === 0 && (
+                            <div style={{ padding: '1rem', color: '#999' }}>
+                                Nenhuma atividade encontrada.
+                            </div>
+                        )}
 
-                    {atividadesFiltradas.map((a, index) => {
-                        const isSelecionada = atividadeSelecionada?.idAtividade === a.idAtividade;
-                        return (
-                            <>
-                                {atividades.map((atividade, index) => (
-                                    <AtividadeCard onClick={() => onAdicionar(atividade, idPadrao)} key={atividade.idAtividade}>
-                                        <p><strong>{atividade.nomeAtividade}</strong></p>
-                                        <Prazo>
-                                            {atividade.prazoAtividade
-                                                ? new Date(atividade.prazoAtividade.replace(' ', 'T')).toLocaleDateString()
-                                                : 'Sem prazo'}
-                                        </Prazo>
-                                    </AtividadeCard>
-                                ))}
-                            </>
-                        );
-                    })}
-                </ModalBody>
+                        {atividadesFiltradas.map((a, index) => {
+                            const isSelecionada = atividadeSelecionada?.idAtividade === a.idAtividade;
+                            return (
+                                <>
+                                    {atividades.map((atividade, index) => (
+                                        <Atividade onClick={() => onAdicionar(atividade, idPadrao)} key={atividade.idAtividade}>
+                                            <p><strong>{atividade.nomeAtividade}</strong></p>
+                                            <Prazo>
+                                                {atividade.prazoAtividade
+                                                    ? new Date(atividade.prazoAtividade.replace(' ', 'T')).toLocaleDateString()
+                                                    : 'Sem prazo'}
+                                            </Prazo>
+                                        </Atividade>
+                                    ))}
+                                </>
+                            );
+                        })}
+                    </AreaAtividades>
+                </Conteudo>
                 <Pesquisar>
                     <span className="material-symbols-outlined">search</span>
                     <Input
@@ -103,7 +115,7 @@ function ModalTecnicas({ onClose, onAdicionar, onTecnica }) {
                         onChange={(e) => setFiltro(e.target.value)}
                     />
                 </Pesquisar>
-            </ModalContainer>
+            </ContainerLista>
         </Overlay>
 
     );

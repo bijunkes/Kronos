@@ -210,6 +210,19 @@ export const QuadroEisen = styled.div`
     justify-content: flex-end;
     left: 0;
     color: #FFFFFF;
+     &::-webkit-scrollbar {
+    width: 5px;
+  }
+
+  &::-webkit-scrollbar-track {
+    background: var(--fundo-menu);
+    border-radius: 10px;
+  }
+
+  &::-webkit-scrollbar-thumb {
+    background-color: var(--fundo-menu-ativo);
+    border-radius: 10px;
+  }
 `;
 export const ImportanteUrgente = styled(QuadroEisen)`
   background-color: #B3261E;
