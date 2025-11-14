@@ -164,6 +164,7 @@ export const verificarEmail = async (req, res) => {
       ['Atividades', username]
     );
 
+    /*
     const pomodoroVals = [
       '00:25:00',
       '00:05:00',
@@ -176,18 +177,16 @@ export const verificarEmail = async (req, res) => {
 
     try {
       await conn.query(
-        `
-        INSERT INTO pomodoro (
-          username,
-          duracaoFoco,
-          duracaoIntervaloCurto,
-          duracaoIntervaloLongo,
-          ciclosFoco,
-          ciclosIntervaloCurto,
-          ciclosIntervaloLongo,
-          atividadesVinculadas
-        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?)
-        `,
+        `INSERT INTO pomodoro (
+        username,
+        duracaoFoco,
+        duracaoIntervaloCurto,
+        duracaoIntervaloLongo,
+        ciclosFoco,
+        ciclosIntervaloCurto,
+        ciclosIntervaloLongo,
+        atividadesVinculadas
+        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?)`,
         [username, ...pomodoroVals]
       );
     } catch (e1) {
@@ -214,6 +213,7 @@ export const verificarEmail = async (req, res) => {
         );
       }
     }
+    */
 
     await conn.commit();
 
@@ -231,9 +231,9 @@ export const verificarEmail = async (req, res) => {
       path: '/',
     });
 
-    return res.redirect(303, `${APP_BASE.replace(/\/+$/,'')}/login`);
+    return res.redirect(303, `${APP_BASE.replace(/\/+$/, '')}/login`);
   } catch (err) {
-    try { await conn.rollback(); } catch {}
+    try { await conn.rollback(); } catch { }
     console.error('Erro ao verificar e-mail:', err?.sqlMessage || err);
     return res.status(500).send('Erro interno ao concluir cadastro.');
   } finally {
@@ -280,19 +280,19 @@ export const perfil = async (req, res) => {
           iconUrl = `${API_BASE}${rel.startsWith('/') ? '' : '/'}${rel}`;
         }
       }
-    } catch {}
+    } catch { }
 
     return res.json({
       username: u.username,
       nome: u.nome,
       email: u.email,
-      icon: iconUrl, 
+      icon: iconUrl,
     });
   } catch (err) {
     return res.status(500).json({ error: err?.sqlMessage || 'Erro ao buscar perfil.' });
   }
 };
-  
+
 
 
 // RESET DE SENHA
@@ -359,7 +359,7 @@ export const redefinirSenha = async (req, res) => {
   }
 
   try {
-    const payload = jwt.verify(token, process.env.RESET_SECRET); 
+    const payload = jwt.verify(token, process.env.RESET_SECRET);
     const senhaHash = await bcrypt.hash(senha, SALT_ROUND);
 
     const [result] = await pool.query(
@@ -420,7 +420,7 @@ export const usuarioExiste = async (req, res) => {
     console.error('Erro ao verificar existencia de usuario:', err);
     return res.status(500).json({ exists: false });
   }
-  
+
 };
 
 // EXCLUIR CONTA
@@ -507,7 +507,7 @@ export const excluirConta = async (req, res) => {
       }
     });
   } catch (err) {
-    try { await conn.rollback(); } catch {}
+    try { await conn.rollback(); } catch { }
     console.error('excluirConta:', err?.sqlMessage || err);
     return res.status(500).json({
       error: err?.sqlMessage || 'Não foi possível excluir a conta.'
@@ -520,15 +520,15 @@ export const excluirConta = async (req, res) => {
 
 // EDITAR CONTA
 const PASSWORD_RULE = /^(?=.*[^A-Za-z0-9]).{5,20}$/; // 5 a 20 chars + 1 especial
-const EMAIL_RULE    = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+const EMAIL_RULE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 const EMAIL_CHANGE_EXP_MIN = Number(process.env.EMAIL_CHANGE_EXP_MIN || 1440);
 
 export const editarPerfil = async (req, res) => {
   const usernameAuth = req.usuarioUsername;
   if (!usernameAuth) return res.status(401).json({ error: 'Não autenticado.' });
 
-  const nomeReq  = (req.body?.nome ?? '').trim();
-  const userReq  = (req.body?.username ?? '').trim();
+  const nomeReq = (req.body?.nome ?? '').trim();
+  const userReq = (req.body?.username ?? '').trim();
   const emailReq = (req.body?.email ?? '').trim();
   const senhaReq = String(req.body?.senha ?? '').trim();
 
@@ -542,8 +542,8 @@ export const editarPerfil = async (req, res) => {
 
     const userDB = rows[0];
 
-    const wantsNome  = !!nomeReq  && nomeReq  !== userDB.nome;
-    const wantsUser  = !!userReq  && userReq  !== userDB.username;
+    const wantsNome = !!nomeReq && nomeReq !== userDB.nome;
+    const wantsUser = !!userReq && userReq !== userDB.username;
     const wantsEmail = !!emailReq && emailReq.toLowerCase() !== String(userDB.email || '').toLowerCase();
     const wantsSenha = !!senhaReq;
 
@@ -578,7 +578,7 @@ export const editarPerfil = async (req, res) => {
 
     const sets = [];
     const params = [];
-    if (wantsNome)  { sets.push('nome = ?');   params.push(nomeReq); }
+    if (wantsNome) { sets.push('nome = ?'); params.push(nomeReq); }
     if (wantsSenha) {
       const hash = await bcrypt.hash(senhaReq, SALT_ROUND);
       sets.push('senha = ?'); params.push(hash);
@@ -610,7 +610,7 @@ export const editarPerfil = async (req, res) => {
       );
 
       const confirmUrl =
-        `${API_BASE.replace(/\/+$/,'')}/confirmar-email?token=${encodeURIComponent(token)}`;
+        `${API_BASE.replace(/\/+$/, '')}/confirmar-email?token=${encodeURIComponent(token)}`;
 
       try {
         console.log('[MAIL] Enviando confirmação de novo e-mail');
@@ -643,8 +643,8 @@ export const editarPerfil = async (req, res) => {
     return res.json({
       message: pendingEmail
         ? (mailErrMsg
-            ? 'Perfil atualizado, mas não foi possível enviar o e-mail de confirmação.'
-            : 'Verifique seu novo e-mail para salvar a edição.')
+          ? 'Perfil atualizado, mas não foi possível enviar o e-mail de confirmação.'
+          : 'Verifique seu novo e-mail para salvar a edição.')
         : 'Perfil atualizado com sucesso.',
       pendingEmail,
       user: {
@@ -656,7 +656,7 @@ export const editarPerfil = async (req, res) => {
     });
 
   } catch (err) {
-    try { await conn.rollback(); } catch {}
+    try { await conn.rollback(); } catch { }
     console.error('editarPerfil:', err?.sqlMessage || err);
     return res.status(500).json({ error: err?.sqlMessage || 'Erro ao atualizar perfil.' });
   } finally {
@@ -726,7 +726,7 @@ export const confirmarNovoEmail = async (req, res) => {
     await conn.commit();
 
 
-      const WEB_BASE =
+    const WEB_BASE =
       process.env.WEB_BASE ||
       process.env.FRONT_BASE_URL ||
       'http://localhost:5173';
@@ -739,7 +739,7 @@ export const confirmarNovoEmail = async (req, res) => {
 
     return res.redirect(303, url.toString());
   } catch (err) {
-    try { await conn.rollback(); } catch {}
+    try { await conn.rollback(); } catch { }
     console.error('confirmarNovoEmail:', err?.sqlMessage || err);
     return res.status(500).json({ error: err?.sqlMessage || 'Erro ao confirmar e-mail.' });
   } finally {
@@ -753,7 +753,7 @@ export const uploadIcon = async (req, res) => {
   if (!req.file) return res.status(400).json({ error: 'Arquivo ausente.' });
 
   const username = req.usuarioUsername;
-  const publicPath = `/uploads/avatars/${req.file.filename}`; 
+  const publicPath = `/uploads/avatars/${req.file.filename}`;
 
   try {
     await pool.query(
@@ -763,7 +763,7 @@ export const uploadIcon = async (req, res) => {
 
     return res.json({
       message: 'Foto atualizada.',
-      iconUrl: relToAbs(publicPath), 
+      iconUrl: relToAbs(publicPath),
     });
   } catch (err) {
     return res.status(500).json({ error: err?.sqlMessage || 'Falha ao salvar icon.' });
@@ -784,10 +784,10 @@ export const removerIcon = async (req, res) => {
         const data = typeof row.icon === 'string' ? JSON.parse(row.icon) : row.icon;
         const rel = data?.url || null;
         if (rel) {
-          const abs = path.join(process.cwd(), rel.replace(/^\//,''));
+          const abs = path.join(process.cwd(), rel.replace(/^\//, ''));
           fs.unlinkSync(abs);
         }
-      } catch {}
+      } catch { }
     }
 
     await pool.query(
