@@ -1,6 +1,7 @@
 import styled from "styled-components";
 
 
+
 export const Container = styled.div`
   display: grid;
   left: 58.5%;
@@ -88,6 +89,19 @@ export const QuadroKanban = styled.div`
     padding: 1%;
     gap: 10%;
     justify-content: flex-start;
+     &::-webkit-scrollbar {
+    width: 5px;
+  }
+
+  &::-webkit-scrollbar-track {
+    background: var(--fundo-menu);
+    border-radius: 10px;
+  }
+
+  &::-webkit-scrollbar-thumb {
+    background-color: var(--fundo-menu-ativo);
+    border-radius: 10px;
+  }
 `;
 export const Pendente = styled(QuadroKanban)`
     grid-area: pendente;
@@ -119,19 +133,18 @@ export const Classificacao = styled.div`
     font-variation-settings:
     "wdth" 100;
 `;
-export const ProgressoCirculo = styled.div`
+export const ProgressoBox = styled.div`
     width: 70%;
     height: 70%;
     display:flex;
     justify-content: center;
     align-items: center;
     background-color: #353535;
-    border-radius: 100%;
     position: relative;
     left: 50%;
     top: 50%;
     transform: translate(-50%, -50%);
-    font-size: 42px;
+    font-size: 60px;
     color: #FFFFFF;
     font-family: "Roboto", sans-serif;
     font-optical-sizing: auto;

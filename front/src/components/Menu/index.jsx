@@ -38,17 +38,16 @@ function Menu() {
   });
   
   const [iconUrl, setIconUrl] = useState(localStorage.getItem('user_icon_url') || null);
-
   const [imgVer, setImgVer] = useState(0);
-
   const [displaySrc, setDisplaySrc] = useState(iconUrl || defaultUserImage);
-
   const objectUrlRef = useRef(null);
-
   const [modalListaAberto, setModalListaAberto] = useState(false);
   const [listas, setListas] = useState([]);
   const [submenuAberto, setSubmenuAberto] = useState('');
   const [submenuSelecionado, setSubmenuSelecionado] = useState({ pai: '', item: '' });
+
+  // 🔔 novo estado para controlar notificações não lidas
+  const [temNotificacoes, setTemNotificacoes] = useState(false);
 
   const withVersion = (url, ver) => {
     if (!url) return null;
@@ -162,23 +161,19 @@ function Menu() {
   const handleSubmenuClick = (pai, item, idLista = null) => {
     if (submenuSelecionado.pai === pai && submenuSelecionado.item === item) {
       setSubmenuSelecionado({ pai: '', item: '' });
-
-      if (pai === 'listas') {
-        setSubmenuAberto('listas');
-        navigate('/listas');
-      } else if (pai === 'tecnicas') {
-        setSubmenuAberto('tecnicas');
-        navigate('/tecnicas');
-      } else if (pai === 'relatorios') {
-        setSubmenuAberto('relatorios');
-        navigate('/relatorios');
-      }
       return;
     }
+
     setSubmenuSelecionado({ pai, item });
+
     if (pai === 'listas') {
+      setSubmenuAberto('listas');
       const listaSlug = encodeURIComponent(item);
       navigate(`/listas/${listaSlug}`);
+    } else if (pai === 'tecnicas') {
+      navigate(`/${item.toLowerCase()}`);
+    } else if (pai === 'relatorios') {
+      navigate(`/relatorio${item.toLowerCase()}`);
     }
   };
 
@@ -212,6 +207,9 @@ function Menu() {
       atualizarListas();
       window.dispatchEvent(new Event('listasAtualizadas'));
       navigate(`/listas/${encodeURIComponent(novaLista.nomeLista)}`);
+
+      // 🔔 sempre que criar algo novo, marcar notificações não lidas
+      setTemNotificacoes(true);
     } catch (err) {
       const msg = err?.response?.data?.error || 'Erro inesperado ao criar lista';
       console.error('Erro ao criar lista:', msg);
@@ -224,6 +222,16 @@ function Menu() {
     localStorage.removeItem('user');
     localStorage.removeItem('user_icon_url');
     window.location.href = '/login';
+  };
+
+  const handleCronometro = () => {
+    navigate('/cronometro');
+  };
+
+  const handleLembretes = () => {
+    // 🔔 ao abrir lembretes, marca notificações como lidas
+    setTemNotificacoes(false);
+    navigate('/lembretes');
   };
 
   return (
@@ -293,9 +301,19 @@ function Menu() {
 
       <Lista>
         <ItemMaior
-          style={{ color: submenuAberto === 'listas' ? '#AF52DE' : '' }}
-          onClick={() => handleClick('listas', false)}
+            style={{
+              color:
+                submenuAberto === 'listas' && submenuSelecionado.pai !== 'listas'
+                  ? '#AF52DE'
+                  : submenuSelecionado.pai === 'listas' && submenuSelecionado.item
+                  ? ''
+                  : submenuAberto === 'listas'
+                  ? '#AF52DE'
+                  : ''
+            }}
+            onClick={() => handleClick('listas', false)}
         >
+
           <ListasHeader>
             Listas
             {submenuAberto === 'listas' && (
@@ -389,11 +407,11 @@ function Menu() {
 
       <OpcoesAbaixo>
         <OpcoesAbaixo1>
-          <span className="material-symbols-outlined" id="sino">
+          <span className="material-symbols-outlined" id="sino" onClick={handleCronometro}>
             schedule
           </span>
-          <span className="material-symbols-outlined" id="notificacao">
-            notifications
+          <span className="material-symbols-outlined" id="notificacao" onClick={handleLembretes}>
+            {temNotificacoes ? "notifications_unread" : "notifications"}
           </span>
         </OpcoesAbaixo1>
         <span className="material-symbols-outlined" id="logout" onClick={handleLogout}>

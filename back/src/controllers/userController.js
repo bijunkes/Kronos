@@ -332,7 +332,7 @@ export const solicitarResetSenha = async (req, res) => {
             Redefinir minha senha
           </a>
         </p>
-        <p style="color:#666">Se o botão não funcionar, copie e cole este link no navegador:<br>${link}</p>
+        
       `,
     });
 

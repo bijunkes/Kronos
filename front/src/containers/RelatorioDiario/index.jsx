@@ -1,12 +1,13 @@
 import { React, useState, useEffect } from 'react';
 import {
-    Container, Titulo, Data, Progresso, Pomodoro, Pendente, Andamento, Concluido, Classificacao, ProgressoCirculo, BoxTitulo, BoxTarefas, BoxNomeTarefa, NomeTarefa, NaoImportanteUrgente,
+    Container, Titulo, Data, Progresso, Pomodoro, Pendente, Andamento, Concluido, Classificacao, ProgressoBox, BoxTitulo, BoxTarefas, BoxNomeTarefa, NomeTarefa, NaoImportanteUrgente,
     NaoImportanteNaoUrgente,
     ImportanteNaoUrgente,
     ImportanteUrgente,
-    RelatorioKanban
+    RelatorioKanban,
+    Icones
 } from './style'
-import { listarAtividadesEmKanban, listarAtividades, contaEmMatrizPorClassificacao } from "../../services/api.js";
+import { listarAtividadesEmKanban, listarAtividades, listarAtividadesEisenPorClassificacao} from "../../services/api.js";
 
 function RelatorioDiario() {
 
@@ -31,8 +32,8 @@ function RelatorioDiario() {
             console.log(todasAtividadesEmKanban);
             const matrizMap = new Map();
             todasAtividadesEmKanban.forEach(item => {
-                if(item.dataAlteracao.substring(0,10) == capturaData()){
-                matrizMap.set(item.idAtividadeKanban, item.classificacao)
+                if (item.dataAlteracao.substring(0, 10) == capturaData()) {
+                    matrizMap.set(item.idAtividadeKanban, item.classificacao)
                 }
             })
             const atividadesEmKanban = todasAtividades.filter(atv => matrizMap.has(atv.Kanban_idAtividadeKanban)).map(atv => ({
@@ -75,31 +76,29 @@ function RelatorioDiario() {
     }, []);
     const contagemAtividadesConcluidas = async () => {
         const todasAtividades = await listarAtividades();
-        let cont =0;
-        let quantAtvs =0;
+        let cont = 0;
+        let quantAtvs = 0;
 
-        const calculaPorcentagem = (total, parcial) => {
-            const resultado = (parcial*100) /total;
-            return resultado;
-        }
+
 
         todasAtividades.forEach(atv => {
-            if(atv.statusAtividade == "1" && atv.dataConclusao.substring(0,10) == capturaData()){
-                 console.log(`Atividade Dentro do if: ${atv}`);
-                cont++;
+            if (atv.statusAtividade == "1") {
+                if (atv.dataConclusao.substring(0, 10) == capturaData()) {
+                    console.log(`Atividade Dentro do if: ${atv}`);
+                    cont++;
+                }
+
+            } else {
+                quantAtvs++;
             }
-            quantAtvs++;
+
         })
 
         console.log(`Total de atividades: ${quantAtvs}`);
         console.log(`Atividades concluidas: ${cont}`);
-        const porcentagem = Math.round(calculaPorcentagem(quantAtvs, cont));
-        console.log(`Porcentagem: ${porcentagem}`);
-        if(  porcentagem !== 0 && porcentagem < 10){
-            return `0${porcentagem}%`;
-        }
 
-        return `${porcentagem}%`;
+
+        return `${cont}|${quantAtvs}`;
 
     }
     const dataFormatada = () => {
@@ -108,7 +107,7 @@ function RelatorioDiario() {
         const mes = String(dataAtual.getMonth() + 1).padStart(2, '0');
         const ano = dataAtual.getFullYear();
 
-        
+
         return `Data:   ${dia}/${mes}/${ano}`;
     }
     const capturaData = () => {
@@ -119,38 +118,42 @@ function RelatorioDiario() {
 
         return `${ano}-${mes}-${dia}`;
     }
-    
+
     const defineTamanho = async (classificacao) => {
         console.log(classificacao)
         console.log(`${capturaData()}`);
-        const quadrante = await contaEmMatrizPorClassificacao(classificacao, capturaData());
+        const listaMatriz = await listarAtividadesEisenPorClassificacao(classificacao);
+        let quantidade = 0;
+        listaMatriz.forEach(atv => {
+            if (atv.dataAlteracao.substring(0, 10) == capturaData()) {
 
-        const extraiValor = (valor) => {
-            if (!valor) return 0;
-            if (Array.isArray(valor)) {
-                const primeiro = valor[0];
-                if (typeof primeiro === 'number') return primeiro;
-                if (typeof primeiro === 'object') return Object.values(primeiro)[0];
+                console.log(`contando...`);
+                quantidade++;
+
             }
-            if (typeof valor === 'object') return Object.values(valor)[0];
-            return valor;
-        };
+        })
 
-        const quantidade = extraiValor(quadrante);
         const tamanho = quantidade * 5;
         console.log("Tamanho do quadrante " + classificacao + ": " + tamanho);
         return tamanho;
 
     }
+    const textoKanban = 'Aqui estão organizadas as\natividades do Kanban modificadas hoje'
+    const textoClassificacao = 'Aqui estão organizadas as\natividades presentes na matriz de Eisenhower\nque foram modificadas hoje'
+    const textoProgresso = 'Aqui são consideradas as atividades terminadas hoje e as ainda não concluídas\nConcluídas hoje/Não Concluídas'
     return (
         <>
             <Container>
                 <Titulo>Relatório Diário</Titulo>
-                <RelatorioKanban>Atividades do Kanban (somente as alteradas hoje)</RelatorioKanban>
+                <RelatorioKanban>Atividades do Kanban <Icones className="material-symbols-outlined" title={textoKanban}>
+                    info
+                </Icones></RelatorioKanban>
                 <Data>{dataFormatada()}</Data>
                 <Progresso>
-                    Progresso
-                    <ProgressoCirculo>{contAtvs}</ProgressoCirculo>
+                    <span style={{ display: 'flex' }}>Progresso <Icones className="material-symbols-outlined" title={textoProgresso}>
+                        info
+                    </Icones></span>
+                    <ProgressoBox>{contAtvs}</ProgressoBox>
                 </Progresso>
                 <Pomodoro></Pomodoro>
                 <Pendente><BoxTitulo>Pendente</BoxTitulo>{atividades.filter(atividade => atividade.coluna === 1).map(atividade => (
@@ -169,11 +172,13 @@ function RelatorioDiario() {
                     </BoxTarefas>
                 ))}</Concluido>
                 <Classificacao>
-                    Atividades em Eisenhower
-                    <ImportanteUrgente style={{ width: `${tamanhos[1]}vw` }} title='Importante e Urgente'>{tamanhos[1]/5}</ImportanteUrgente>
-                    <ImportanteNaoUrgente style={{ width: `${tamanhos[2]}vw` }} title='Importante e Não urgente'>{tamanhos[2]/5}</ImportanteNaoUrgente>
-                    <NaoImportanteUrgente style={{ width: `${tamanhos[3]}vw` }} title='Não importante e Urgente'>{tamanhos[3]/5}</NaoImportanteUrgente>
-                    <NaoImportanteNaoUrgente style={{ width: `${tamanhos[4]}vw` }} title='Não importante e Não urgente'>{tamanhos[4]/5}</NaoImportanteNaoUrgente>
+                    <span style={{ display: 'flex' }}>Classificação <Icones className="material-symbols-outlined" title={textoClassificacao}>
+                        info
+                    </Icones></span>
+                    <ImportanteUrgente style={{ width: `${tamanhos[1]}vw` }} title='Importante e Urgente'>{tamanhos[1] / 5}</ImportanteUrgente>
+                    <ImportanteNaoUrgente style={{ width: `${tamanhos[2]}vw` }} title='Importante e Não urgente'>{tamanhos[2] / 5}</ImportanteNaoUrgente>
+                    <NaoImportanteUrgente style={{ width: `${tamanhos[3]}vw` }} title='Não importante e Urgente'>{tamanhos[3] / 5}</NaoImportanteUrgente>
+                    <NaoImportanteNaoUrgente style={{ width: `${tamanhos[4]}vw` }} title='Não importante e Não urgente'>{tamanhos[4] / 5}</NaoImportanteNaoUrgente>
                 </Classificacao>
             </Container>
         </>

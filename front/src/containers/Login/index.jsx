@@ -39,7 +39,6 @@ function Login() {
     let emailVal = '';
     let msgVal   = '';
 
-    // 1) Tenta via cookies (flash_email / flash_msg)
     const emailC = getCookie('flash_email');
     const msgC   = getCookie('flash_msg');
 
@@ -47,20 +46,14 @@ function Login() {
       emailVal = safeDecode(emailC);
       msgVal   = safeDecode(msgC);
 
-      // limpa os cookies (one-shot)
       document.cookie = 'flash_email=; Max-Age=0; path=/; SameSite=Lax';
       document.cookie = 'flash_msg=; Max-Age=0; path=/; SameSite=Lax';
     }
 
-    // 2) Se não veio por cookies, tenta via querystring
     if (!emailVal && !msgVal) {
       const qs = new URLSearchParams(window.location.search);
-
-      // padrão novo (confirmar novo e-mail): ?email=<...>&email_changed=1
       const qpEmail = qs.get('email');
       const emailChanged = qs.get('email_changed') === '1';
-
-      // compat anterior (verificação/cadastro): ?verified=1&email=<...>&toast=<...>
       const verified = qs.get('verified') === '1';
       const toastMsg = qs.get('toast');
 
@@ -72,7 +65,6 @@ function Login() {
         msgVal = safeDecode(toastMsg) || 'Conta cadastrada. Você já pode acessar.';
       }
 
-      // remove parâmetros usados
       if (qpEmail || emailChanged || verified || toastMsg) {
         qs.delete('email');
         qs.delete('email_changed');
@@ -120,7 +112,6 @@ function Login() {
     const tid = toast.loading('Enviando link de redefinição...', { position: 'top-center' });
     try {
       await solicitarResetSenha(emailParaReset);
-      // mensagem de sucesso já vem do interceptor, se aplicável
     } catch (err) {
       showOkToast(err?.response?.data?.error || 'Não foi possível enviar o link.', 'error');
     } finally {

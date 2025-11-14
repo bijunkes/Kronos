@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react'; 
 import {
   Background,
   ContainerLista,
@@ -22,30 +22,35 @@ function Hoje() {
   const [filtro, setFiltro] = useState("");
 
   useEffect(() => {
-    const carregarAtividadesHoje = async () => {
-      try {
-        const todas = await listarTodasAtividades();
-        const hoje = new Date().toISOString().split("T")[0]; // yyyy-mm-dd
+  const carregarAtividadesHoje = async () => {
+    try {
+      const todas = await listarTodasAtividades();
 
-        const filtradas = todas
-          .filter(a => {
-            if (!a.prazoAtividade) return false;
-            const data = a.prazoAtividade.split("T")[0];
-            return data === hoje;
-          })
-          .map(a => ({
-            ...a,
-            concluido: a.statusAtividade === 1
-          }));
+      const hoje = new Date(Date.now() - new Date().getTimezoneOffset() * 60000)
+        .toISOString()
+        .split("T")[0];
 
-        setAtividades(ordenarAtividades(filtradas));
-      } catch (err) {
-        console.error("Erro ao carregar atividades de hoje:", err);
-      }
-    };
+      const filtradas = todas
+        .filter(a => {
+          if (!a.prazoAtividade) return false;
+          const match = a.prazoAtividade.match(/\d{4}-\d{2}-\d{2}/);
+          const dataAtividade = match ? match[0] : null;
+          return dataAtividade === hoje;
+        })
+        .map(a => ({
+          ...a,
+          concluido: a.statusAtividade === 1
+        }));
 
-    carregarAtividadesHoje();
-  }, []);
+      setAtividades(ordenarAtividades(filtradas));
+    } catch (err) {
+      console.error("Erro ao carregar atividades de hoje:", err);
+    }
+  };
+
+  carregarAtividadesHoje();
+}, []);
+
 
   const ordenarAtividades = (lista) => {
     return [...lista].sort((a, b) => {
@@ -132,39 +137,38 @@ function Hoje() {
               </div>
             )}
             {atividadesFiltradas.map((a, index) => {
-  const isSelecionada = atividadeSelecionada?.idAtividade === a.idAtividade;
-  return (
-    <Atividade
-      key={a.idAtividade || index}
-      onClick={() => setAtividadeSelecionada(isSelecionada ? null : a)}
-      style={{
-        backgroundColor: isSelecionada
-          ? 'var(--cinza-claro)'
-          : 'var(--fundo-menu-ativo)',
-      }}
-    >
-      <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-        <span
-          className="material-symbols-outlined"
-          style={{ fontSize: '20px', cursor: 'pointer' }}
-          onClick={(e) => {
-            e.stopPropagation();
-            toggleConcluido(index);
-          }}
-        >
-          {a.concluido ? 'radio_button_checked' : 'radio_button_unchecked'}
-        </span>
-        {a.nomeAtividade}
-      </div>
-      <Prazo>
-        {a.prazoAtividade
-          ? new Date(a.prazoAtividade.replace(' ', 'T')).toLocaleDateString()
-          : 'Sem prazo'}
-      </Prazo>
-    </Atividade>
-  );
-})}
-
+              const isSelecionada = atividadeSelecionada?.idAtividade === a.idAtividade;
+              return (
+                <Atividade
+                  key={a.idAtividade || index}
+                  onClick={() => setAtividadeSelecionada(isSelecionada ? null : a)}
+                  style={{
+                    backgroundColor: isSelecionada
+                      ? 'var(--cinza-claro)'
+                      : 'var(--fundo-menu-ativo)',
+                  }}
+                >
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                    <span
+                      className="material-symbols-outlined"
+                      style={{ fontSize: '20px', cursor: 'pointer' }}
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        toggleConcluido(index);
+                      }}
+                    >
+                      {a.concluido ? 'radio_button_checked' : 'radio_button_unchecked'}
+                    </span>
+                    {a.nomeAtividade}
+                  </div>
+                  <Prazo>
+                    {a.prazoAtividade
+                      ? new Date(a.prazoAtividade.replace(' ', 'T')).toLocaleDateString()
+                      : 'Sem prazo'}
+                  </Prazo>
+                </Atividade>
+              );
+            })}
           </AreaAtividades>
         </Conteudo>
 

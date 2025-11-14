@@ -44,12 +44,12 @@ export const listarAtividadesNaMatriz = async (req, res) => {
     }
 }
 export const listarAtividadesPorClassificacao = async (req, res) => {
-    const id = req.params.idAtividadeEisenhower;
+    
     const classificacao = req.params.classificacao;
 
     try {
         const [atividades] = await pool.query(
-            `SELECT * FROM eisenhower WHERE idAtividadeEisenhower = ? AND classificacao= ? ORDER BY idAtividadeEisenhower ASC`, [id, classificacao]
+            `SELECT * FROM eisenhower WHERE classificacao= ? ORDER BY classificacao ASC`, [ classificacao]
         );
         res.json(atividades);
     } catch (err) {
@@ -97,7 +97,7 @@ export const contaPorClassificacao = async (req, res) => {
 
     try {
         const contagem = await pool.query(
-            `SELECT COUNT(*) AS total FROM eisenhower WHERE classificacao = ? AND DATE(dataAlteracao) = ?`,
+            `SELECT COUNT(*) AS total, DATE(dataAlteracao) FROM eisenhower JOIN atividades a ON idAtividadeEisenhower = a.Eisenhower_idAtividadeEisenhower WHERE classificacao = ? AND DATE(dataAlteracao) = ? AND a.statusAtividade = 0 GROUP BY DATE(dataAlteracao);`,
             [classificacao, dataAlteracao]
         );
         console.log("Contagem: "+ contagem[0])

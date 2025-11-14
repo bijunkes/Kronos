@@ -133,19 +133,18 @@ export const Classificacao = styled.div`
     font-variation-settings:
     "wdth" 100;
 `;
-export const ProgressoCirculo = styled.div`
+export const ProgressoBox = styled.div`
     width: 70%;
     height: 70%;
     display:flex;
     justify-content: center;
     align-items: center;
     background-color: #353535;
-    border-radius: 100%;
     position: relative;
     left: 50%;
     top: 50%;
     transform: translate(-50%, -50%);
-    font-size: 42px;
+    font-size: 60px;
     color: #FFFFFF;
     font-family: "Roboto", sans-serif;
     font-optical-sizing: auto;
@@ -154,7 +153,7 @@ export const ProgressoCirculo = styled.div`
     font-variation-settings:
     "wdth" 100;
 `;
-export const BoxTitulo= styled.div`
+export const BoxTitulo = styled.div`
     position: relative;
     display: flex;
     align-items: center;
@@ -190,7 +189,7 @@ export const BoxNomeTarefa = styled.div`
     color: rgba(255, 255, 255, 1);
     display: flex;
     justify-content: center;
-    flex wrap: wrap;
+    flex-wrap: wrap;
 `;
 
 export const NomeTarefa = styled.h2`
@@ -211,6 +210,19 @@ export const QuadroEisen = styled.div`
     justify-content: flex-end;
     left: 0;
     color: #FFFFFF;
+     &::-webkit-scrollbar {
+    width: 5px;
+  }
+
+  &::-webkit-scrollbar-track {
+    background: var(--fundo-menu);
+    border-radius: 10px;
+  }
+
+  &::-webkit-scrollbar-thumb {
+    background-color: var(--fundo-menu-ativo);
+    border-radius: 10px;
+  }
 `;
 export const ImportanteUrgente = styled(QuadroEisen)`
   background-color: #B3261E;
@@ -227,5 +239,13 @@ export const NaoImportanteUrgente = styled(QuadroEisen)`
 
 export const NaoImportanteNaoUrgente = styled(QuadroEisen)`
   background-color: #34C759;
+
+`;
+export const Icones = styled.span`
+    position: relative;
+    left: 30%;
+    color: rgba(255, 255, 255, 1);
+    left: 1rem;
+    
 
 `;

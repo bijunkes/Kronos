@@ -9,22 +9,61 @@ export const Painel = styled.div`
     margin: 1rem 1rem 1rem 1rem;
     background-color: #252525;
     border-radius: 1rem;
-    
+    overflow-y: scroll;
+    scroll-behavior: smooth;
+    &::-webkit-scrollbar {
+    width: 6px;
+  }
+
+  &::-webkit-scrollbar-thumb {
+    background-color: rgba(255, 255, 255, 0.15);
+    border-radius: 10px;
+  }
+
+  &::-webkit-scrollbar-thumb:hover {
+    background-color: rgba(255, 255, 255, 0.25);
+  }
     
 `;
+export const PainelTarefas = styled.div`
+  display: flex;
+  flex-direction: column;
+  width: 95%;
+  height: 78.42vh;
+  position: absolute;
+  overflow-y: scroll;
+  top: 5rem;
+  left: 1rem;
+  scroll-behavior: smooth;
+  &::-webkit-scrollbar {
+    width: 6px;
+  }
+
+  &::-webkit-scrollbar-thumb {
+    background-color: rgba(255, 255, 255, 0.15);
+    border-radius: 10px;
+  }
+
+  &::-webkit-scrollbar-thumb:hover {
+    background-color: rgba(255, 255, 255, 0.25);
+  }
+
+
+`;
+
 export const BoxTitulo= styled.div`
-    position: relative;
+    position: absolute;
     display: flex;
     align-items: center;
     justify-content: center;
     align-self: center;
     height: 5.29vh;
     width: 24vw;
-    font-size: 24px;
+    font-size: 20px;
     background-color: rgba(255, 255, 255, 0.1);
     border-radius: 1rem;
     top: 1rem;
-    font-weight: bold;
+    font-weight: 0;
     color: rgba(255, 255, 255, 1);
 `;
 export const Container = styled.div`
@@ -36,7 +75,7 @@ export const Container = styled.div`
   justify-content: space-around;
 
 `;
-export const BoxTarefas = styled.div`
+export const BoxTarefa = styled.div`
     height: auto;
     width: 24vw;
     background-color: rgba(255, 255, 255, 0.1);
@@ -44,11 +83,10 @@ export const BoxTarefas = styled.div`
     border-radius: 2rem;
     position: relative;
     display: flex;
-    top: 3rem;
-    left: 1rem;
     margin-bottom: 1rem;
     justify-content: space-around;
     flex-wrap: wrap;
+     
 `;
 export const BoxNomeTarefa = styled.div`
     position: relative;
@@ -58,12 +96,13 @@ export const BoxNomeTarefa = styled.div`
     color: rgba(255, 255, 255, 1);
     display: flex;
     justify-content: center;
-    flex wrap: wrap;
+    flex-wrap: wrap;
 `;
 
 export const NomeTarefa = styled.h2`
     position: relative;
     align-self: center;
+    font-weight: 0;
     color: rgba(255, 255, 255, 1);
 `;
 export const BoxIcones = styled.div`
@@ -90,11 +129,10 @@ export const BoxAdicionar= styled.button`
     align-self: center;
     height: 5.29vh;
     width: 24vw;
-    font-size: 24px;
+    font-size: 20px;
     background-color: rgba(255, 255, 255, 0.1);
     border-radius: 1rem;
     margin-top: auto;
     bottom: 1rem;
-    font-weight: bold;
     color: rgba(255, 255, 255, 1);
 `;

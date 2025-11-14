@@ -1,24 +1,42 @@
 import React, { useEffect, useState } from 'react';
-import { listarAtividades, listarListas } from '../../services/api.js';  
-import { Overlay, AtividadeCard, ModalContainer, ModalHeader, Icones, ModalBody } from './style.js';
+import { listarAtividades, listarListas } from '../../services/api.js';
+import {
+    Overlay,
+    AreaAtividades,
+    Atividade,
+    Prazo,
+    Input,
+    ModalHeader,
+    Pesquisar,
+    ContainerLista,
+    Conteudo,
+} from './style.js';
 
-function ModalTecnicas({ onClose, onAdicionar}) {
+function ModalTecnicas({ onClose, onAdicionar, onTecnica }) {
     const [atividades, setAtividades] = useState([]);
     const [erro, setErro] = useState(null);
+    const [filtro, setFiltro] = useState("");
     const [carregando, setCarregando] = useState(false);
     const [idPadrao, setIdPadrao] = useState(null);
+    const [atividadeSelecionada, setAtividadeSelecionada] = useState(null);
 
     const buscarAtividades = async () => {
         setCarregando(true);
         try {
-            
+
             const atvsNaoConcluidas = []
             const todasAtividades = await listarAtividades();
             todasAtividades.forEach(atividade => {
                 if (atividade.statusAtividade !== 1) {
-                    atvsNaoConcluidas.push(atividade);
+                    if (onTecnica == "kanban" && !atividade.Kanban_idAtividadeKanban) {
+                        atvsNaoConcluidas.push(atividade)
+                    } else if (onTecnica == "eisenhower" && !atividade.Eisenhower_idAtividadeEisenhower) {
+                        atvsNaoConcluidas.push(atividade)
+                    }
+
                 }
-            }); 
+
+            });
             setAtividades(atvsNaoConcluidas);
         } catch (err) {
             console.error('Erro ao carregar todas as atividades', err);
@@ -38,34 +56,68 @@ function ModalTecnicas({ onClose, onAdicionar}) {
         }
     };
 
+    const atividadesFiltradas = atividades.filter((a) =>
+        a.nomeAtividade.toLowerCase().includes(filtro.toLowerCase())
+    );
+
     useEffect(() => {
         buscarAtividades();
         carregarListaPadrao();
     }, []);
 
-   
+
 
     return (
         <Overlay>
-            <ModalContainer>
+            <ContainerLista>
                 <ModalHeader>
                     Atividades
-                    <Icones onClick={onClose} className="material-symbols-outlined">
+                    <span className="material-symbols-outlined" onClick={onClose}>
                         close
-                    </Icones>
+                    </span>
                 </ModalHeader>
-                <ModalBody>
-                    {carregando && <p>Carregando...</p>}
-                    {erro && <p style={{ color: 'red' }}>{erro}</p>}
-                    {atividades.length === 0 && !carregando && !erro && <p>Nenhuma atividade disponível.</p>}
-                    {atividades.map((atividade, index) => (
-                        <AtividadeCard onClick={() => onAdicionar(atividade, idPadrao)} key={atividade.idAtividade}>
-                            <p><strong>{atividade.nomeAtividade}</strong></p>
-                        </AtividadeCard>
-                    ))}
-                </ModalBody>
-            </ModalContainer>
+                <Conteudo>
+                    <AreaAtividades>
+                        {carregando && <p>Carregando...</p>}
+                        {erro && <p style={{ color: 'red' }}>{erro}</p>}
+                        {atividades.length === 0 && !carregando && !erro && <p>Nenhuma atividade disponível.</p>}
+                        {atividadesFiltradas.length === 0 && (
+                            <div style={{ padding: '1rem', color: '#999' }}>
+                                Nenhuma atividade encontrada.
+                            </div>
+                        )}
+
+                        {atividadesFiltradas.map((a, index) => {
+                            const isSelecionada = atividadeSelecionada?.idAtividade === a.idAtividade;
+                            return (
+                                <>
+                                    {atividades.map((atividade, index) => (
+                                        <Atividade onClick={() => onAdicionar(atividade, idPadrao)} key={atividade.idAtividade}>
+                                            <p><strong>{atividade.nomeAtividade}</strong></p>
+                                            <Prazo>
+                                                {atividade.prazoAtividade
+                                                    ? new Date(atividade.prazoAtividade.replace(' ', 'T')).toLocaleDateString()
+                                                    : 'Sem prazo'}
+                                            </Prazo>
+                                        </Atividade>
+                                    ))}
+                                </>
+                            );
+                        })}
+                    </AreaAtividades>
+                </Conteudo>
+                <Pesquisar>
+                    <span className="material-symbols-outlined">search</span>
+                    <Input
+                        type="text"
+                        placeholder="Pesquisar..."
+                        value={filtro}
+                        onChange={(e) => setFiltro(e.target.value)}
+                    />
+                </Pesquisar>
+            </ContainerLista>
         </Overlay>
+
     );
 }
 

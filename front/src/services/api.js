@@ -119,6 +119,8 @@ export const excluirConta = async () =>
   (await api.delete('/usuarios/me')).data;
 
 
+export const excluirLembretes = async () =>
+  (await api.delete('/lembretes')).data;
 
 
 export const criarAtividade = async (dados) =>
@@ -173,9 +175,12 @@ export const atualizarIdKanbanAtividade = async (id, dados) => {
   return response.data;
 };
 
-
+export const listarAtividadesEisenPorClassificacao = async (classificacao) => {
+  const response = await api.get(`/eisenhower/listar/${classificacao}`);
+  return response.data;
+};
 export const listarAtividadesEmMatriz = async () => {
-    const response = await api.get('/eisenhower/idAtividadeEisenhower');
+    const response = await api.get('/eisenhower/');
     return response.data;
 };
 export const deletarAtividadeDeMatriz = async (idAtividadeEisenhower) => {
@@ -197,7 +202,7 @@ export const contaEmMatrizPorClassificacao = async (classificacao, dataAlteracao
 };
 
 export const listarAtividadesEmKanban = async () => {
-    const response = await api.get('/kanban/idAtividadeKanban');
+    const response = await api.get('/kanban/');
     return response.data;
 };
 export const deletarAtividadeDeKanban = async (idAtividadeKanban) => {
