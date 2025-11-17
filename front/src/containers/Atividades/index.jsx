@@ -13,7 +13,7 @@ import {
     Pesquisar,
     Input
 } from './styles.js';
-import { listarAtividadesPorLista, listarListas, listarTodasAtividades, atualizarAtividade, deletarAtividadeDeMatriz } from '../../services/api.js';
+import { listarAtividadesPorLista, listarListas, listarTodasAtividades, atualizarAtividade, deletarAtividadeDeMatriz, atualizarAtividadeEmKanban } from '../../services/api.js';
 import ModalCriarAtividade from '../ModalCriarAtividade/index.jsx';
 import AtividadeSelecionada from '../AtividadeSelecionada/index.jsx';
 
@@ -75,19 +75,19 @@ function Atividades() {
     const capturaData = () => {
         const dataAtual = new Date();
 
-        const formato = { 
-        year: 'numeric', 
-        month: '2-digit', 
-        day: '2-digit', 
-        hour: '2-digit', 
-        minute: '2-digit', 
-        second: '2-digit', 
-        hour12: false 
-    };
+        const formato = {
+            year: 'numeric',
+            month: '2-digit',
+            day: '2-digit',
+            hour: '2-digit',
+            minute: '2-digit',
+            second: '2-digit',
+            hour12: false
+        };
 
-    const dataFormatada = dataAtual.toLocaleString('sv-SE', formato);
-    console.log(dataFormatada)
-    return dataFormatada.replace(', ', '');
+        const dataFormatada = dataAtual.toLocaleString('sv-SE', formato);
+        console.log(dataFormatada)
+        return dataFormatada.replace(', ', '');
     }
 
     const toggleConcluido = async (index) => {
@@ -120,10 +120,15 @@ function Atividades() {
         }
 
         try {
+            if (atividade.Eisenhower_idAtividadeEisenhower !== null) { await deletarAtividadeDeMatriz(atividade.Eisenhower_idAtividadeEisenhower); }
+
+            
+            
+
             await atualizarAtividade(atividade.idAtividade, {
                 nomeAtividade: atividade.nomeAtividade,
                 descricaoAtividade: atividade.descricaoAtividade,
-                prazoAtividade: formatarDataMySQL(atividade.prazoAtividade),
+                prazoAtividade: atividade.prazoAtividade,
                 statusAtividade: novoStatus,
                 dataConclusao: novaConclusao,
                 ListaAtividades_idLista: listaSelecionada || atividade.ListaAtividades_idLista,
@@ -131,7 +136,12 @@ function Atividades() {
                 Kanban_idAtividadeKanban: atividade.Kanban_idAtividadeKanban,
                 Eisenhower_idAtividadeEisenhower: null
             });
-            await deletarAtividadeDeMatriz(atividade.idAtividadeEisenhower);
+            if(novoStatus == 0 && atividade.Kanban_idAtividadeKanban !== null ){
+                console.log("aaiiaoiaoiosioaispoia")
+                await atualizarAtividadeEmKanban(atividade.Kanban_idAtividadeKanban, 1,formatarDataMySQL(new Date()))
+                
+            }
+
         } catch (err) {
             console.error('Erro ao atualizar atividade:', err);
             setAtividades(atividades);

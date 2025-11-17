@@ -58,7 +58,7 @@ function Kanban() {
             })
             const atividadesEmKanban = todasAtividades.filter(atv => matrizMap.has(atv.Kanban_idAtividadeKanban)).map(atv => ({
                 ...atv,
-                coluna: parseInt(matrizMap.get(atv.Kanban_idAtividadeKanban)),
+                coluna: verificaConclusao(atv),
                 nome: atv.nomeAtividade,
             }))
             setAtividades(atividadesEmKanban);
