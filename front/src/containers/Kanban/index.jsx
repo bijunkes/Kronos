@@ -38,12 +38,12 @@ function Kanban() {
             todasAtividadesEmKanban.forEach(item => {
                 matrizMap.set(item.idAtividadeKanban, item.classificacao)
             })
-            console.log([...matrizMap.keys()]);
+            console.log("chablau: "+[...matrizMap.values()]);
             const verificaConclusao = (atividade) => {
                 console.log("LIAWYUuiwquiqwfuiwbf: "+atividade);
                 if (atividade.statusAtividade == 1) {
                     todasAtividadesEmKanban.forEach(item => {
-                        if (item.idAtividadeKanban == atividade.Kanban_idAtividadeKanban && item.classificacao !== 3) {
+                        if (item.classificacao !== 3) {
                             atualizaKanban(item.idAtividadeKanban, 3, capturaData())
                         }
                     })
@@ -52,9 +52,13 @@ function Kanban() {
                 console.log("awrlkhhfguiwvbuiw4eb:  "+matrizMap.get(atividade.Kanban_idAtividadeKanban))
                 return parseInt(matrizMap.get(atividade.Kanban_idAtividadeKanban));
             }
+            console.log(matrizMap.has(7))
+            todasAtividades.forEach(a => {
+                console.log(a)
+            })
             const atividadesEmKanban = todasAtividades.filter(atv => matrizMap.has(atv.Kanban_idAtividadeKanban)).map(atv => ({
                 ...atv,
-                coluna: verificaConclusao(atv),
+                coluna: parseInt(matrizMap.get(atv.Kanban_idAtividadeKanban)),
                 nome: atv.nomeAtividade,
             }))
             setAtividades(atividadesEmKanban);
@@ -62,7 +66,7 @@ function Kanban() {
 
 
             console.log("todasAtividades:", todasAtividades);
-            console.log("todasAtividadesEmMatriz:", todasAtividadesEmKanban);
+            console.log("todasAtividadesEmKanban:", todasAtividadesEmKanban);
             console.log("AtividadesEmKanban:", atividadesEmKanban);
             console.log("Atividades doKanban:", atividadesAdicionadas);
 
@@ -147,20 +151,23 @@ function Kanban() {
 
         console.log("Atividade KAnben: " + atividadeKanban)
         if (atividadeKanban.coluna == 3) {
+            console.log("if funcionando")
             const atividade = atividadeKanban;
-            const novaConclusao = !atividade.concluido
-                ? atividade.dataConclusao || formatarDataMySQL(new Date())
-                : null;
             const novoStatus = 1;
+            console.log("Atividade: "+atividade)
             try {
                 await atualizarAtividade(atividade.idAtividade, {
                     nomeAtividade: atividade.nomeAtividade,
                     descricaoAtividade: atividade.descricaoAtividade,
                     prazoAtividade: formatarDataMySQL(atividade.prazoAtividade),
-                    dataConclusao: novaConclusao,
+                    dataConclusao: capturaData(),
                     statusAtividade: novoStatus,
+                    Pomodorostatus: atividade.Pomodorostatus,
+                    Kanban_idAtividadeKanban: atividade.Kanban_idAtividadeKanban,
+                    Eisenhower_idAtividadeEisenhower: atividade.Eisenhower_idAtividadeEisenhower,
                     ListaAtividades_idLista: atividade.ListaAtividades_idLista
                 });
+                
             } catch (err) {
                 console.error('Erro ao atualizar atividade:', err);
                 setAtividades(atividades);
@@ -169,6 +176,7 @@ function Kanban() {
                 }
             }
         }
+        return;
 
     }
     const proximo = (atividadeId) => {
@@ -189,7 +197,7 @@ function Kanban() {
             )
             const atividadeAtualizada = novaLista.find(t => t.idAtividade === atividadeId);
 
-            console.log("Atividade KAnben: " + atividadeAtualizada)
+            console.log("Atividade KAnben: " + atividadeAtualizada.Kanban_idAtividadeKanban)
 
             atualizaKanban(atividadeAtualizada.Kanban_idAtividadeKanban, atividadeAtualizada.coluna, capturaData());
             atividadeConcluida(atividadeAtualizada);
@@ -246,7 +254,7 @@ function Kanban() {
                             delete
                         </Icones>
                         <Icones className="material-symbols-outlined" onClick={() => anterior(atividadeId)}>
-                            arrow_left_alt
+                            arrow_back
                         </Icones>
                         <Icones className="material-symbols-outlined" onClick={() => proximo(atividadeId)}>
                             arrow_forward
@@ -260,7 +268,7 @@ function Kanban() {
                             delete
                         </Icones>
                         <Icones className="material-symbols-outlined" onClick={() => anterior(atividadeId)}>
-                            arrow_left_alt
+                            arrow_back
                         </Icones>
                     </BoxIcones>
                 );

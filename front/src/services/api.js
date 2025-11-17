@@ -162,24 +162,6 @@ export const listarTodasAtividades = async () =>
   (await api.get('/atividades', { __successSilent: true })).data;
 
 
-export const salvarAtividadesSessao = async (idSessao, atividades) => {
-  const res = await api.post(`/pomodoro/${idSessao}/atividades`, {
-    atividades: atividades.map(a => a.idAtividade)
-  });
-  return res.data;
-};
-
-
-
-
-export const listarAtividadesSessao = async (idSessao) => {
-  const res = await api.get(`/pomodoro/${idSessao}/atividades`);
-  return res.data;
-};
-
-
-
-
 export const atualizarIdEisenAtividade = async (id, dados) => {
   const response = await api.put(`/atividades/eisenhower/${id}`, dados);
   return response.data;
@@ -266,6 +248,53 @@ export const gerarLembretesProximas = async () =>
 
 export const gerarLembretesExpirados = async () =>
   (await api.post("/lembretes/gerar-expirados")).data;
+
+export const criarSessaoPomodoro = async (configuracoes) => {
+  const res = await api.post("/pomodoro", configuracoes);
+  return res.data;
+};
+
+export const salvarAtividadesSessao = async (idSessao, atividades) => {
+  const res = await api.post(`/pomodoro/${idSessao}/atividades`, {
+    atividades: atividades.map(a => a.idAtividade)
+  });
+  return res.data;
+};
+
+export const listarAtividadesSessao = async (idSessao) => {
+  const res = await api.get(`/pomodoro/${idSessao}/atividades`);
+  return res.data;
+};
+
+export const registrarTempoPomodoro = async (idSessao, tempos) => {
+  const res = await api.put(`/pomodoro/${idSessao}/tempo`, tempos);
+  return res.data;
+};
+
+export const finalizarSessaoPomodoro = async (idSessao) => {
+  const res = await api.put(`/pomodoro/${idSessao}/finalizar`);
+  return res.data;
+};
+
+export const iniciarSessaoPomodoro = async (idSessao) => {
+  const res = await api.put(`/pomodoro/${idSessao}/iniciar`);
+  return res.data;
+};
+
+export const adicionarAtividadeSessao = async (idSessao, idAtividade) => {
+  const res = await api.post(`/pomodoro/${idSessao}/atividades`, {
+    idAtividade
+  });
+  return res.data;
+};
+
+export const obterUltimaSessaoPomodoro = async () => {
+  const res = await api.get("/pomodoro/ultima");
+  return res.data;
+};
+
+
+
 
 export default api;
 
