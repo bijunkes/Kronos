@@ -5,7 +5,9 @@ import {
     ImportanteNaoUrgente,
     ImportanteUrgente,
     RelatorioKanban,
-    Icones
+    Icones,
+    BoxPomodoro,
+    PainelTarefas
 } from './style'
 import { listarAtividadesEmKanban, listarAtividades, listarAtividadesEisenPorClassificacao } from "../../services/api.js";
 
@@ -192,6 +194,7 @@ function RelatorioSemanal() {
     const textoKanban = 'Aqui estão organizadas as\natividades do Kanban modificadas na semana'
     const textoClassificacao = 'Aqui estão organizadas as\natividades presentes na matriz de Eisenhower\nque foram modificadas na semana'
     const textoProgresso = 'Aqui são consideradas as atividades terminadas na semana e as ainda não concluídas\nConcluídas na semana/Não Concluídas'
+    const textoPomodoro = 'Aqui estão o foco e descanso totais do Pomodoro dessa semana'
     return (
         <>
             <Container>
@@ -206,22 +209,33 @@ function RelatorioSemanal() {
                     </Icones></span>
                     <ProgressoBox>{contAtvs}</ProgressoBox>
                 </Progresso>
-                <Pomodoro></Pomodoro>
-                <Pendente><BoxTitulo>Pendente</BoxTitulo>{atividades.filter(atividade => atividade.coluna === 1).map(atividade => (
+                <Pomodoro>
+                    <span style={{ display: 'flex' }}>Pomodoro <Icones className="material-symbols-outlined" title={textoPomodoro}>
+                        info
+                    </Icones></span>
+                    <BoxPomodoro>Foco: </BoxPomodoro>
+                    <BoxPomodoro>Descanso: </BoxPomodoro></Pomodoro>
+                <Pendente><BoxTitulo>Pendente</BoxTitulo><PainelTarefas>{atividades.filter(atividade => atividade.coluna === 1).map(atividade => (
                     <BoxTarefas key={atividade.Kanban_idAtividadeKanban} id={atividade.idAtividade}>
-                        <BoxNomeTarefa><NomeTarefa>{atividade.nome}</NomeTarefa></BoxNomeTarefa>
+                        
+                            <BoxNomeTarefa><NomeTarefa>{atividade.nome}</NomeTarefa></BoxNomeTarefa>
+                        
                     </BoxTarefas>
-                ))}</Pendente>
-                <Andamento><BoxTitulo>Em Andamento</BoxTitulo>{atividades.filter(atividade => atividade.coluna === 2).map(atividade => (
+                ))}</PainelTarefas></Pendente>
+                <Andamento><BoxTitulo>Em Andamento</BoxTitulo><PainelTarefas>{atividades.filter(atividade => atividade.coluna === 2).map(atividade => (
                     <BoxTarefas key={atividade.Kanban_idAtividadeKanban} id={atividade.idAtividade}>
-                        <BoxNomeTarefa><NomeTarefa>{atividade.nome}</NomeTarefa></BoxNomeTarefa>
+                        
+                            <BoxNomeTarefa><NomeTarefa>{atividade.nome}</NomeTarefa></BoxNomeTarefa>
+                        
                     </BoxTarefas>
-                ))}</Andamento>
-                <Concluido><BoxTitulo>Concluído</BoxTitulo>{atividades.filter(atividade => atividade.coluna === 3).map(atividade => (
+                ))}</PainelTarefas></Andamento>
+                <Concluido><BoxTitulo>Concluído</BoxTitulo><PainelTarefas>{atividades.filter(atividade => atividade.coluna === 3).map(atividade => (
                     <BoxTarefas key={atividade.Kanban_idAtividadeKanban} id={atividade.idAtividade}>
-                        <BoxNomeTarefa><NomeTarefa>{atividade.nome}</NomeTarefa></BoxNomeTarefa>
+                        
+                            <BoxNomeTarefa><NomeTarefa>{atividade.nome}</NomeTarefa></BoxNomeTarefa>
+                        
                     </BoxTarefas>
-                ))}</Concluido>
+                ))}</PainelTarefas></Concluido>
                 <Classificacao>
                     <span style={{ display: 'flex' }}>Classificação <Icones className="material-symbols-outlined" title={textoClassificacao}>
                         info

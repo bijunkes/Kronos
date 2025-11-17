@@ -117,6 +117,7 @@ export const QuadroKanban = styled.div`
     padding: 1%;
     gap: 5%;
     justify-content: flex-start;
+   
     
     
 `;
@@ -124,8 +125,11 @@ export const PainelTarefas = styled.div`
   display: flex;
   flex-direction: column;
   width: 95%;
-  height: 78.42vh;
-  position: absolute;
+  height: 80%;
+  position: relativo;
+  padding: 1%;
+  gap: 10%;
+  align-items: center;
   overflow-y: scroll;
   scroll-behavior: smooth;
   &::-webkit-scrollbar {
