@@ -103,7 +103,7 @@ function ModalCriarAtividade({
       onClose();
     } catch (err) {
       console.error("Erro ao criar atividade:", err);
-      alert(err?.response?.data?.error || "Erro ao criar atividade");
+     showOkToast(err?.response?.data?.error || 'Erro ao criar', 'error');
     } finally {
       setLoading(false);
     }

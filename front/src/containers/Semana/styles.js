@@ -19,22 +19,36 @@ export const ListaAtividades = styled.div`
   overflow-y: auto;
   overflow-x: hidden;
   width: calc(100% + 8px);  
-  margin-right: -8px;       
+  margin-right: -8px;  
+       
 `;
 
 export const SemanaScroll = styled.div`
   margin-left: var(--sidebar-width);
-  padding: 4vh 4vh 2vh 4vh;
+  padding: 4vh 4vh 4vh 4vh; 
   box-sizing: border-box;
-
   display: flex;
   align-items: flex-start;
   gap: 2.5vh;
-  height: calc(100vh - 4vh);
+  height: calc(100vh - 6vh);
   overflow-x: auto;
   overflow-y: hidden;
   scroll-behavior: smooth;
+
+  &::-webkit-scrollbar {
+    height: 8px;
+  }
+
+  &::-webkit-scrollbar-thumb {
+    background-color: rgba(255, 255, 255, 0.15);
+    border-radius: 10px;
+  }
+
+  &::-webkit-scrollbar-thumb:hover {
+    background-color: rgba(255, 255, 255, 0.25);
+  }
 `;
+
 
 export const DiaColuna = styled.div`
   flex: 0 0 50vh;
@@ -93,5 +107,7 @@ export const AtividadesDia = styled.div`
   overflow-x: hidden;
   padding-right: 8px;
   width: calc(100% + 8px);     
-  margin-right: -8px;         
+  margin-right: -8px;     
 `;
+    
+

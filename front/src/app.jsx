@@ -42,9 +42,7 @@ function App() {
                     <Route path="/semana" element={<Semana />} />
                     <Route path="/atividades" element={<Atividades />} />
 
-
-                    <Route path="/listas/:nomeLista" element={<Lista />} />
-
+                    <Route path="/listas/:nomeLista" element={<Lista />} />                 
 
                     <Route path="/pomodoro" element={<Pomodoro />} />
                     <Route path="/kanban" element={<Kanban />} />

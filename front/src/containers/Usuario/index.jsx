@@ -1,4 +1,3 @@
-// src/pages/Usuario/index.jsx
 import React, { useEffect, useState, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import {
@@ -68,12 +67,10 @@ function Usuario() {
           icon: p.icon || null
         });
 
-        // Ícone (cache + broadcast)
         window.dispatchEvent(new CustomEvent('user:icon', { detail: { iconUrl: p.icon || null } }));
         if (p.icon) localStorage.setItem('user_icon_url', p.icon);
         else localStorage.removeItem('user_icon_url');
 
-        // Perfil (cache + broadcast) -> usado pelo Menu para atualizar o nome
         localStorage.setItem('user_nome', p.nome || '');
         window.dispatchEvent(
           new CustomEvent('user:profile', {
@@ -90,7 +87,6 @@ function Usuario() {
     return () => {
       if (tempIconUrl) URL.revokeObjectURL(tempIconUrl);
     };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const onAvatarClick = () => {

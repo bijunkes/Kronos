@@ -154,16 +154,16 @@ function Semana() {
 
           <div
             style={{
-              flex: 1,
-              display: "flex",
-              flexDirection: "column",
-              justifyContent: "flex-start",
-              alignItems: "center",
-              color: "#999",
-              marginTop: "1vh",
-              overflowY: "auto",
-              width: "100%",
-              paddingRight: "6px",
+             flex: 1,
+            display: "flex",
+            flexDirection: "column",
+            justifyContent: "flex-start",
+            alignItems: "center",
+            marginTop: "1.5vh",
+            overflowY: "auto",
+            width: "100%",
+            paddingRight: "6px",
+            color: "var(--cor-texto)",
             }}
           >
             {atividadesPorDia(d.iso).length === 0 ? (
@@ -186,8 +186,8 @@ function Semana() {
                       justifyContent: "space-between",
                       alignItems: "center",
                       background: "var(--fundo-menu-ativo)",
-                      padding: "12px 16px",
-                      borderRadius: 10,
+                      padding: "20px 25px",
+                      borderRadius: 20,
                       cursor: "pointer",
                     }}
                   >
@@ -206,7 +206,7 @@ function Semana() {
                       </span>
                       <span>{a.nomeAtividade}</span>
                     </div>
-                    <div style={{ color: "#bbb" }}>
+                    <div style={{ color: "#fffefe" }}>
                       {a.prazoIso
                         ? a.prazoIso.split("-").reverse().join("/")
                         : "Sem prazo"}

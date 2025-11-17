@@ -72,6 +72,7 @@ globalThis.__API_INTERCEPTORS__.res = api.interceptors.response.use(
 );
 
 
+
 export const usuarioExiste = async (email) => {
   const { data } = await api.get('/usuario-existe', {
     params: { email },
@@ -117,10 +118,6 @@ export const atualizarPerfil = async (dados, opts = {}) => {
 
 export const excluirConta = async () =>
   (await api.delete('/usuarios/me')).data;
-
-
-export const excluirLembretes = async () =>
-  (await api.delete('/lembretes')).data;
 
 
 export const criarAtividade = async (dados) =>
@@ -247,6 +244,28 @@ export const enviarIcone = async (file) => {
 export const removerIcone = async () =>
   (await api.delete('/usuarios/me/icon')).data;
 
+export const listarLembretes = async () =>
+  (await api.get("/lembretes")).data;
+
+
+export const getLembrete = async (id) =>
+  (await api.get(`/lembretes/${id}`)).data;
+
+
+export const excluirLembrete = async (id) =>
+  (await api.delete(`/lembretes/${id}`)).data;
+
+
+export const excluirLembretes = async () =>
+  (await api.delete("/lembretes")).data;
+
+
+export const gerarLembretesProximas = async () =>
+  (await api.post("/lembretes/gerar-proximas")).data;
+
+
+export const gerarLembretesExpirados = async () =>
+  (await api.post("/lembretes/gerar-expirados")).data;
 
 export default api;
 

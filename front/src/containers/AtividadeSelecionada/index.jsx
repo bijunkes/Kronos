@@ -213,7 +213,7 @@ function AtividadeSelecionada({ atividade, onAtualizarAtividade }) {
                 await excluirDeTecnicas("kanban", atividade)
             }
             if (atividade.Eisenhower_idAtividadeEisenhower !== null) {
-                await excluirDeMatriz("eisenhower",atividade)
+                await excluirDeTecnicas("eisenhower",atividade)
             }
             await deletarAtividade(atividade.idAtividade);
             onAtualizarAtividade?.(null);
@@ -355,23 +355,28 @@ function AtividadeSelecionada({ atividade, onAtualizarAtividade }) {
             </Tecnicas>
             <Tecnica
                 tipo="pomodoro"
+                id='pomodoro'
                 ativo={tecnicasAtivas.pomodoro}
                 onClick={() => botaoTecnicas("pomodoro")}
+                onDoubleClick={async () => await excluirDeTecnicas("pomodoro",atividade)}
             >
                 Pomodoro
             </Tecnica>
             <Tecnica
                 tipo="kanban"
+                id='kanban'
                 ativo={tecnicasAtivas.kanban}
                 onClick={() => botaoTecnicas("kanban")}
+                onDoubleClick={async () => await excluirDeTecnicas("kanban",atividade)}
             >
                 Kanban
             </Tecnica>
             <Tecnica
                 tipo="eisenhower"
-                id='Eisenhower'
+                id='eisenhower'
                 ativo={tecnicasAtivas.eisenhower}
                 onClick={() => botaoTecnicas("eisenhower")}
+                onDoubleClick={async () => await excluirDeTecnicas("eisenhower",atividade)}
 
 
             >
