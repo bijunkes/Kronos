@@ -147,7 +147,7 @@ function Kanban() {
         return `${yyyy}-${mm}-${dd} ${hh}:${mi}:${ss}`;
     };
 
-    const atividadeConcluida = async (atividadeKanban) => {
+    const atividadeEstaConcluida = async (atividadeKanban) => {
 
         console.log("Atividade KAnben: " + atividadeKanban)
         if (atividadeKanban.coluna == 3) {
@@ -155,6 +155,31 @@ function Kanban() {
             const atividade = atividadeKanban;
             const novoStatus = 1;
             console.log("Atividade: "+atividade)
+            try {
+                await atualizarAtividade(atividade.idAtividade, {
+                    nomeAtividade: atividade.nomeAtividade,
+                    descricaoAtividade: atividade.descricaoAtividade,
+                    prazoAtividade: formatarDataMySQL(atividade.prazoAtividade),
+                    dataConclusao: capturaData(),
+                    statusAtividade: novoStatus,
+                    Pomodorostatus: atividade.Pomodorostatus,
+                    Kanban_idAtividadeKanban: atividade.Kanban_idAtividadeKanban,
+                    Eisenhower_idAtividadeEisenhower: atividade.Eisenhower_idAtividadeEisenhower,
+                    ListaAtividades_idLista: atividade.ListaAtividades_idLista
+                });
+                
+            } catch (err) {
+                console.error('Erro ao atualizar atividade:', err);
+                setAtividades(atividades);
+                if (atividadeSelecionada?.idAtividade === atividade.idAtividade) {
+                    setAtividadeSelecionada(atividade);
+                }
+            }
+        } else if (atividadeKanban.statusAtividade == 1 && atividadeKanban.coluna !== 3){
+
+            console.log("Else if funcionando")
+            const atividade = atividadeKanban;
+            const novoStatus = 0;
             try {
                 await atualizarAtividade(atividade.idAtividade, {
                     nomeAtividade: atividade.nomeAtividade,
@@ -200,7 +225,7 @@ function Kanban() {
             console.log("Atividade KAnben: " + atividadeAtualizada.Kanban_idAtividadeKanban)
 
             atualizaKanban(atividadeAtualizada.Kanban_idAtividadeKanban, atividadeAtualizada.coluna, capturaData());
-            atividadeConcluida(atividadeAtualizada);
+            atividadeEstaConcluida(atividadeAtualizada);
 
             return novaLista;
         });
@@ -225,8 +250,9 @@ function Kanban() {
             const atividadeAtualizada = novaLista.find(t => t.idAtividade === atividadeId);
 
 
-            atualizaKanban(atividadeAtualizada.Kanban_idAtividadeKanban, atividadeAtualizada.coluna, capturaData());
 
+            atualizaKanban(atividadeAtualizada.Kanban_idAtividadeKanban, atividadeAtualizada.coluna, capturaData());
+            atividadeEstaConcluida(atividadeAtualizada);
             return novaLista;
         })
 

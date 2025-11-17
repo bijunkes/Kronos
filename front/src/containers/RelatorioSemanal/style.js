@@ -7,7 +7,7 @@ export const Container = styled.div`
   left: 58.5%;
   top: 50%;
   transform: translate(-50%, -50%);
-  grid-template-areas: "titulo . . ." 
+  grid-template-areas: "titulo relaKanban relaKanban relaKanban" 
   "data pendente andamento concluido"
   "progresso pendente andamento concluido"
   "pomodoro classificacao classificacao classificacao";
@@ -19,6 +19,20 @@ export const Container = styled.div`
   position: fixed;
   border-radius: 1rem;
   background-color: #212121;
+`;
+
+export const RelatorioKanban = styled.h2`
+    grid-area: relaKanban;
+    font-size: 27px;
+    display: flex;
+    justify-content: center;
+    color: #FFFFFF;
+    font-family: "Roboto", sans-serif;
+    font-optical-sizing: auto;
+    font-weight: bold;
+    font-style: normal;
+    font-variation-settings:
+    "wdth" 100;
 `;
 
 export const Titulo = styled.h2`
@@ -225,5 +239,13 @@ export const NaoImportanteUrgente = styled(QuadroEisen)`
 
 export const NaoImportanteNaoUrgente = styled(QuadroEisen)`
   background-color: #34C759;
+
+`;
+export const Icones = styled.span`
+    position: relative;
+    left: 30%;
+    color: rgba(255, 255, 255, 1);
+    left: 1rem;
+    
 
 `;

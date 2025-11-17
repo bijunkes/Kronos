@@ -13,7 +13,7 @@ import {
     Pesquisar,
     Input
 } from './styles.js';
-import { listarAtividadesPorLista, listarListas, listarTodasAtividades, atualizarAtividade } from '../../services/api.js';
+import { listarAtividadesPorLista, listarListas, listarTodasAtividades, atualizarAtividade, deletarAtividadeDeMatriz } from '../../services/api.js';
 import ModalCriarAtividade from '../ModalCriarAtividade/index.jsx';
 import AtividadeSelecionada from '../AtividadeSelecionada/index.jsx';
 
@@ -54,9 +54,9 @@ function Atividades() {
         const yyyy = d.getFullYear();
         const mm = String(d.getMonth() + 1).padStart(2, '0');
         const dd = String(d.getDate()).padStart(2, '0');
-        const hh = String(d.getHours()).padStart(2, '0');
-        const mi = String(d.getMinutes()).padStart(2, '0');
-        const ss = String(d.getSeconds()).padStart(2, '0');
+        const hh = d.getHours();
+        const mi = d.getMinutes();
+        const ss = d.getSeconds();
         return `${yyyy}-${mm}-${dd} ${hh}:${mi}:${ss}`;
     };
 
@@ -72,10 +72,29 @@ function Atividades() {
         });
     };
 
+    const capturaData = () => {
+        const dataAtual = new Date();
+
+        const formato = { 
+        year: 'numeric', 
+        month: '2-digit', 
+        day: '2-digit', 
+        hour: '2-digit', 
+        minute: '2-digit', 
+        second: '2-digit', 
+        hour12: false 
+    };
+
+    const dataFormatada = dataAtual.toLocaleString('sv-SE', formato);
+    console.log(dataFormatada)
+    return dataFormatada.replace(', ', '');
+    }
+
     const toggleConcluido = async (index) => {
+
         const atividade = atividades[index];
         const novaConclusao = !atividade.concluido
-            ? atividade.dataConclusao || formatarDataMySQL(new Date())
+            ? atividade.dataConclusao || capturaData()
             : null;
         const novoStatus = !atividade.concluido ? 1 : 0;
 
@@ -94,6 +113,8 @@ function Atividades() {
 
         setAtividades(ordenarAtividades(novasAtividades));
 
+        console.log("Data de conclusão: " + novaConclusao);
+
         if (atividadeSelecionada?.idAtividade === atividade.idAtividade) {
             setAtividadeSelecionada(novaAtividade);
         }
@@ -103,10 +124,14 @@ function Atividades() {
                 nomeAtividade: atividade.nomeAtividade,
                 descricaoAtividade: atividade.descricaoAtividade,
                 prazoAtividade: formatarDataMySQL(atividade.prazoAtividade),
-                dataConclusao: novaConclusao,
                 statusAtividade: novoStatus,
-                ListaAtividades_idLista: listaSelecionada || atividade.ListaAtividades_idLista
+                dataConclusao: novaConclusao,
+                ListaAtividades_idLista: listaSelecionada || atividade.ListaAtividades_idLista,
+                Pomodorostatus: null,
+                Kanban_idAtividadeKanban: atividade.Kanban_idAtividadeKanban,
+                Eisenhower_idAtividadeEisenhower: null
             });
+            await deletarAtividadeDeMatriz(atividade.idAtividadeEisenhower);
         } catch (err) {
             console.error('Erro ao atualizar atividade:', err);
             setAtividades(atividades);

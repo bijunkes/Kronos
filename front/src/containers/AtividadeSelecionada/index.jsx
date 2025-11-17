@@ -27,7 +27,7 @@ function AtividadeSelecionada({ atividade, onAtualizarAtividade }) {
 
     const botaoTecnicas = (tipo) => {
         // toggleTecnica(tipo);
-        adicionarAtividadeEmTecnica(tipo, atividade);
+        alterarAtividadeEmTecnica(tipo, atividade);
     }
 
     const toggleTecnica = async (tipo) => {
@@ -87,7 +87,7 @@ function AtividadeSelecionada({ atividade, onAtualizarAtividade }) {
         return `${ano}-${mes}-${dia} ${h}:${min}:${seg}`
     }
 
-    const adicionarAtividadeEmTecnica = async (tipo, atividad) => {
+    const alterarAtividadeEmTecnica = async (tipo, atividad) => {
 
         if (tipo == "eisenhower") {
             if (atividad.Eisenhower_idAtividadeEisenhower == null) {
@@ -118,7 +118,15 @@ function AtividadeSelecionada({ atividade, onAtualizarAtividade }) {
             }
 
             else {
-                showOkToast("Atividade já inserida na matriz!", "error");
+                await excluirDeTecnicas("eisenhower", atividade)
+                await atualizarIdEisenAtividade(atividad.idAtividade, {
+                            Eisenhower_idAtividadeEisenhower: null,
+                            Usuarios_username: atividad.Usuarios_username,
+                            idAtividade: atividad.idAtividade
+
+                        })
+                showOkToast('Atividade retirada de Eisenhower')
+                
                 return;
             }
         } else if (tipo == "kanban") {
@@ -151,7 +159,14 @@ function AtividadeSelecionada({ atividade, onAtualizarAtividade }) {
             }
 
             else {
-                showOkToast("Atividade já inserida em Kanban!", "error");
+                await excluirDeTecnicas("kanban", atividade)
+                await atualizarIdKanbanAtividade(atividad.idAtividade, {
+                            Kanban_idAtividadeKanban: null,
+                            Usuarios_username: atividad.Usuarios_username,
+                            idAtividade: atividad.idAtividade
+
+                        })
+                showOkToast('Atividade retirada de Kanban')
                 return;
             }
         }
