@@ -90,6 +90,21 @@ export const Pomodoro = styled.div`
     height: 30vh;
     background-color: #282828;
     border-radius: 1rem;
+    display: flex;
+    flex-direction: column;
+    padding: 1rem;
+    gap: 1rem;
+    justify-content: flex-start;
+    align-items: start;
+    font-size: 27px;
+    gap: 2rem;
+    color: #FFFFFF;
+    font-family: "Roboto", sans-serif;
+    font-optical-sizing: auto;
+    font-weight: bold;
+    font-style: normal;
+    font-variation-settings:
+    "wdth" 100;
 `;
 export const QuadroKanban = styled.div`
     width: 18vw;
@@ -102,6 +117,35 @@ export const QuadroKanban = styled.div`
     padding: 1%;
     gap: 5%;
     justify-content: flex-start;
+   
+    
+    
+`;
+export const PainelTarefas = styled.div`
+  display: flex;
+  flex-direction: column;
+  width: 95%;
+  height: 80%;
+  position: relativo;
+  padding: 1%;
+  gap: 10%;
+  align-items: center;
+  overflow-y: scroll;
+  scroll-behavior: smooth;
+  &::-webkit-scrollbar {
+    width: 6px;
+  }
+
+  &::-webkit-scrollbar-thumb {
+    background-color: rgba(255, 255, 255, 0.15);
+    border-radius: 10px;
+  }
+
+  &::-webkit-scrollbar-thumb:hover {
+    background-color: rgba(255, 255, 255, 0.25);
+  }
+
+
 `;
 export const Pendente = styled(QuadroKanban)`
     grid-area: pendente;
@@ -248,4 +292,13 @@ export const Icones = styled.span`
     left: 1rem;
     
 
+`;
+export const BoxPomodoro = styled.div`
+    width: 20rem;
+    height: 3rem;
+    display: flex;
+    align-items:center;
+    padding: 0.5rem;
+    border-radius: 1rem;
+    background-color: rgba(255, 255, 255, 0.1);
 `;

@@ -21,7 +21,31 @@ function Hoje() {
   const [atividadeSelecionada, setAtividadeSelecionada] = useState(null);
   const [filtro, setFiltro] = useState("");
 
-  useEffect(() => {
+  const ordenarAtividades = (lista) => {
+    return [...lista].sort((a, b) => {
+      if (a.concluido !== b.concluido) return a.concluido ? 1 : -1;
+      const dataA = a.prazoAtividade ? new Date(a.prazoAtividade) : null;
+      const dataB = b.prazoAtividade ? new Date(b.prazoAtividade) : null;
+      if (!dataA && !dataB) return 0;
+      if (!dataA) return 1;
+      if (!dataB) return -1;
+      return dataA - dataB;
+    });
+  };
+
+  const formatarDataMySQL = (data) => {
+    if (!data) return null;
+    if (typeof data === 'string' && data.length === 10) return `${data} 00:00:00`;
+    const d = new Date(data);
+    const yyyy = d.getFullYear();
+    const mm = String(d.getMonth() + 1).padStart(2, '0');
+    const dd = String(d.getDate()).padStart(2, '0');
+    const hh = String(d.getHours()).padStart(2, '0');
+    const mi = String(d.getMinutes()).padStart(2, '0');
+    const ss = String(d.getSeconds()).padStart(2, '0');
+    return `${yyyy}-${mm}-${dd} ${hh}:${mi}:${ss}`;
+  };
+
   const carregarAtividadesHoje = async () => {
     try {
       const todas = await listarTodasAtividades();
@@ -43,42 +67,26 @@ function Hoje() {
         }));
 
       setAtividades(ordenarAtividades(filtradas));
+
+      if (
+        atividadeSelecionada &&
+        !filtradas.some(a => a.idAtividade === atividadeSelecionada.idAtividade)
+      ) {
+        setAtividadeSelecionada(null);
+      }
     } catch (err) {
       console.error("Erro ao carregar atividades de hoje:", err);
     }
   };
 
-  carregarAtividadesHoje();
-}, []);
-
-
-  const ordenarAtividades = (lista) => {
-    return [...lista].sort((a, b) => {
-      if (a.concluido !== b.concluido) return a.concluido ? 1 : -1;
-      const dataA = a.prazoAtividade ? new Date(a.prazoAtividade) : null;
-      const dataB = b.prazoAtividade ? new Date(b.prazoAtividade) : null;
-      if (!dataA && !dataB) return 0;
-      if (!dataA) return 1;
-      if (!dataB) return -1;
-      return dataA - dataB;
-    });
-  };
-
-  const formatarDataMySQL = (data) => {
-    if (!data) return null;
-    if (data.length === 10) return `${data} 00:00:00`;
-    const d = new Date(data);
-    const yyyy = d.getFullYear();
-    const mm = String(d.getMonth() + 1).padStart(2, '0');
-    const dd = String(d.getDate()).padStart(2, '0');
-    const hh = String(d.getHours()).padStart(2, '0');
-    const mi = String(d.getMinutes()).padStart(2, '0');
-    const ss = String(d.getSeconds()).padStart(2, '0');
-    return `${yyyy}-${mm}-${dd} ${hh}:${mi}:${ss}`;
-  };
+  useEffect(() => {
+    carregarAtividadesHoje();
+  }, []);
 
   const toggleConcluido = async (index) => {
     const atividade = atividades[index];
+    if (!atividade) return;
+
     const novaConclusao = !atividade.concluido
       ? atividade.dataConclusao || formatarDataMySQL(new Date())
       : null;
@@ -96,7 +104,6 @@ function Hoje() {
       novaAtividade,
       ...atividades.slice(index + 1)
     ];
-
     setAtividades(ordenarAtividades(novasAtividades));
 
     if (atividadeSelecionada?.idAtividade === atividade.idAtividade) {
@@ -112,13 +119,15 @@ function Hoje() {
         statusAtividade: novoStatus,
         ListaAtividades_idLista: atividade.ListaAtividades_idLista
       });
+
+      await carregarAtividadesHoje();
     } catch (err) {
       console.error('Erro ao atualizar atividade:', err);
-      setAtividades(atividades);
+      await carregarAtividadesHoje();
     }
   };
 
-  const atividadesFiltradas = atividades.filter((a) =>
+  const atividadesFiltradas = (atividades || []).filter((a) =>
     (a.nomeAtividade || '').toLowerCase().startsWith(filtro.toLowerCase())
   );
 
@@ -187,7 +196,7 @@ function Hoje() {
         <AtividadeSelecionada
           atividade={atividadeSelecionada}
           onClose={() => setAtividadeSelecionada(null)}
-          onAtualizarAtividade={(atividadeAtualizada) => {
+          onAtualizarAtividade={async (atividadeAtualizada) => {
             if (!atividadeAtualizada) {
               setAtividadeSelecionada(null);
               setAtividades(prev =>
@@ -204,6 +213,8 @@ function Hoje() {
               )
             ));
             setAtividadeSelecionada({ ...atividadeAtualizada, concluido: !!atividadeAtualizada.dataConclusao });
+
+            await carregarAtividadesHoje();
           }}
         />
       </Parte2>

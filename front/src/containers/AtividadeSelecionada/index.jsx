@@ -27,7 +27,7 @@ function AtividadeSelecionada({ atividade, onAtualizarAtividade }) {
 
     const botaoTecnicas = (tipo) => {
         // toggleTecnica(tipo);
-        adicionarAtividadeEmTecnica(tipo, atividade);
+        alterarAtividadeEmTecnica(tipo, atividade);
     }
 
     const toggleTecnica = async (tipo) => {
@@ -131,7 +131,7 @@ function AtividadeSelecionada({ atividade, onAtualizarAtividade }) {
         return `${ano}-${mes}-${dia} ${h}:${min}:${seg}`
     }
 
-    const adicionarAtividadeEmTecnica = async (tipo, atividad) => {
+    const alterarAtividadeEmTecnica = async (tipo, atividad) => {
 
         if (tipo == "eisenhower") {
             if (atividad.Eisenhower_idAtividadeEisenhower == null) {
@@ -162,7 +162,15 @@ function AtividadeSelecionada({ atividade, onAtualizarAtividade }) {
             }
 
             else {
-                showOkToast("Atividade já inserida na matriz!", "error");
+                await excluirDeTecnicas("eisenhower", atividade)
+                await atualizarIdEisenAtividade(atividad.idAtividade, {
+                            Eisenhower_idAtividadeEisenhower: null,
+                            Usuarios_username: atividad.Usuarios_username,
+                            idAtividade: atividad.idAtividade
+
+                        })
+                showOkToast('Atividade retirada de Eisenhower')
+                
                 return;
             }
         } else if (tipo == "kanban") {
@@ -195,7 +203,14 @@ function AtividadeSelecionada({ atividade, onAtualizarAtividade }) {
             }
 
             else {
-                showOkToast("Atividade já inserida em Kanban!", "error");
+                await excluirDeTecnicas("kanban", atividade)
+                await atualizarIdKanbanAtividade(atividad.idAtividade, {
+                            Kanban_idAtividadeKanban: null,
+                            Usuarios_username: atividad.Usuarios_username,
+                            idAtividade: atividad.idAtividade
+
+                        })
+                showOkToast('Atividade retirada de Kanban')
                 return;
             }
         } else if (tipo === "pomodoro") {
@@ -308,7 +323,7 @@ const idSessao = sessao.idStatus;
                 await excluirDeTecnicas("kanban", atividade)
             }
             if (atividade.Eisenhower_idAtividadeEisenhower !== null) {
-                await excluirDeTecnicas("eisenhower", atividade)
+                await excluirDeMatriz("eisenhower",atividade)
             }
             await deletarAtividade(atividade.idAtividade);
             onAtualizarAtividade?.(null);
@@ -445,25 +460,29 @@ const idSessao = sessao.idStatus;
             <Tecnicas>
                 Técnicas
             </Tecnicas>
-            <Pomodoro
-                $tipo="pomodoro"
-                $ativo={tecnicasAtivas.pomodoro}
+            <Tecnica
+                tipo="pomodoro"
+                ativo={tecnicasAtivas.pomodoro}
                 onClick={() => botaoTecnicas("pomodoro")}
+                onDoubleClick={async () => await excluirDeTecnicas("pomodoro",atividade)}
             >
                 Pomodoro
             </Pomodoro>
             <Tecnica
                 tipo="kanban"
+                id='kanban'
                 ativo={tecnicasAtivas.kanban}
                 onClick={() => botaoTecnicas("kanban")}
+                onDoubleClick={async () => await excluirDeTecnicas("kanban",atividade)}
             >
                 Kanban
             </Tecnica>
             <Tecnica
                 tipo="eisenhower"
-                id='Eisenhower'
+                id='eisenhower'
                 ativo={tecnicasAtivas.eisenhower}
                 onClick={() => botaoTecnicas("eisenhower")}
+                onDoubleClick={async () => await excluirDeTecnicas("eisenhower",atividade)}
 
 
             >

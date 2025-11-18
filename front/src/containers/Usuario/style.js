@@ -35,25 +35,32 @@ export const Header = styled.div`
 
 
 export const Avatar = styled.div`
+  position: relative;
   width: 12vh;
   height: 12vh;
   border-radius: 50%;
   background-color: var(--fundo-campo);
   display: grid;
   place-items: center;
-  font-size: 6vh;
-  user-select: none;
   overflow: hidden;
-
+  cursor: ${(p) => (p.$editando ? 'pointer' : 'default')};
+  transition: all 0.25s ease;
 
   img {
     width: 100%;
     height: 100%;
     object-fit: cover;
-    object-position: center;
-    display: block;
+    opacity: ${(p) => (p.$editando ? 1 : 0.5)};
+    transition: opacity 0.3s ease;
+    pointer-events: none;
+  }
+
+  &:hover {
+    transform: ${(p) => (p.$editando ? 'scale(1.05)' : 'none')};
   }
 `;
+
+
 
 
 export const HeaderText = styled.div`
@@ -111,13 +118,16 @@ export const Input = styled.input`
   border: none;
   outline: none;
   box-sizing: border-box;
+  transition: opacity 0.2s;
 
+  opacity: ${(p) => (p.readOnly ? 0.6 : 1)};
 
   &::placeholder {
     color: #999;
     font-size: 1.9vh;
   }
 `;
+
 
 
 export const InputWithIcon = styled.div`

@@ -2,8 +2,10 @@ import express from "express";
 import {
   listarLembretes,
   excluirLembretes,
+  excluirLembrete,
   gerarLembretesAtividadesProximas,
-  gerarLembretesExpirados
+  gerarLembretesExpirados,
+  detalhesLembrete
 } from "../controllers/lembretesController.js";
 
 import verificarToken from "../middlewares/userMiddleware.js";
@@ -11,8 +13,6 @@ import verificarToken from "../middlewares/userMiddleware.js";
 const router = express.Router();
 
 router.get("/", verificarToken, listarLembretes);
-
-router.delete("/", verificarToken, excluirLembretes);
 
 router.post("/gerar-proximas", async (req, res) => {
   try {
@@ -41,5 +41,11 @@ router.post("/gerar-expirados", async (req, res) => {
       .json({ error: "Erro ao gerar lembretes de atividades expiradas." });
   }
 });
+
+router.delete("/", verificarToken, excluirLembretes);
+
+router.delete("/:id", verificarToken, excluirLembrete);
+
+router.get("/:id", verificarToken, detalhesLembrete);
 
 export default router;

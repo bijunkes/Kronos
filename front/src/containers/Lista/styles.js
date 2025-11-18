@@ -28,17 +28,16 @@ export const Conteudo = styled.div`
   overflow-y: auto;
 
   &::-webkit-scrollbar {
-    width: 5px;
-  }
-
-  &::-webkit-scrollbar-track {
-    background: var(--fundo-menu);
-    border-radius: 10px;
+    width: 6px;
   }
 
   &::-webkit-scrollbar-thumb {
-    background-color: var(--fundo-menu-ativo);
+    background-color: rgba(255, 255, 255, 0.15);
     border-radius: 10px;
+  }
+
+  &::-webkit-scrollbar-thumb:hover {
+    background-color: rgba(255, 255, 255, 0.25);
   }
 `;
 

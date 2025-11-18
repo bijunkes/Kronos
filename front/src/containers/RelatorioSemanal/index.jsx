@@ -3,7 +3,11 @@ import {
     Container, Titulo, Data, Progresso, Pomodoro, Pendente, Andamento, Concluido, Classificacao, ProgressoBox, BoxTitulo, BoxTarefas, BoxNomeTarefa, NomeTarefa, NaoImportanteUrgente,
     NaoImportanteNaoUrgente,
     ImportanteNaoUrgente,
-    ImportanteUrgente
+    ImportanteUrgente,
+    RelatorioKanban,
+    Icones,
+    BoxPomodoro,
+    PainelTarefas
 } from './style'
 import { listarAtividadesEmKanban, listarAtividades, listarAtividadesEisenPorClassificacao } from "../../services/api.js";
 
@@ -190,37 +194,56 @@ function RelatorioSemanal() {
     const textoKanban = 'Aqui estão organizadas as\natividades do Kanban modificadas na semana'
     const textoClassificacao = 'Aqui estão organizadas as\natividades presentes na matriz de Eisenhower\nque foram modificadas na semana'
     const textoProgresso = 'Aqui são consideradas as atividades terminadas na semana e as ainda não concluídas\nConcluídas na semana/Não Concluídas'
+    const textoPomodoro = 'Aqui estão o foco e descanso totais do Pomodoro dessa semana'
     return (
         <>
             <Container>
                 <Titulo>Relatório Diário</Titulo>
+                <RelatorioKanban>Atividades do Kanban <Icones className="material-symbols-outlined" title={textoKanban}>
+                    info
+                </Icones></RelatorioKanban>
                 <Data>{dataIntervalo()}</Data>
                 <Progresso>
-                    Progresso
+                    <span style={{ display: 'flex' }}>Progresso <Icones className="material-symbols-outlined" title={textoProgresso}>
+                        info
+                    </Icones></span>
                     <ProgressoBox>{contAtvs}</ProgressoBox>
                 </Progresso>
-                <Pomodoro></Pomodoro>
-                <Pendente><BoxTitulo>Pendente</BoxTitulo>{atividades.filter(atividade => atividade.coluna === 1).map(atividade => (
+                <Pomodoro>
+                    <span style={{ display: 'flex' }}>Pomodoro <Icones className="material-symbols-outlined" title={textoPomodoro}>
+                        info
+                    </Icones></span>
+                    <BoxPomodoro>Foco: </BoxPomodoro>
+                    <BoxPomodoro>Descanso: </BoxPomodoro></Pomodoro>
+                <Pendente><BoxTitulo>Pendente</BoxTitulo><PainelTarefas>{atividades.filter(atividade => atividade.coluna === 1).map(atividade => (
                     <BoxTarefas key={atividade.Kanban_idAtividadeKanban} id={atividade.idAtividade}>
-                        <BoxNomeTarefa><NomeTarefa>{atividade.nome}</NomeTarefa></BoxNomeTarefa>
+                        
+                            <BoxNomeTarefa><NomeTarefa>{atividade.nome}</NomeTarefa></BoxNomeTarefa>
+                        
                     </BoxTarefas>
-                ))}</Pendente>
-                <Andamento><BoxTitulo>Em Andamento</BoxTitulo>{atividades.filter(atividade => atividade.coluna === 2).map(atividade => (
+                ))}</PainelTarefas></Pendente>
+                <Andamento><BoxTitulo>Em Andamento</BoxTitulo><PainelTarefas>{atividades.filter(atividade => atividade.coluna === 2).map(atividade => (
                     <BoxTarefas key={atividade.Kanban_idAtividadeKanban} id={atividade.idAtividade}>
-                        <BoxNomeTarefa><NomeTarefa>{atividade.nome}</NomeTarefa></BoxNomeTarefa>
+                        
+                            <BoxNomeTarefa><NomeTarefa>{atividade.nome}</NomeTarefa></BoxNomeTarefa>
+                        
                     </BoxTarefas>
-                ))}</Andamento>
-                <Concluido><BoxTitulo>Concluído</BoxTitulo>{atividades.filter(atividade => atividade.coluna === 3).map(atividade => (
+                ))}</PainelTarefas></Andamento>
+                <Concluido><BoxTitulo>Concluído</BoxTitulo><PainelTarefas>{atividades.filter(atividade => atividade.coluna === 3).map(atividade => (
                     <BoxTarefas key={atividade.Kanban_idAtividadeKanban} id={atividade.idAtividade}>
-                        <BoxNomeTarefa><NomeTarefa>{atividade.nome}</NomeTarefa></BoxNomeTarefa>
+                        
+                            <BoxNomeTarefa><NomeTarefa>{atividade.nome}</NomeTarefa></BoxNomeTarefa>
+                        
                     </BoxTarefas>
-                ))}</Concluido>
+                ))}</PainelTarefas></Concluido>
                 <Classificacao>
-                    Classificação
-                    <ImportanteUrgente style={{ width: `${tamanhos[1]}vw` }}>{tamanhos[1] / 5}</ImportanteUrgente>
-                    <ImportanteNaoUrgente style={{ width: `${tamanhos[2]}vw` }}>{tamanhos[2] / 5}</ImportanteNaoUrgente>
-                    <NaoImportanteUrgente style={{ width: `${tamanhos[3]}vw` }}>{tamanhos[3] / 5}</NaoImportanteUrgente>
-                    <NaoImportanteNaoUrgente style={{ width: `${tamanhos[4]}vw` }}>{tamanhos[4] / 5}</NaoImportanteNaoUrgente>
+                    <span style={{ display: 'flex' }}>Classificação <Icones className="material-symbols-outlined" title={textoClassificacao}>
+                        info
+                    </Icones></span>
+                    <ImportanteUrgente style={{ width: `${tamanhos[1]}vw` }} title='Importante e Urgente'>{tamanhos[1] / 5} </ImportanteUrgente>
+                    <ImportanteNaoUrgente style={{ width: `${tamanhos[2]}vw` }} title='Importante e Não urgente'>{tamanhos[2] / 5}</ImportanteNaoUrgente>
+                    <NaoImportanteUrgente style={{ width: `${tamanhos[3]}vw` }} title='Não importante e Urgente'>{tamanhos[3] / 5}</NaoImportanteUrgente>
+                    <NaoImportanteNaoUrgente style={{ width: `${tamanhos[4]}vw` }} title='Não importante e Não urgente'>{tamanhos[4] / 5}</NaoImportanteNaoUrgente>
                 </Classificacao>
             </Container>
         </>

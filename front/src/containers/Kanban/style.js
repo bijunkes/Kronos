@@ -59,11 +59,11 @@ export const BoxTitulo= styled.div`
     align-self: center;
     height: 5.29vh;
     width: 24vw;
-    font-size: 20px;
+    font-size: 22px;
     background-color: rgba(255, 255, 255, 0.1);
     border-radius: 1rem;
     top: 1rem;
-    font-weight: 0;
+    font-weight: bold;
     color: rgba(255, 255, 255, 1);
 `;
 export const Container = styled.div`
@@ -93,6 +93,7 @@ export const BoxNomeTarefa = styled.div`
     align-self: center;
     width: 15vw;
     left: 1rem;
+    padding: 0.5rem;
     color: rgba(255, 255, 255, 1);
     display: flex;
     justify-content: center;
@@ -102,7 +103,8 @@ export const BoxNomeTarefa = styled.div`
 export const NomeTarefa = styled.h2`
     position: relative;
     align-self: center;
-    font-weight: 0;
+    font-weight: normal;
+    font-size: 24px;
     color: rgba(255, 255, 255, 1);
 `;
 export const BoxIcones = styled.div`

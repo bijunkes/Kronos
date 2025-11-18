@@ -9,6 +9,7 @@ listRoutes.get('/', verificarToken, listarListas);
 listRoutes.delete('/:id', verificarToken, deletarLista);
 
 
+
 listRoutes.get('/atividades', verificarToken, async (req, res) => {
     try {
         const usuarioUsername = req.usuarioUsername;

@@ -1,4 +1,3 @@
-// src/pages/Usuario/index.jsx
 import React, { useEffect, useState, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import {
@@ -68,12 +67,10 @@ function Usuario() {
           icon: p.icon || null
         });
 
-        // Ícone (cache + broadcast)
         window.dispatchEvent(new CustomEvent('user:icon', { detail: { iconUrl: p.icon || null } }));
         if (p.icon) localStorage.setItem('user_icon_url', p.icon);
         else localStorage.removeItem('user_icon_url');
 
-        // Perfil (cache + broadcast) -> usado pelo Menu para atualizar o nome
         localStorage.setItem('user_nome', p.nome || '');
         window.dispatchEvent(
           new CustomEvent('user:profile', {
@@ -90,7 +87,6 @@ function Usuario() {
     return () => {
       if (tempIconUrl) URL.revokeObjectURL(tempIconUrl);
     };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const onAvatarClick = () => {
@@ -245,32 +241,18 @@ function Usuario() {
       <Card>
         <Header>
           <Avatar
+            $editando={editando}
             onClick={onAvatarClick}
             title={editando ? (uploading ? 'Enviando...' : 'Clique para escolher uma foto') : ''}
-            style={{ cursor: editando && !uploading ? 'pointer' : 'default', position: 'relative' }}
           >
             <img
               src={avatarSrc}
               alt="Foto do usuário"
-              style={{ opacity: uploading ? 0.6 : 1, transition: 'opacity .2s' }}
             />
-            {editando && (
-              <div
-                style={{
-                  position: 'absolute',
-                  inset: 0,
-                  background: 'rgba(0,0,0,.25)',
-                  borderRadius: '50%',
-                }}
-              />
-            )}
           </Avatar>
-
           <HeaderText>
             <h2>Meu Perfil</h2>
             <p>Gerencie suas informações</p>
-
-            {/* input oculto para upload */}
             <input
               ref={fileRef}
               type="file"
@@ -285,9 +267,7 @@ function Usuario() {
           <Loading>Carregando…</Loading>
         ) : (
           <Form
-            onSubmit={(e) => e.preventDefault()}
-            style={{ opacity: editando ? 1 : 0.6, transition: 'opacity .2s' }}
-          >
+            onSubmit={(e) => e.preventDefault()}>
             <Field>
               <Label htmlFor="nome">Nome</Label>
               <Input

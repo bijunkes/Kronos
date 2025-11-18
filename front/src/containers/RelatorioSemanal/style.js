@@ -7,7 +7,7 @@ export const Container = styled.div`
   left: 58.5%;
   top: 50%;
   transform: translate(-50%, -50%);
-  grid-template-areas: "titulo . . ." 
+  grid-template-areas: "titulo relaKanban relaKanban relaKanban" 
   "data pendente andamento concluido"
   "progresso pendente andamento concluido"
   "pomodoro classificacao classificacao classificacao";
@@ -19,6 +19,20 @@ export const Container = styled.div`
   position: fixed;
   border-radius: 1rem;
   background-color: #212121;
+`;
+
+export const RelatorioKanban = styled.h2`
+    grid-area: relaKanban;
+    font-size: 27px;
+    display: flex;
+    justify-content: center;
+    color: #FFFFFF;
+    font-family: "Roboto", sans-serif;
+    font-optical-sizing: auto;
+    font-weight: bold;
+    font-style: normal;
+    font-variation-settings:
+    "wdth" 100;
 `;
 
 export const Titulo = styled.h2`
@@ -51,6 +65,32 @@ export const Data = styled.div`
     font-variation-settings:
     "wdth" 100;
 `;
+export const PainelTarefas = styled.div`
+  display: flex;
+  flex-direction: column;
+  width: 95%;
+  height: 80%;
+  position: relativo;
+  padding: 1%;
+  gap: 10%;
+  align-items: center;
+  overflow-y: scroll;
+  scroll-behavior: smooth;
+  &::-webkit-scrollbar {
+    width: 6px;
+  }
+
+  &::-webkit-scrollbar-thumb {
+    background-color: rgba(255, 255, 255, 0.15);
+    border-radius: 10px;
+  }
+
+  &::-webkit-scrollbar-thumb:hover {
+    background-color: rgba(255, 255, 255, 0.25);
+  }
+
+
+`;
 
 export const Progresso = styled.div`
     grid-area: progresso;
@@ -77,6 +117,21 @@ export const Pomodoro = styled.div`
     height: 30vh;
     background-color: #282828;
     border-radius: 1rem;
+    display: flex;
+    flex-direction: column;
+    padding: 1rem;
+    gap: 1rem;
+    justify-content: flex-start;
+    align-items: start;
+    font-size: 27px;
+    gap: 2rem;
+    color: #FFFFFF;
+    font-family: "Roboto", sans-serif;
+    font-optical-sizing: auto;
+    font-weight: bold;
+    font-style: normal;
+    font-variation-settings:
+    "wdth" 100;
 `;
 export const QuadroKanban = styled.div`
     width: 18vw;
@@ -87,21 +142,8 @@ export const QuadroKanban = styled.div`
     flex-direction: column;
     align-items: center;
     padding: 1%;
-    gap: 10%;
-    justify-content: flex-start;
-     &::-webkit-scrollbar {
-    width: 5px;
-  }
-
-  &::-webkit-scrollbar-track {
-    background: var(--fundo-menu);
-    border-radius: 10px;
-  }
-
-  &::-webkit-scrollbar-thumb {
-    background-color: var(--fundo-menu-ativo);
-    border-radius: 10px;
-  }
+    gap: 7.5%;
+    
 `;
 export const Pendente = styled(QuadroKanban)`
     grid-area: pendente;
@@ -226,4 +268,21 @@ export const NaoImportanteUrgente = styled(QuadroEisen)`
 export const NaoImportanteNaoUrgente = styled(QuadroEisen)`
   background-color: #34C759;
 
+`;
+export const Icones = styled.span`
+    position: relative;
+    left: 30%;
+    color: rgba(255, 255, 255, 1);
+    left: 1rem;
+    
+
+`;
+export const BoxPomodoro = styled.div`
+    width: 20rem;
+    height: 3rem;
+    display: flex;
+    align-items:center;
+    padding: 0.5rem;
+    border-radius: 1rem;
+    background-color: rgba(255, 255, 255, 0.1);
 `;
