@@ -199,3 +199,45 @@ export const Tecnica = styled.div`
     }};
   }
 `;
+
+export const Pomodoro = styled.div`
+  font-size: 18px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+  height: 7vh;
+  margin-bottom: 2vh;
+  border-radius: 20px;
+  cursor: pointer;
+
+  background-color: ${({ $ativo, $tipo }) => {
+    if (!$ativo) return "var(--fundo-menu-ativo)";
+    switch ($tipo) {
+      case "pomodoro":
+        return "var(--Importante-Urgente)";
+      case "kanban":
+        return "var(--NaoImportante-Urgente)";
+      case "eisenhower":
+        return "var(--Importante-NaoUrgente)";
+      default:
+        return "var(--fundo-menu-ativo)";
+    }
+  }};
+  color: ${({ $ativo }) => ($ativo ? "var(--texto)" : "var(--texto-claro)")};
+
+  &:hover {
+    background-color: ${({ $tipo }) => {
+      switch ($tipo) {
+        case "pomodoro":
+          return "var(--Importante-Urgente)";
+        case "kanban":
+          return "var(--NaoImportante-Urgente)";
+        case "eisenhower":
+          return "var(--Importante-NaoUrgente)";
+        default:
+          return "var(--fundo-menu-ativo)";
+      }
+    }};
+  }
+`;

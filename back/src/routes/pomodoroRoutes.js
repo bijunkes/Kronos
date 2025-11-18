@@ -1,5 +1,5 @@
 import express from "express";
-import { criarSessaoPomodoro, salvarAtividadesSessao, listarAtividadesSessao, registrarTempoPomodoro, finalizarSessaoPomodoro, iniciarSessaoPomodoro, adicionarAtividadeSessao, obterUltimaSessaoPomodoro } from "../controllers/pomodoroController.js";
+import { criarSessaoPomodoro, salvarAtividadesSessao, listarAtividadesSessao, registrarTempoPomodoro, finalizarSessaoPomodoro, iniciarSessaoPomodoro, obterUltimaSessaoPomodoro, atualizarParcial } from "../controllers/pomodoroController.js";
 
 import verificarToken from "../middlewares/userMiddleware.js";
 
@@ -13,6 +13,8 @@ router.patch("/:id/finalizar", finalizarSessaoPomodoro);
 router.patch("/:id/iniciar", iniciarSessaoPomodoro);
 // router.post("/pomodoro/:id/atividades", verificarToken, adicionarAtividadeSessao);
 router.get("/ultima", verificarToken, obterUltimaSessaoPomodoro);
+router.patch("/:id/atualizar-parcial", atualizarParcial);
+
 
 
 export default router;

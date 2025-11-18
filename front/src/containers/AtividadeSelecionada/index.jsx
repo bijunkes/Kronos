@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import { Container, Excluir, Header, NomeAtividade, Status, Datas, Data, Input, Desc, DescTextarea, Lista, Tecnicas, Tecnica } from './styles.js';
-import { atualizarIdKanbanAtividade, atualizarIdEisenAtividade, adicionarAtividadeEmKanban, adicionarAtividadeEmMatriz, atualizarAtividade, deletarAtividade, listarListas, listarAtividadesEmMatriz, listarAtividadesEmKanban, deletarAtividadeDeKanban, deletarAtividadeDeMatriz } from '../../services/api';
+import { Container, Excluir, Header, NomeAtividade, Status, Datas, Data, Input, Desc, DescTextarea, Lista, Tecnicas, Tecnica, Pomodoro } from './styles.js';
+import { atualizarIdKanbanAtividade, atualizarIdEisenAtividade, adicionarAtividadeEmKanban, adicionarAtividadeEmMatriz, atualizarAtividade, deletarAtividade, listarListas, listarAtividadesEmMatriz, listarAtividadesEmKanban, deletarAtividadeDeKanban, deletarAtividadeDeMatriz, obterUltimaSessaoPomodoro, salvarAtividadesSessao, criarSessaoPomodoro } from '../../services/api';
 import { showConfirmToast, showOkToast } from '../../components/showToast.jsx';
 
 function AtividadeSelecionada({ atividade, onAtualizarAtividade }) {
@@ -73,7 +73,51 @@ function AtividadeSelecionada({ atividade, onAtualizarAtividade }) {
         }
     }, [atividade]);
 
-    
+    useEffect(() => {
+        const carregarUltimaSessao = async () => {
+            try {
+                const sessao = await obterUltimaSessaoPomodoro(); // sua função já exportada (retorna dados)
+                if (!sessao) return;
+
+                // atividadesVinculadas pode ser [1,2] ou [{idAtividade:1}, ...] — cobrimos ambos
+                const vinculadas = sessao.atividadesVinculadas ?? [];
+                const isLinked = vinculadas.includes?.(atividade.idAtividade) ||
+                    vinculadas.some?.(a => a?.idAtividade === atividade.idAtividade);
+
+                setTecnicasAtivas(prev => ({ ...prev, pomodoro: !!isLinked }));
+            } catch (err) {
+                console.error("Erro ao carregar última sessão (AtividadeSelecionada):", err);
+            }
+        };
+
+        // só tenta se houver atividade (evita chamadas desnecessárias)
+        if (atividade?.idAtividade) carregarUltimaSessao();
+    }, [atividade]);
+
+    const removerAtividadeDoPomodoro = async (atividadeId) => {
+        try {
+            const sessao = await obterUltimaSessaoPomodoro();
+            if (!sessao || !sessao.idStatus) return;
+
+            const idSessao = sessao.idStatus;
+
+            // Se vier null ou vazio, nada a remover
+            const atuais = Array.isArray(sessao.atividadesVinculadas)
+                ? sessao.atividadesVinculadas
+                : [];
+
+            const filtradas = atuais.filter(id => id !== atividadeId);
+
+            await salvarAtividadesSessao(idSessao, filtradas.map(id => ({ idAtividade: id })));
+
+            return true;
+        } catch (err) {
+            console.error("Erro ao remover atividade do Pomodoro:", err);
+            return false;
+        }
+    };
+
+
     const capturaData = () => {
         const dataAtual = new Date();
 
@@ -154,8 +198,57 @@ function AtividadeSelecionada({ atividade, onAtualizarAtividade }) {
                 showOkToast("Atividade já inserida em Kanban!", "error");
                 return;
             }
+        } else if (tipo === "pomodoro") {
+            if (atividad.statusAtividade == 1) {
+                showOkToast("Não é possível adicionar atividades concluídas à técnica Pomodoro");
+                return;
+            }
+            try {
+                let sessao;
+
+try {
+    sessao = await obterUltimaSessaoPomodoro();
+} catch (err) {
+    sessao = await criarSessaoPomodoro();
+}
+
+const idSessao = sessao.idStatus;
+
+                if (!atividad?.idAtividade) {
+                    console.error("ERRO: atividade.idAtividade undefined:", atividad);
+                    showOkToast("Erro: atividade inválida");
+                    return;
+                }
+
+                // SE JÁ ESTÁ ATIVO → REMOVER
+                if (tecnicasAtivas.pomodoro) {
+                    await removerAtividadeDoPomodoro(atividad.idAtividade);
+
+                    setTecnicasAtivas(prev => ({ ...prev, pomodoro: false }));
+                    onAtualizarAtividade?.({ ...atividade, Pomodoro_idStatus: null });
+
+                    showOkToast("Atividade removida do Pomodoro!");
+                    return;
+                }
+
+                // SE NÃO ESTÁ → ADICIONAR
+                const res = await salvarAtividadesSessao(idSessao, [{ idAtividade: atividad.idAtividade }]);
+
+                setTecnicasAtivas(prev => ({ ...prev, pomodoro: true }));
+                onAtualizarAtividade?.({ ...atividade, Pomodoro_idStatus: idSessao });
+
+                showOkToast("Atividade adicionada ao Pomodoro!");
+
+            } catch (err) {
+                console.error("Erro ao adicionar/remover do Pomodoro:", err);
+                showOkToast("Erro ao adicionar/remover atividade");
+            }
+
+            return;
         }
+
     };
+
 
     const excluirDeTecnicas = async (tipo, atividade) => {
         if (tipo == "kanban") {
@@ -209,11 +302,13 @@ function AtividadeSelecionada({ atividade, onAtualizarAtividade }) {
 
         try {
 
+            await removerAtividadeDoPomodoro(atividade.idAtividade);
+
             if (atividade.Kanban_idAtividadeKanban !== null) {
                 await excluirDeTecnicas("kanban", atividade)
             }
             if (atividade.Eisenhower_idAtividadeEisenhower !== null) {
-                await excluirDeMatriz("eisenhower",atividade)
+                await excluirDeTecnicas("eisenhower", atividade)
             }
             await deletarAtividade(atividade.idAtividade);
             onAtualizarAtividade?.(null);
@@ -257,9 +352,6 @@ function AtividadeSelecionada({ atividade, onAtualizarAtividade }) {
                 dataConclusao: formatarDataMySQL(conclusao),
                 statusAtividade: status === 'Concluído' ? 1 : 0,
                 ListaAtividades_idLista: listaAtual,
-                Pomodoro_idStatus: tecnicasAtivas.pomodoro ? 1 : null,
-                Kanban_idAtividadeKanban: tecnicasAtivas.kanban ? 1 : null,
-                Eisenhower_idAtividadeEisenhower: tecnicasAtivas.eisenhower ? 1 : null,
                 ...camposAtualizados,
             };
 
@@ -353,13 +445,13 @@ function AtividadeSelecionada({ atividade, onAtualizarAtividade }) {
             <Tecnicas>
                 Técnicas
             </Tecnicas>
-            <Tecnica
-                tipo="pomodoro"
-                ativo={tecnicasAtivas.pomodoro}
+            <Pomodoro
+                $tipo="pomodoro"
+                $ativo={tecnicasAtivas.pomodoro}
                 onClick={() => botaoTecnicas("pomodoro")}
             >
                 Pomodoro
-            </Tecnica>
+            </Pomodoro>
             <Tecnica
                 tipo="kanban"
                 ativo={tecnicasAtivas.kanban}

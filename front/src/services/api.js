@@ -270,11 +270,24 @@ export const adicionarAtividadeSessao = async (idSessao, idAtividade) => {
 };
 
 export const obterUltimaSessaoPomodoro = async () => {
-  const res = await api.get("/pomodoro/ultima");
-  return res.data;
+  try {
+    const res = await api.get("/pomodoro/ultima");
+    return res.data;
+  } catch (err) {
+    if (err.response?.status === 404) {
+      return null; // <--- aqui retorna NULL quando não existe sessão
+    }
+    throw err;
+  }
 };
 
-
+export async function salvarTempoRealParcial(idSessao, tempoReal) {
+  return api.patch(`/pomodoro/${idSessao}/atualizar-parcial`, {
+    foco: tempoReal.foco,
+    curto: tempoReal.curto,
+    longo: tempoReal.longo
+  });
+}
 
 
 export default api;

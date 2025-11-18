@@ -28,7 +28,7 @@ export const criarSessaoPomodoro = async (req, res) => {
     // 2️⃣ Caso não haja sessão, cria uma nova limpa
     const atividadesVinculadas = JSON.stringify([]);
     const duracaoFoco = JSON.stringify([25]);
-const ciclosFoco = JSON.stringify([4]);
+    const ciclosFoco = JSON.stringify([4]);
 
     // 1 ciclo padrão
 
@@ -214,21 +214,34 @@ export const listarAtividadesSessao = async (req, res) => {
  * ✅ Resto dos endpoints — permanecem iguais
  */
 export const salvarAtividadesSessao = async (req, res) => {
-  const { atividades } = req.body;
+  const { atividades } = req.body; // array de IDs
   const idSessao = req.params.id;
 
   try {
     const atividadesJSON = JSON.stringify(atividades || []);
+
+    // 1️⃣ Atualiza a sessão
     await pool.query(
       `UPDATE pomodoro SET atividadesVinculadas = ? WHERE idStatus = ?`,
       [atividadesJSON, idSessao]
     );
+
+    // 2️⃣ Vincula as atividades à sessão correta
+    if (atividades && atividades.length > 0) {
+      await pool.query(
+        `UPDATE atividades SET Pomodoro_idStatus = ? WHERE idAtividade IN (?)`,
+        [idSessao, atividades]
+      );
+    }
+
     res.json({ message: "Atividades salvas com sucesso!", atividades });
+
   } catch (err) {
     console.error("Erro ao salvar atividades:", err);
     res.status(500).json({ error: "Erro ao salvar atividades" });
   }
 };
+
 
 export const registrarTempoPomodoro = async (req, res) => {
   const { idSessao } = req.params;
@@ -252,9 +265,27 @@ export const registrarTempoPomodoro = async (req, res) => {
 
 export const finalizarSessaoPomodoro = async (req, res) => {
   const idSessao = req.params.id;
-  const { duracaoRealFocoSegundos, duracaoRealCurtoSegundos, duracaoRealLongoSegundos } = req.body;
+  const {
+    duracaoRealFocoSegundos,
+    duracaoRealCurtoSegundos,
+    duracaoRealLongoSegundos,
+    fimAutomatico
+  } = req.body;
 
   try {
+    if (fimAutomatico === true) {
+      await pool.query(
+        `UPDATE pomodoro
+         SET fim = NOW()
+         WHERE idStatus = ?`,
+        [idSessao]
+      );
+
+      return res.json({
+        message: "Sessão finalizada automaticamente (reload)."
+      });
+    }
+
     await pool.query(
       `UPDATE pomodoro 
        SET duracaoRealFocoSegundos = ?, 
@@ -262,8 +293,14 @@ export const finalizarSessaoPomodoro = async (req, res) => {
            duracaoRealLongoSegundos = ?, 
            fim = NOW() 
        WHERE idStatus = ?`,
-      [duracaoRealFocoSegundos, duracaoRealCurtoSegundos, duracaoRealLongoSegundos, idSessao]
+      [
+        duracaoRealFocoSegundos,
+        duracaoRealCurtoSegundos,
+        duracaoRealLongoSegundos,
+        idSessao
+      ]
     );
+
     res.json({ message: "Sessão finalizada com sucesso!" });
   } catch (err) {
     console.error("Erro ao finalizar sessão Pomodoro:", err);
@@ -271,6 +308,7 @@ export const finalizarSessaoPomodoro = async (req, res) => {
   }
 };
 
+/*
 export const adicionarAtividadeSessao = async (req, res) => {
   const { id } = req.params;
   const { idAtividade } = req.body;
@@ -310,7 +348,7 @@ export const adicionarAtividadeSessao = async (req, res) => {
     res.status(500).json({ error: "Erro ao vincular atividade à sessão." });
   }
 };
-
+*/
 export const obterUltimaSessaoPomodoro = async (req, res) => {
   const username = req.usuarioUsername;
 
@@ -324,7 +362,7 @@ export const obterUltimaSessaoPomodoro = async (req, res) => {
     );
 
     if (rows.length === 0) {
-      return res.status(404).json({ message: "Nenhuma sessão encontrada." });
+      return res.status(404).json();
     }
 
     const sessao = rows[0];
@@ -340,3 +378,36 @@ export const obterUltimaSessaoPomodoro = async (req, res) => {
     res.status(500).json({ error: "Erro ao buscar última sessão Pomodoro." });
   }
 };
+
+export const atualizarParcial = async (req, res) => {
+  const id = req.params.id;
+
+  const { foco, curto, longo } = req.body;
+
+  if (!id) {
+    return res.status(400).json({ erro: "ID da sessão não fornecido." });
+  }
+
+  try {
+    await pool.query(`
+      UPDATE pomodoro
+      SET 
+        duracaoRealFocoSegundos = ?,
+        duracaoRealCurtoSegundos = ?,
+        duracaoRealLongoSegundos = ?
+      WHERE idStatus = ?
+    `, [
+      foco ?? 0,
+      curto ?? 0,
+      longo ?? 0,
+      id
+    ]);
+
+    res.json({ ok: true, msg: "Tempo real salvo com sucesso." });
+
+  } catch (e) {
+    console.error("Erro ao atualizar parcial:", e);
+    res.status(500).json({ erro: "Erro ao salvar progresso parcial." });
+  }
+};
+

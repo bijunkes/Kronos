@@ -164,6 +164,43 @@ export const verificarEmail = async (req, res) => {
       ['Atividades', username]
     );
 
+    await conn.query(
+  `
+    INSERT INTO pomodoro (
+      duracaoFoco,
+      duracaoIntervaloCurto,
+      duracaoIntervaloLongo,
+      ciclosFoco,
+      ciclosIntervaloCurto,
+      ciclosIntervaloLongo,
+      duracaoRealFocoSegundos,
+      duracaoRealCurtoSegundos,
+      duracaoRealLongoSegundos,
+      atividadesVinculadas,
+      Usuarios_username,
+      inicio,
+      fim
+    )
+    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+  `,
+  [
+    "25",   // duracaoFoco
+    5,      // duracaoIntervaloCurto
+    15,     // duracaoIntervaloLongo
+    "4",    // ciclosFoco
+    3,      // ciclosIntervaloCurto
+    1,      // ciclosIntervaloLongo
+    0,      // duracaoRealFocoSegundos
+    0,      // duracaoRealCurtoSegundos
+    0,      // duracaoRealLongoSegundos
+    "[]",   // atividadesVinculadas
+    username, // usuario
+    new Date(), // inicio
+    null        // fim ainda não encerrado
+  ]
+);
+
+
     /*
     const pomodoroVals = [
       '00:25:00',
