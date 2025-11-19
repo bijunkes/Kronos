@@ -100,18 +100,17 @@ export const Conteudo = styled.div`
   overflow-y: auto;
   padding: 0 3vh;
 
-  &::-webkit-scrollbar {
-    width: 5px;
-  }
-
-  &::-webkit-scrollbar-track {
-    background: var(--fundo-menu);
-    border-radius: 10px;
+    &::-webkit-scrollbar {
+    width: 6px;
   }
 
   &::-webkit-scrollbar-thumb {
-    background-color: var(--fundo-menu-ativo);
+    background-color: rgba(255, 255, 255, 0.15);
     border-radius: 10px;
+  }
+
+  &::-webkit-scrollbar-thumb:hover {
+    background-color: rgba(255, 255, 255, 0.25);
   }
 `;
 
@@ -147,7 +146,7 @@ export const Atividade = styled.div`
   border-radius: 20px;
   cursor: pointer;
   padding: 0 3vh;
-  color: white;
+  color: var(--cor-texto);
 
   &:hover {
     background-color: var(--cinza-claro);
