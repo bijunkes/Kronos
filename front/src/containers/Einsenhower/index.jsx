@@ -263,6 +263,7 @@ function Eisenhower() {
             return;
         }
 
+    const paraDataPrazo = (v) => v ? new Date(v.replace(" ", "T")) : new Date("9999-12-31");
 
         try {
 
@@ -270,28 +271,44 @@ function Eisenhower() {
                 classificacao: quadranteSelecionado,
                 dataAlteracao: capturaData()
             });
+
             const idEisen = res.idAtividadeEisenhower;
 
-            const novaAtividade = { ...atividade, quadrante: quadranteSelecionado, nome: atividade.nomeAtividade, Eisenhower_idAtividadeEisenhower: idEisen, Usuarios_username: atividade.Usuarios_username, dataAlteracao: capturaData() };
-            console.log(novaAtividade);
+            const novaAtividade = { 
+                ...atividade,
+                quadrante: quadranteSelecionado,
+                nome: atividade.nomeAtividade,
+                Eisenhower_idAtividadeEisenhower: idEisen,
+                Usuarios_username: atividade.Usuarios_username,
+                dataAlteracao: capturaData()
+            };
+
             await atualizarIdEisenAtividade(novaAtividade.idAtividade, {
                 Eisenhower_idAtividadeEisenhower: novaAtividade.Eisenhower_idAtividadeEisenhower,
                 Usuarios_username: novaAtividade.Usuarios_username,
                 idAtividade: novaAtividade.idAtividade
+            });
 
-            })
-            setAtividades((prev) => [...prev, novaAtividade]);
-            setAtividadesAdicionadas((prev) => [...prev, novaAtividade]);
+            setAtividades((prev) => {
+                const lista = [...prev, novaAtividade];
+                return lista.sort((a, b) =>
+                    paraDataPrazo(a.prazoAtividade) - paraDataPrazo(b.prazoAtividade)
+                );
+            });
+
+            setAtividadesAdicionadas((prev) => {
+                const lista = [...prev, novaAtividade];
+                return lista.sort((a, b) =>
+                    paraDataPrazo(a.prazoAtividade) - paraDataPrazo(b.prazoAtividade)
+                );
+            });
 
         } catch (err) {
             console.error("Erro ao adicionar ou atualizar atividade: ", err);
         }
 
-
-
         setMostrarModal(false);
     };
-
 
     return (
         <>

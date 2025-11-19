@@ -147,7 +147,7 @@ function Pomodoro() {
   }, [idSessao]);
 
   useEffect(() => {
-    console.log("🚀 Carregando última sessão...");
+    console.log("Carregando última sessão...");
 
     const carregarUltimaSessao = async () => {
       try {
@@ -163,7 +163,7 @@ function Pomodoro() {
             atividades: [],
           });
           if (novaSessaoId) {
-            console.log("🆕 Nova sessão criada — ID:", novaSessaoId);
+            console.log("Nova sessão criada — ID:", novaSessaoId);
             setIdSessao(novaSessaoId);
             setSessaoIniciada(false);
           }
@@ -171,7 +171,7 @@ function Pomodoro() {
         }
 
         const id = dados.idStatus;
-        console.log("✅ Sessão anterior encontrada — ID:", id);
+        console.log("Sessão anterior encontrada — ID:", id);
 
         setSessaoTemplate(dados);
         setIdSessao(null);
@@ -204,14 +204,14 @@ function Pomodoro() {
         };
 
         const atividadesBanco = await listarAtividadesSessao(id);
-        console.log("🧠 Atividades brutas:", atividadesBanco);
+        console.log("Atividades brutas:", atividadesBanco);
 
         const novasAtividades = (atividadesBanco || []).map(a => ({
           ...a,
           foco: a.foco != null ? Number(a.foco) : 25,
           ciclos: a.ciclos != null ? Number(a.ciclos) : 4,
         }));
-        console.log("🎯 Atividades normalizadas:", novasAtividades);
+        console.log("Atividades normalizadas:", novasAtividades);
 
         setAtividadesSelecionadas(novasAtividades);
 
@@ -243,8 +243,8 @@ function Pomodoro() {
         setAtivo(false);
 
       } catch (err) {
-        console.warn("❌ Erro ao carregar última sessão:", err);
-        console.log("⚙️ Criando sessão padrão de fallback...");
+        console.warn("Erro ao carregar última sessão:", err);
+        console.log("Criando sessão padrão de fallback...");
 
         try {
           const novaSessaoId = await garantirSessao({
@@ -259,7 +259,7 @@ function Pomodoro() {
             setSessaoIniciada(false);
           }
         } catch (e) {
-          console.error("💀 Falha ao criar fallback:", e);
+          console.error("Falha ao criar fallback:", e);
         }
       }
     };
@@ -431,24 +431,39 @@ function Pomodoro() {
     if (name === modo) setTempo(novoValor * 60);
   };
 
-  const adicionarAtividadeSessao = async (atividade) => {
+    const adicionarAtividadeSessao = async (atividade) => {
     if (atividadesSelecionadas.some(a => a.idAtividade === atividade.idAtividade)) return;
 
-    const novasAtivs = [
-      ...atividadesSelecionadas,
-      { ...atividade, foco: atividade.foco ?? 25, ciclos: 1, concluido: false }
-    ];
+    const paraDataPrazo = (v) =>
+      v ? new Date(v.replace(" ", "T")) : new Date("9999-12-31");
 
-    setAtividadesSelecionadas(novasAtivs); 
+    const novaAtividade = {
+      ...atividade,
+      foco: atividade.foco ?? 25,
+      ciclos: 1,
+      concluido: false
+    };
+
+    const novasAtivs = [...atividadesSelecionadas, novaAtividade];
+
+    const ordenadas = novasAtivs.sort(
+      (a, b) => paraDataPrazo(a.prazoAtividade) - paraDataPrazo(b.prazoAtividade)
+    );
+
+    setAtividadesSelecionadas(ordenadas);
 
     try {
-      const sessao = await garantirSessao(novasAtivs);
+      const sessao = await garantirSessao(ordenadas);
       if (!sessao) return;
 
-      await salvarAtividadesSessao(sessao, novasAtivs);
+      await salvarAtividadesSessao(sessao, ordenadas);
 
       const listaAtualizada = await listarAtividadesSessao(sessao);
-      setAtividadesSelecionadas(listaAtualizada);
+      const listaFinal = listaAtualizada.sort(
+        (a, b) => paraDataPrazo(a.prazoAtividade) - paraDataPrazo(b.prazoAtividade)
+      );
+
+      setAtividadesSelecionadas(listaFinal);
 
       console.log("Atividades atualizadas com sucesso!");
     } catch (err) {
@@ -456,11 +471,10 @@ function Pomodoro() {
     }
   };
 
-
   const [sessaoIniciada, setSessaoIniciada] = useState(false);
 
   const handlePlay = async () => {
-    console.log("🚀 handlePlay chamado");
+    console.log("handlePlay chamado");
 
     const { totalFoco, totalCurto, totalLongo } = calcularDuracoesTotais();
 
@@ -477,7 +491,7 @@ function Pomodoro() {
 
     try {
       if (sessaoIniciada) {
-        console.log("▶️ Retomando sessão já iniciada...");
+        console.log("Retomando sessão já iniciada...");
         setAtivo(true);
         return;
       }
@@ -485,10 +499,10 @@ function Pomodoro() {
       let sessao = idSessao;
 
       if (!sessao || (sessaoTemplate?.fim && !ativo)) {
-        console.log("🆕 Criando nova sessão porque não há sessão ativa...");
+        console.log("Criando nova sessão porque não há sessão ativa...");
         sessao = await garantirSessao(atividadesSelecionadas);
         if (!sessao) {
-          console.error("❌ Falha ao criar nova sessão");
+          console.error("Falha ao criar nova sessão");
           return;
         }
         setIdSessao(sessao);

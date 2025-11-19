@@ -60,6 +60,18 @@ function ModalTecnicas({ onClose, onAdicionar, onTecnica }) {
         a.nomeAtividade.toLowerCase().includes(filtro.toLowerCase())
     );
 
+  
+    const atividadesOrdenadas = [...atividadesFiltradas].sort((a, b) => {
+    const prazoA = a.prazoAtividade ? new Date(a.prazoAtividade.replace(" ", "T")) : null;
+    const prazoB = b.prazoAtividade ? new Date(b.prazoAtividade.replace(" ", "T")) : null;
+
+    if (!prazoA) return 1;
+    if (!prazoB) return -1;
+
+    return prazoA - prazoB;
+    });
+
+
     useEffect(() => {
         buscarAtividades();
         carregarListaPadrao();
@@ -87,23 +99,21 @@ function ModalTecnicas({ onClose, onAdicionar, onTecnica }) {
                             </div>
                         )}
 
-                        {atividadesFiltradas.map((a, index) => {
+                       {atividadesOrdenadas.map((a, index) => {
                             const isSelecionada = atividadeSelecionada?.idAtividade === a.idAtividade;
                             return (
-                                <>
-
-                                    <Atividade onClick={() => onAdicionar(a, idPadrao)} key={a.idAtividade}>
-                                        <p>{a.nomeAtividade}</p>
-                                        <Prazo>
-                                            {a.prazoAtividade
-                                                ? new Date(a.prazoAtividade.replace(' ', 'T')).toLocaleDateString()
-                                                : 'Sem prazo'}
-                                        </Prazo>
-                                    </Atividade>
-
-                                </>
+                                <Atividade onClick={() => onAdicionar(a, idPadrao)} key={a.idAtividade}>
+                                    <p>{a.nomeAtividade}</p>
+                                    <Prazo>
+                                        {a.prazoAtividade
+                                            ? new Date(a.prazoAtividade.replace(' ', 'T')).toLocaleDateString()
+                                            : 'Sem prazo'}
+                                    </Prazo>
+                                </Atividade>
                             );
                         })}
+
+
                     </AreaAtividades>
                 </Conteudo>
                 <Pesquisar>

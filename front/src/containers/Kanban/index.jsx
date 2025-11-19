@@ -307,38 +307,58 @@ function Kanban() {
         }
     };
 
-    const adicionarAtividade = async (atividade) => {
-        if (verificaAtividadeEmLista(atividade.idAtividade)) {
-            showOkToast("Atividade já inserida no Kanban!", "error");
+        const adicionarAtividade = async (atividade) => {
+            if (verificaAtividadeEmLista(atividade.idAtividade)) {
+                showOkToast("Atividade já inserida no Kanban!", "error");
+                setMostrarModal(false);
+                return;
+            }
+
+            const paraDataPrazo = (v) => v ? new Date(v.replace(" ", "T")) : new Date("9999-12-31");
+
+            try {
+                const res = await adicionarAtividadeEmKanban({
+                    classificacao: colunaSelecionada,
+                    dataAlteracao: capturaData()
+                });
+
+                const idKanban = res.idAtividadeKanban;
+
+                const novaAtividade = {
+                    ...atividade,
+                    coluna: colunaSelecionada,
+                    nome: atividade.nomeAtividade,
+                    Kanban_idAtividadeKanban: idKanban,
+                    Usuarios_username: atividade?.Usuarios_username ?? null,
+                    dataAlteracao: capturaData()
+                };
+
+                await atualizarIdKanbanAtividade(atividade.idAtividade, {
+                    Kanban_idAtividadeKanban: idKanban,
+                    Usuarios_username: novaAtividade.Usuarios_username,
+                    idAtividade: atividade.idAtividade
+                });
+
+                setAtividades((prev) => {
+                    const lista = [...prev, novaAtividade];
+                    return lista.sort((a, b) =>
+                        paraDataPrazo(a.prazoAtividade) - paraDataPrazo(b.prazoAtividade)
+                    );
+                });
+
+                setAtividadesAdicionadas((prev) => {
+                    const lista = [...prev, novaAtividade];
+                    return lista.sort((a, b) =>
+                        paraDataPrazo(a.prazoAtividade) - paraDataPrazo(b.prazoAtividade)
+                    );
+                });
+
+            } catch (err) {
+                console.error("Erro ao adicionar ou atualizar atividade: ", err);
+            }
+
             setMostrarModal(false);
-            return;
-        }
-        try {
-
-
-            const res = await adicionarAtividadeEmKanban({
-                classificacao: colunaSelecionada,
-                dataAlteracao: capturaData()
-            });
-            const idKanban = res.idAtividadeKanban;
-
-            const novaAtividade = { ...atividade, coluna: colunaSelecionada, nome: atividade.nomeAtividade, Kanban_idAtividadeKanban: idKanban, Usuarios_username: atividade.Usuarios_username, dataAlteracao: capturaData() };
-
-            console.log(novaAtividade);
-            await atualizarIdKanbanAtividade(novaAtividade.idAtividade, {
-                Kanban_idAtividadeKanban: novaAtividade.Kanban_idAtividadeKanban,
-                Usuarios_username: novaAtividade.Usuarios_username,
-                idAtividade: novaAtividade.idAtividade
-
-            })
-            setAtividades((prev) => [...prev, novaAtividade]);
-            setAtividadesAdicionadas((prev) => [...prev, novaAtividade]);
-        } catch (err) {
-            console.error("Erro ao adicionar ou atualizar atividade: ", err);
-        }
-
-        setMostrarModal(false);
-    };
+        };
 
     return (
         <>

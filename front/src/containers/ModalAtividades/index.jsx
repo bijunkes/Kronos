@@ -36,6 +36,17 @@ function ModalAtividades({ aberto, onFechar, atividades, onAdicionar }) {
     .filter(a => a.statusAtividade !== 1)
     .filter(a => a.nomeAtividade.toLowerCase().includes(filtro.toLowerCase()));
 
+  const atividadesOrdenadas = [...atividadesFiltradas].sort((a, b) => {
+  const prazoA = a.prazoAtividade ? new Date(a.prazoAtividade.replace(" ", "T")) : null;
+  const prazoB = b.prazoAtividade ? new Date(b.prazoAtividade.replace(" ", "T")) : null;
+
+  if (!prazoA) return 1; 
+  if (!prazoB) return -1;
+
+  return prazoA - prazoB;
+  });
+
+
   const handleAdicionarAtividade = () => {
     if (!novaAtividade.trim()) return;
 
@@ -83,20 +94,18 @@ function ModalAtividades({ aberto, onFechar, atividades, onAdicionar }) {
               </div>
             )}
 
-            {atividadesFiltradas.map((a, index) => {
+            {atividadesOrdenadas.map((a, index) => {
               const isSelecionada = atividadeSelecionada?.idAtividade === a.idAtividade;
               return (
                 <Atividade
-                  key={a.idAtividade || index}
+                  key={`${a.idAtividade}-${a.nomeAtividade}`}
                   onClick={() => {
                     setAtividadeSelecionada(a);
                     onAdicionar(a);
                     onFechar();
                   }}
                 >
-                  <div>
-                    {a.nomeAtividade}
-                  </div>
+                  <div>{a.nomeAtividade}</div>
                   <Prazo>
                     {a.prazoAtividade
                       ? new Date(a.prazoAtividade.replace(' ', 'T')).toLocaleDateString()
@@ -105,6 +114,7 @@ function ModalAtividades({ aberto, onFechar, atividades, onAdicionar }) {
                 </Atividade>
               );
             })}
+
           </AreaAtividades>
 
         </Conteudo>

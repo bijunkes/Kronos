@@ -6,6 +6,7 @@ O sistema Kronos tem como objetivo auxiliar jovens na gestão eficiente do tempo
 ## Conteúdo 
 <a href = "#Kronos" > Kronos </a> <br /> 
 <a href = "#Acesso" > Acesso </a> <br /> 
+<a href = "#interface" > Interface </a> <br />
 <a href = "#Tecnologias-Utilizadas" > Tecnologias Utilizadas </a> <br /> 
 <a href = "#Versão" > Versão </a> <br /> 
 <a href = "#Desenvolvedores" > Desenvolvedores </a> <br /> 
@@ -13,6 +14,22 @@ O sistema Kronos tem como objetivo auxiliar jovens na gestão eficiente do tempo
 
 ## Acesso 
 <a id="Acesso"></a> <span>Acesse o Kronos em: </span> <a href = "" > Kronos </a> 
+
+## Interface
+<table>
+  <tr>
+    <td><img src="src/assets/Tela0.png" alt="Tela de Cadastro" width="300"></td>
+    <td><img src="src/assets/Tela1.png" alt="Tela de Atividades" width="300"></td>
+  </tr>
+  <tr>
+    <td><img src="src/assets/Tela3.png" alt="Tela do Pomodoro" width="300"></td>
+    <td><img src="src/assets/Tela4.png" alt="Tela do Kanban" width="300"></td>
+  </tr>
+  <tr>
+    <td><img src="src/assets/Tela4.png" alt="Tela do Eisenhower" width="300"></td>
+    <td><img src="src/assets/Tela5.png" alt="Tela de Relatório" width="300"></td>
+  </tr>
+</table>
 
 ## Tecnologias Utilizadas 
 <a id="Tecnologias-Utilizadas"></a> 
