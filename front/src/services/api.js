@@ -318,6 +318,17 @@ export const listarSessoes = async () => {
   }
 };
 
+export const atualizarLista = async (idLista, novoNome) => {
+    try {
+        const response = await api.put(`/listas/${idLista}`, { nome: novoNome });
+        return response.data;
+    } catch (err) {
+        console.error('Erro ao atualizar lista:', err);
+        throw err;
+    }
+};
+
+
 
 export default api;
 

@@ -14,7 +14,7 @@ import {
     Pesquisar,
     Input
 } from './styles.js';
-import { deletarLista, listarAtividadesPorLista, listarListas, atualizarAtividade } from '../../services/api.js';
+import { deletarLista, listarAtividadesPorLista, listarListas, atualizarAtividade, atualizarLista } from '../../services/api.js';
 import ModalCriarAtividade from '../ModalCriarAtividade/index.jsx';
 import AtividadeSelecionada from '../AtividadeSelecionada/index.jsx';
 import { showConfirmToast } from '../../components/showToast.jsx';
@@ -28,6 +28,50 @@ function Lista() {
     const [atividadeSelecionada, setAtividadeSelecionada] = useState(null);
     const [mostrarModal, setMostrarModal] = useState(false);
     const [filtro, setFiltro] = useState("");
+
+    const [editandoNome, setEditandoNome] = useState(false);
+    const [novoNome, setNovoNome] = useState(nomeLista);
+
+    const handleSalvarNome = async () => {
+        const nomeTrim = novoNome.trim();
+        if (!nomeTrim || nomeTrim === nomeLista) {
+            setEditandoNome(false);
+            setNovoNome(nomeLista);
+            return;
+        }
+
+        try {
+            await atualizarLista(idLista, nomeTrim);
+            setEditandoNome(false);
+            window.dispatchEvent(new Event('listasAtualizadas'));
+        } catch (err) {
+            console.error('Erro ao atualizar nome da lista', err);
+            alert('Não foi possível atualizar o nome da lista');
+            setNovoNome(nomeLista);
+        }
+    };
+
+    useEffect(() => {
+        const atualizarNome = async () => {
+            try {
+                const listas = await listarListas();
+                const lista = listas.find(l => l.idLista === idLista);
+                if (lista) {
+                    setNovoNome(lista.nomeLista);
+                }
+            } catch (err) {
+                console.error("Erro ao atualizar nome da lista", err);
+            }
+        };
+
+        window.addEventListener('listasAtualizadas', atualizarNome);
+
+        return () => {
+            window.removeEventListener('listasAtualizadas', atualizarNome);
+        };
+    }, [idLista]);
+
+
 
     useEffect(() => {
         const carregarLista = async () => {
@@ -149,7 +193,42 @@ function Lista() {
         <Background>
             <ContainerLista>
                 <Header>
-                    <NomeLista>{nomeLista}</NomeLista>
+                    {editandoNome ? (
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                            <input
+                                type="text"
+                                value={novoNome}
+                                autoFocus
+                                onChange={(e) => setNovoNome(e.target.value)}
+                                onKeyDown={(e) => {
+                                    if (e.key === 'Enter') handleSalvarNome();
+                                    if (e.key === 'Escape') {
+                                        setEditandoNome(false);
+                                        setNovoNome(nomeLista);
+                                    }
+                                }}
+                                onBlur={handleSalvarNome}
+                                style={{
+                                    fontFamily: 'inherit',
+                                    fontSize: '20px',
+                                    fontWeight: 'bold',
+                                    lineHeight: 'inherit',
+                                    color: 'inherit', 
+                                    background: 'transparent',
+                                    border: 'none',
+                                    padding: 0,
+                                    margin: 0,
+                                    width: '100%',
+                                    cursor: 'text',
+                                }}
+                            />
+                        </div>
+                    ) : (
+                        <NomeLista onDoubleClick={() => setEditandoNome(true)}>
+                            {novoNome}
+                        </NomeLista>
+
+                    )}
                     <Botoes>
                         <span className="material-symbols-outlined" id="delete" onClick={handleExcluir}>delete</span>
                         <span className="material-symbols-outlined" id="add" onClick={() => setMostrarModal(true)}>add</span>
@@ -186,7 +265,7 @@ function Lista() {
                 </Conteudo>
 
                 <Pesquisar>
-                    <span className="material-symbols-outlined">search</span>
+                    <span style={{cursor: 'default'}} className="material-symbols-outlined">search</span>
                     <Input type="text" placeholder="Pesquisar..." value={filtro} onChange={(e) => setFiltro(e.target.value)} />
                 </Pesquisar>
             </ContainerLista>

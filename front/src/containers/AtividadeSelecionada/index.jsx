@@ -18,7 +18,6 @@ function AtividadeSelecionada({ atividade, onAtualizarAtividade }) {
 
     const listaAtual = listaSelecionada || atividade.ListaAtividades_idLista || listas[0]?.idLista;
 
-
     const [tecnicasAtivas, setTecnicasAtivas] = useState({
         pomodoro: !!atividade.Pomodoro_idStatus,
         kanban: !!atividade.Kanban_idAtividadeKanban,

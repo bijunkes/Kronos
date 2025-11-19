@@ -32,9 +32,9 @@ function ModalAtividades({ aberto, onFechar, atividades, onAdicionar }) {
     setAtivs(novasAtivs);
   };
 
-  const atividadesFiltradas = ativs.filter((a) =>
-    a.nomeAtividade.toLowerCase().includes(filtro.toLowerCase())
-  );
+  const atividadesFiltradas = ativs
+    .filter(a => a.statusAtividade !== 1)
+    .filter(a => a.nomeAtividade.toLowerCase().includes(filtro.toLowerCase()));
 
   const handleAdicionarAtividade = () => {
     if (!novaAtividade.trim()) return;
