@@ -62,6 +62,7 @@ function ModalCriarAtividade({
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (!nome.trim()) return alert("Informe o nome da atividade.");
+    if (nome.length > 20) return alert("A atividade deve conter até 20 caracteres!");
     if (!listaPadrao?.idLista)
       return alert("Lista padrão 'Atividades' não encontrada!");
 

@@ -91,16 +91,16 @@ function ModalTecnicas({ onClose, onAdicionar, onTecnica }) {
                             const isSelecionada = atividadeSelecionada?.idAtividade === a.idAtividade;
                             return (
                                 <>
-                                    {atividades.map((atividade, index) => (
-                                        <Atividade onClick={() => onAdicionar(atividade, idPadrao)} key={atividade.idAtividade}>
-                                            <p><strong>{atividade.nomeAtividade}</strong></p>
+                                   
+                                        <Atividade onClick={() => onAdicionar(a, idPadrao)} key={a.idAtividade}>
+                                            <p><strong>{a.nomeAtividade}</strong></p>
                                             <Prazo>
-                                                {atividade.prazoAtividade
-                                                    ? new Date(atividade.prazoAtividade.replace(' ', 'T')).toLocaleDateString()
+                                                {a.prazoAtividade
+                                                    ? new Date(a.prazoAtividade.replace(' ', 'T')).toLocaleDateString()
                                                     : 'Sem prazo'}
                                             </Prazo>
                                         </Atividade>
-                                    ))}
+                                    
                                 </>
                             );
                         })}

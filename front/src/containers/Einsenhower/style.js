@@ -170,9 +170,9 @@ export const BoxNomeTarefa = styled.div`
     width: 15vw;
     left: 0;
     color: rgba(255, 255, 255, 1);
-    display: flex;
-    justify-content: flex-start;
-    flex-wrap: wrap;
+    white-space: normal;
+word-wrap: break-word;
+overflow-wrap: break-word;
 `;
 export const BoxIcones = styled.div`
     position: relative;

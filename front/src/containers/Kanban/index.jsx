@@ -1,7 +1,7 @@
 import { React, useState, useEffect } from 'react';
 import { Container, Painel, BoxTitulo, BoxTarefa, NomeTarefa, Icones, BoxAdicionar, BoxNomeTarefa, BoxIcones, PainelTarefas } from './style.js';
 import ModalTecnicas from "../ModalTecnicas/index.jsx";
-import { atualizarAtividade, adicionarAtividadeEmKanban, atualizarAtividadeEmKanban, listarAtividadesEmKanban, listarAtividades, atualizarIdKanbanAtividade, deletarAtividadeDeKanban } from "../../services/api.js";
+import { listarAtividadesEmMatriz, deletarAtividadeDeMatriz, atualizarAtividade, adicionarAtividadeEmKanban, atualizarAtividadeEmKanban, listarAtividadesEmKanban, listarAtividades, atualizarIdKanbanAtividade, deletarAtividadeDeKanban } from "../../services/api.js";
 
 
 function Kanban() {
@@ -14,6 +14,7 @@ function Kanban() {
     const [colunaSelecionada, setColunaSelecionada] = useState(null);
     const [carregando, setCarregando] = useState(true);
     const [erro, setErro] = useState('');
+    const [hoverId, setHoverId] = useState('');
 
     const capturaData = () => {
         const dataAtual = new Date();
@@ -38,18 +39,13 @@ function Kanban() {
             todasAtividadesEmKanban.forEach(item => {
                 matrizMap.set(item.idAtividadeKanban, item.classificacao)
             })
-            console.log("chablau: "+[...matrizMap.values()]);
+            console.log("chablau: " + [...matrizMap.values()]);
             const verificaConclusao = (atividade) => {
-                console.log("LIAWYUuiwquiqwfuiwbf: "+atividade);
+                console.log("LIAWYUuiwquiqwfuiwbf: " + atividade);
                 if (atividade.statusAtividade == 1) {
-                    todasAtividadesEmKanban.forEach(item => {
-                        if (item.classificacao !== 3) {
-                            atualizaKanban(item.idAtividadeKanban, 3, capturaData())
-                        }
-                    })
                     return 3;
                 }
-                console.log("awrlkhhfguiwvbuiw4eb:  "+matrizMap.get(atividade.Kanban_idAtividadeKanban))
+                console.log("awrlkhhfguiwvbuiw4eb:  " + matrizMap.get(atividade.Kanban_idAtividadeKanban))
                 return parseInt(matrizMap.get(atividade.Kanban_idAtividadeKanban));
             }
             console.log(matrizMap.has(7))
@@ -124,11 +120,11 @@ function Kanban() {
         setAtividadesAdicionadas(prev => prev.filter(atividade => atividade.idAtividade !== atividadeId));
         const atividadeDeletada = atividades.find(a => a.idAtividade == atividadeId);
         const listaAtividades = await listarAtividades()
-        listaAtividades.forEach(atv => {
+        for (const atv of listaAtividades) {
             if (atv.idAtividade == atividadeId) {
-                nulaId(atv);
+                await nulaId(atv);
             }
-        })
+        }
         console.log(atividadeDeletada.Kanban_idAtividadeKanban);
         await deletarAtividadeDeKanban(atividadeDeletada.Kanban_idAtividadeKanban);
 
@@ -154,7 +150,7 @@ function Kanban() {
             console.log("if funcionando")
             const atividade = atividadeKanban;
             const novoStatus = 1;
-            console.log("Atividade: "+atividade)
+            console.log("Atividade: " + atividade)
             try {
                 await atualizarAtividade(atividade.idAtividade, {
                     nomeAtividade: atividade.nomeAtividade,
@@ -167,7 +163,15 @@ function Kanban() {
                     Eisenhower_idAtividadeEisenhower: atividade.Eisenhower_idAtividadeEisenhower,
                     ListaAtividades_idLista: atividade.ListaAtividades_idLista
                 });
-                
+                const listaMatriz = await listarAtividadesEmMatriz();
+                const atividadeEisen = listaMatriz.find(a => a.idAtividadeEisenhower == atividade.Eisenhower_idAtividadeEisenhower);
+                            if (!atividadeEisen) {
+                                console.warn("Atividade não encontrada na Matriz:", atividade.Eisenhower_idAtividadeEisenhower);
+                                return;
+                            }
+                            console.log("Excluindo da Matriz:", atividade.idAtividadeEisenhower);
+                            await deletarAtividadeDeMatriz(atividade.Eisenhower_idAtividadeEisenhower);
+
             } catch (err) {
                 console.error('Erro ao atualizar atividade:', err);
                 setAtividades(atividades);
@@ -175,24 +179,25 @@ function Kanban() {
                     setAtividadeSelecionada(atividade);
                 }
             }
-        } else if (atividadeKanban.statusAtividade == 1 && atividadeKanban.coluna !== 3){
+        } else if (atividadeKanban.coluna !== 3) {
 
             console.log("Else if funcionando")
             const atividade = atividadeKanban;
             const novoStatus = 0;
+
             try {
                 await atualizarAtividade(atividade.idAtividade, {
                     nomeAtividade: atividade.nomeAtividade,
                     descricaoAtividade: atividade.descricaoAtividade,
                     prazoAtividade: formatarDataMySQL(atividade.prazoAtividade),
-                    dataConclusao: capturaData(),
+                    dataConclusao: null,
                     statusAtividade: novoStatus,
                     Pomodorostatus: atividade.Pomodorostatus,
                     Kanban_idAtividadeKanban: atividade.Kanban_idAtividadeKanban,
                     Eisenhower_idAtividadeEisenhower: atividade.Eisenhower_idAtividadeEisenhower,
                     ListaAtividades_idLista: atividade.ListaAtividades_idLista
                 });
-                
+
             } catch (err) {
                 console.error('Erro ao atualizar atividade:', err);
                 setAtividades(atividades);
@@ -259,6 +264,8 @@ function Kanban() {
 
     }
     const renderIcons = (coluna, atividadeId) => {
+
+
         switch (coluna) {
             case 1:
                 return (
@@ -342,27 +349,29 @@ function Kanban() {
                 <Painel id='1'>
                     <BoxTitulo>A Fazer</BoxTitulo>
                     <PainelTarefas>{atividades.filter(atividade => atividade.coluna == 1).map(atividade => (
-                        <BoxTarefa key={atividade.idAtividade} id={atividade.idAtividade}>
+                        <BoxTarefa key={atividade.idAtividade} id={atividade.idAtividade} onMouseEnter={() => setHoverId(atividade.idAtividade)} onMouseLeave={() => setHoverId(null)}>
                             <BoxNomeTarefa><NomeTarefa>{atividade.nome}</NomeTarefa></BoxNomeTarefa>
-                            {renderIcons(atividade.coluna, atividade.idAtividade)}
+                            {hoverId === atividade.idAtividade && renderIcons(atividade.coluna, atividade.idAtividade)}
                         </BoxTarefa>
                     ))}</PainelTarefas>
 
                     <BoxAdicionar onClick={handleClick(1)} id="Adicionar">Adicionar atividade</BoxAdicionar></Painel>
                 <Painel id='2'><BoxTitulo>Fazendo</BoxTitulo>
                     <PainelTarefas>{atividades.filter(atividade => atividade.coluna == 2).map(atividade => (
-                        <BoxTarefa key={atividade.idAtividade} id={atividade.idAtividade}>
+                        <BoxTarefa key={atividade.idAtividade} id={atividade.idAtividade} onMouseEnter={() => setHoverId(atividade.idAtividade)} onMouseLeave={() => setHoverId(null)}>
                             <BoxNomeTarefa><NomeTarefa>{atividade.nome}</NomeTarefa></BoxNomeTarefa>
-                            {renderIcons(atividade.coluna, atividade.idAtividade)}
+
+                            {hoverId === atividade.idAtividade && renderIcons(atividade.coluna, atividade.idAtividade)}
                         </BoxTarefa>
                     ))}</PainelTarefas>
                     <BoxAdicionar onClick={handleClick(2)} id="Adicionar">Adicionar atividade</BoxAdicionar>
                 </Painel>
                 <Painel id='3'><BoxTitulo>Feito</BoxTitulo>
                     <PainelTarefas>{atividades.filter(atividade => atividade.coluna == 3).map(atividade => (
-                        <BoxTarefa key={atividade.idAtividade} id={atividade.idAtividade}>
+                        <BoxTarefa key={atividade.idAtividade} id={atividade.idAtividade} onMouseEnter={() => setHoverId(atividade.idAtividade)} onMouseLeave={() => setHoverId(null)}>
                             <BoxNomeTarefa><NomeTarefa>{atividade.nome}</NomeTarefa></BoxNomeTarefa>
-                            {renderIcons(atividade.coluna, atividade.idAtividade)}
+
+                            {hoverId === atividade.idAtividade && renderIcons(atividade.coluna, atividade.idAtividade)}
                         </BoxTarefa>
                     ))}</PainelTarefas>
                     <BoxAdicionar onClick={handleClick(3)} id="Adicionar">Adicionar atividade</BoxAdicionar>

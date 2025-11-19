@@ -29,22 +29,29 @@ function RelatorioSemanal() {
 
         try {
             const todasAtividadesEmKanban = await listarAtividadesEmKanban();
-
             const todasAtividades = await listarAtividades();
             console.log(todasAtividadesEmKanban);
             const matrizMap = new Map();
             todasAtividadesEmKanban.forEach(item => {
-                if (verificaDataNoIntervalo(item.dataAlteracao.substring(0, 10))) {
-
-                    console.log("TESTE FOR EACH!!!!!!")
-                    matrizMap.set(item.idAtividadeKanban, item.classificacao)
+                matrizMap.set(item.idAtividadeKanban, item.classificacao)
+            })
+            console.log("chablau: " + [...matrizMap.values()]);
+            const verificaConclusao = (atividade) => {
+                console.log("LIAWYUuiwquiqwfuiwbf: " + atividade);
+                if (atividade.statusAtividade == 1) {
+                    return 3;
                 }
+                console.log("awrlkhhfguiwvbuiw4eb:  " + matrizMap.get(atividade.Kanban_idAtividadeKanban))
+                return parseInt(matrizMap.get(atividade.Kanban_idAtividadeKanban));
+            }
+            console.log(matrizMap.has(7))
+            todasAtividades.forEach(a => {
+                console.log(a)
             })
             const atividadesEmKanban = todasAtividades.filter(atv => matrizMap.has(atv.Kanban_idAtividadeKanban)).map(atv => ({
                 ...atv,
-                coluna: parseInt(matrizMap.get(atv.Kanban_idAtividadeKanban)),
+                coluna: verificaConclusao(atv),
                 nome: atv.nomeAtividade,
-                idAtividade: atv.idAtividade,
             }))
             setAtividades(atividadesEmKanban);
 
@@ -198,38 +205,38 @@ function RelatorioSemanal() {
 
     const [tempos, setTempos] = useState({ foco: 0, descanso: 0 });
 
-  useEffect(() => {
-    const carregarSessoesSemana = async () => {
-      const todasSessoes = await listarSessoes();
+    useEffect(() => {
+        const carregarSessoesSemana = async () => {
+            const todasSessoes = await listarSessoes();
 
-      const hoje = new Date();
-      const semanaPassada = new Date();
-      semanaPassada.setDate(hoje.getDate() - 7);
+            const hoje = new Date();
+            const semanaPassada = new Date();
+            semanaPassada.setDate(hoje.getDate() - 7);
 
-      const sessoesSemana = todasSessoes.filter(s => {
-        const inicio = new Date(s.inicio);
-        return inicio >= semanaPassada && inicio <= hoje;
-      });
+            const sessoesSemana = todasSessoes.filter(s => {
+                const inicio = new Date(s.inicio);
+                return inicio >= semanaPassada && inicio <= hoje;
+            });
 
-      const somaSegundos = sessoesSemana.reduce((acc, s) => ({
-        foco: acc.foco + (s.duracaoRealFocoSegundos || 0),
-        descanso: acc.descanso + ((s.duracaoRealCurtoSegundos || 0) + (s.duracaoRealLongoSegundos || 0))
-      }), { foco: 0, descanso: 0 });
+            const somaSegundos = sessoesSemana.reduce((acc, s) => ({
+                foco: acc.foco + (s.duracaoRealFocoSegundos || 0),
+                descanso: acc.descanso + ((s.duracaoRealCurtoSegundos || 0) + (s.duracaoRealLongoSegundos || 0))
+            }), { foco: 0, descanso: 0 });
 
-      const somaMinutos = {
-        foco: Math.floor(somaSegundos.foco / 60),
-        descanso: Math.floor(somaSegundos.descanso / 60)
-      };
+            const somaMinutos = {
+                foco: Math.floor(somaSegundos.foco / 60),
+                descanso: Math.floor(somaSegundos.descanso / 60)
+            };
 
-      setTempos(somaMinutos);
-    };
+            setTempos(somaMinutos);
+        };
 
-    carregarSessoesSemana();
-  }, []);
+        carregarSessoesSemana();
+    }, []);
     return (
         <>
             <Container>
-                <Titulo>Relatório Diário</Titulo>
+                <Titulo>Relatório Semanal</Titulo>
                 <RelatorioKanban>Atividades do Kanban <Icones className="material-symbols-outlined" title={textoKanban}>
                     info
                 </Icones></RelatorioKanban>
@@ -248,23 +255,23 @@ function RelatorioSemanal() {
                     <BoxPomodoro>Descanso: {tempos.descanso} min</BoxPomodoro></Pomodoro>
                 <Pendente><BoxTitulo>Pendente</BoxTitulo><PainelTarefas>{atividades.filter(atividade => atividade.coluna === 1).map(atividade => (
                     <BoxTarefas key={atividade.Kanban_idAtividadeKanban} id={atividade.idAtividade}>
-                        
-                            <BoxNomeTarefa><NomeTarefa>{atividade.nome}</NomeTarefa></BoxNomeTarefa>
-                        
+
+                        <BoxNomeTarefa><NomeTarefa>{atividade.nome}</NomeTarefa></BoxNomeTarefa>
+
                     </BoxTarefas>
                 ))}</PainelTarefas></Pendente>
                 <Andamento><BoxTitulo>Em Andamento</BoxTitulo><PainelTarefas>{atividades.filter(atividade => atividade.coluna === 2).map(atividade => (
                     <BoxTarefas key={atividade.Kanban_idAtividadeKanban} id={atividade.idAtividade}>
-                        
-                            <BoxNomeTarefa><NomeTarefa>{atividade.nome}</NomeTarefa></BoxNomeTarefa>
-                        
+
+                        <BoxNomeTarefa><NomeTarefa>{atividade.nome}</NomeTarefa></BoxNomeTarefa>
+
                     </BoxTarefas>
                 ))}</PainelTarefas></Andamento>
                 <Concluido><BoxTitulo>Concluído</BoxTitulo><PainelTarefas>{atividades.filter(atividade => atividade.coluna === 3).map(atividade => (
                     <BoxTarefas key={atividade.Kanban_idAtividadeKanban} id={atividade.idAtividade}>
-                        
-                            <BoxNomeTarefa><NomeTarefa>{atividade.nome}</NomeTarefa></BoxNomeTarefa>
-                        
+
+                        <BoxNomeTarefa><NomeTarefa>{atividade.nome}</NomeTarefa></BoxNomeTarefa>
+
                     </BoxTarefas>
                 ))}</PainelTarefas></Concluido>
                 <Classificacao>

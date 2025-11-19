@@ -24,7 +24,7 @@ export const adicionarAtividade = async (req, res) => {
         );
         const idAtividadeEisenhower = resultado.insertId;
         
-        res.status(201).json({idAtividadeEisenhower, message: "Atividade adicionada ao Eisenhower"});
+        res.status(201).json({idAtividadeEisenhower});
     } catch (err) {
         console.error(err);
         res.status(500).json({ error: "Erro ao adicionar atividade ao Eisenhower" });
@@ -70,7 +70,7 @@ export const atualizarMatriz = async (req, res) => {
             WHERE idAtividadeEisenhower = ? `,
             [classificacao, dataAlteracao, id]
         );
-        res.json({ message: "Matriz atualizada" });
+        
     } catch (err) {
         console.error(err);
         res.status(500).json({ error: "Erro ao atualizar matriz" });
@@ -84,7 +84,7 @@ export const deletarAtividadeDeMatriz = async (req, res) => {
         await pool.query("SET foreign_key_checks = 0;");
         await pool.query("DELETE FROM eisenhower WHERE idAtividadeEisenhower = ?", [id]);
         await pool.query("SET foreign_key_checks = 1;");
-        res.json({message: "Atividade deletada"});
+        
     } catch (err) {
         console.error(err);
         res.status(500).json({error: "Erro ao deletar atividade"});
