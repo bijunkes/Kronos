@@ -64,14 +64,17 @@ function AtividadeSelecionada({ atividade, onAtualizarAtividade }) {
             setPrazo(atividade.prazoAtividade || '');
             setConclusao(atividade.dataConclusao || '');
             setDescricao(atividade.descricaoAtividade || '');
+            setListaSelecionada(atividade.ListaAtividades_idLista || listas[0]?.idLista); // ✅ atualizar
         } else {
             setNome('');
             setStatus(0);
             setPrazo('');
             setConclusao('');
             setDescricao('');
+            setListaSelecionada(listas[0]?.idLista || '');
         }
-    }, [atividade]);
+    }, [atividade, listas]);
+
 
     useEffect(() => {
         const carregarUltimaSessao = async () => {
@@ -448,6 +451,7 @@ function AtividadeSelecionada({ atividade, onAtualizarAtividade }) {
                         </option>
                     ))}
                 </select>
+
             </Lista>
             <Tecnicas>
                 Técnicas

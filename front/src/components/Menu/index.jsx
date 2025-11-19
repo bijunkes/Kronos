@@ -36,7 +36,7 @@ function Menu() {
     nome: localStorage.getItem('user_nome') || '',
     username: ''
   });
-  
+
   const [iconUrl, setIconUrl] = useState(localStorage.getItem('user_icon_url') || null);
   const [imgVer, setImgVer] = useState(0);
   const [displaySrc, setDisplaySrc] = useState(iconUrl || defaultUserImage);
@@ -67,7 +67,7 @@ function Menu() {
           setIconUrl(null);
           localStorage.removeItem('user_icon_url');
         }
-        setImgVer((v) => v + 1); 
+        setImgVer((v) => v + 1);
       } catch (err) {
         console.error('Erro ao buscar usuário no menu:', err?.response?.data || err);
       }
@@ -136,7 +136,7 @@ function Menu() {
         const objUrl = URL.createObjectURL(blob);
         objectUrlRef.current = objUrl;
         setDisplaySrc(objUrl);
-      } catch (e) {     
+      } catch (e) {
       }
     })();
 
@@ -151,12 +151,15 @@ function Menu() {
   const handleClick = (item, temRota = true) => {
     if (submenuAberto === item) {
       setSubmenuAberto('');
+      setSubmenuSelecionado({ pai: '', item: '' });
       if (temRota) navigate('/home');
     } else {
       setSubmenuAberto(item);
+      setSubmenuSelecionado({ pai: '', item: '' });
       if (temRota) navigate('/' + item);
     }
   };
+
 
   const handleSubmenuClick = (pai, item, idLista = null) => {
     if (submenuSelecionado.pai === pai && submenuSelecionado.item === item) {
@@ -245,7 +248,7 @@ function Menu() {
           }}
         >
           <img
-            key={displaySrc}        
+            key={displaySrc}
             src={displaySrc}
             alt="Icon usuário"
             onError={() => {
@@ -301,17 +304,17 @@ function Menu() {
 
       <Lista>
         <ItemMaior
-            style={{
-              color:
-                submenuAberto === 'listas' && submenuSelecionado.pai !== 'listas'
-                  ? '#AF52DE'
-                  : submenuSelecionado.pai === 'listas' && submenuSelecionado.item
+          style={{
+            color:
+              submenuAberto === 'listas' && submenuSelecionado.pai !== 'listas'
+                ? '#AF52DE'
+                : submenuSelecionado.pai === 'listas' && submenuSelecionado.item
                   ? ''
                   : submenuAberto === 'listas'
-                  ? '#AF52DE'
-                  : ''
-            }}
-            onClick={() => handleClick('listas', false)}
+                    ? '#AF52DE'
+                    : ''
+          }}
+          onClick={() => handleClick('listas', false)}
         >
 
           <ListasHeader>
