@@ -20,7 +20,6 @@ export const Card = styled.div`
   background-color: var(--fundo-menu);
   color: var(--cor-texto);
   border-radius: 20px;
-  box-shadow: 0 0 20px rgba(0,0,0,0.3);
   padding: 3vh;
 `;
 

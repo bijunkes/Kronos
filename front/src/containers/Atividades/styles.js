@@ -81,7 +81,7 @@ export const Atividade = styled.div`
   align-items: center;
   border-radius: 20px;
   gap: 1vh;
-  cursor: pointer;
+  cursor: pointer;opacity: ${props => (props.concluido ? 0.5 : 1)};
 `;
 
 export const Prazo = styled.div`

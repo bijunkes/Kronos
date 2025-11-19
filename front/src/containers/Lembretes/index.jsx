@@ -214,7 +214,7 @@ const handleExcluir = async () => {
       <Card>
         <Header>
           <h2>Lembretes</h2>
-          <button onClick={handleExcluirTodos}>Excluir</button>
+          <button onClick={handleExcluirTodos}>Excluir todos</button>
         </Header>
 
         {carregando ? (
