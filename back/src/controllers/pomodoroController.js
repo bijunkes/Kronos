@@ -381,25 +381,34 @@ export const obterUltimaSessaoPomodoro = async (req, res) => {
 
 export const atualizarParcial = async (req, res) => {
   const id = req.params.id;
-
-  const { foco, curto, longo } = req.body;
+  const { foco, curto, longo, dataFimSessao } = req.body;
 
   if (!id) {
     return res.status(400).json({ erro: "ID da sessão não fornecido." });
   }
 
   try {
+    console.log("Atualizando sessão:", {
+      id,
+      foco,
+      curto,
+      longo,
+      dataFimSessao
+    });
+
     await pool.query(`
       UPDATE pomodoro
       SET 
         duracaoRealFocoSegundos = ?,
         duracaoRealCurtoSegundos = ?,
-        duracaoRealLongoSegundos = ?
+        duracaoRealLongoSegundos = ?,
+        fim = ?
       WHERE idStatus = ?
     `, [
       foco ?? 0,
       curto ?? 0,
       longo ?? 0,
+      dataFimSessao ? new Date(dataFimSessao) : null,
       id
     ]);
 
@@ -410,6 +419,7 @@ export const atualizarParcial = async (req, res) => {
     res.status(500).json({ erro: "Erro ao salvar progresso parcial." });
   }
 };
+
 
 export const listarSessoes = async (req, res) => {
   const username = req.usuarioUsername;

@@ -304,7 +304,8 @@ export async function salvarTempoRealParcial(idSessao, tempoReal) {
   return api.patch(`/pomodoro/${idSessao}/atualizar-parcial`, {
     foco: tempoReal.foco,
     curto: tempoReal.curto,
-    longo: tempoReal.longo
+    longo: tempoReal.longo,
+    dataFimSessao: tempoReal.dataFimSessao
   });
 }
 
