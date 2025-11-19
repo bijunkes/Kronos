@@ -109,7 +109,7 @@ export const atualizarAtividade = async (req, res) => {
       ]
     );
 
-    res.json({ message: "Atividade atualizada" });
+    res.json({ message: ""});
   } catch (err) {
     console.error("Erro ao atualizar atividade:", err);
     res.status(500).json({ error: "Erro ao atualizar atividade" });
@@ -128,7 +128,7 @@ export const atualizarIdEisenAtividade = async (req, res) => {
         WHERE idAtividade = ? AND Usuarios_username = ?`,
       [idEisen, idAtividade, usuario]
     );
-    res.json({ message: "Atividade atualizada" });
+    res.json({ message:""});
   } catch (err) {
     console.error(err);
     res.status(500).json({ error: "Erro ao atualizar atividade" });
@@ -147,7 +147,7 @@ export const atualizarIdKanbanAtividade = async (req, res) => {
         WHERE idAtividade = ? AND Usuarios_username = ?`,
       [idKanban, idAtividade, usuario]
     );
-    res.json({ message: "Atividade atualizada" });
+    res.json({ message:""});
   } catch (err) {
     console.error(err);
     res.status(500).json({ error: "Erro ao atualizar atividade" });
