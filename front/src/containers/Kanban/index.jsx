@@ -48,10 +48,7 @@ function Kanban() {
                 console.log("awrlkhhfguiwvbuiw4eb:  " + matrizMap.get(atividade.Kanban_idAtividadeKanban))
                 return parseInt(matrizMap.get(atividade.Kanban_idAtividadeKanban));
             }
-            console.log(matrizMap.has(7))
-            todasAtividades.forEach(a => {
-                console.log(a)
-            })
+            
             const atividadesEmKanban = todasAtividades.filter(atv => matrizMap.has(atv.Kanban_idAtividadeKanban)).map(atv => ({
                 ...atv,
                 coluna: verificaConclusao(atv),
@@ -160,7 +157,7 @@ function Kanban() {
                     statusAtividade: novoStatus,
                     Pomodorostatus: atividade.Pomodorostatus,
                     Kanban_idAtividadeKanban: atividade.Kanban_idAtividadeKanban,
-                    Eisenhower_idAtividadeEisenhower: atividade.Eisenhower_idAtividadeEisenhower,
+                    Eisenhower_idAtividadeEisenhower: null,
                     ListaAtividades_idLista: atividade.ListaAtividades_idLista
                 });
                 const listaMatriz = await listarAtividadesEmMatriz();
