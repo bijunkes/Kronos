@@ -26,22 +26,13 @@ function AtividadeSelecionada({ atividade, onAtualizarAtividade }) {
 
     const botaoTecnicas = (tipo) => {
         // toggleTecnica(tipo);
+
         alterarAtividadeEmTecnica(tipo, atividade);
     }
 
     const toggleTecnica = async (tipo) => {
         const novoEstado = { ...tecnicasAtivas, [tipo]: !tecnicasAtivas[tipo] };
-        const atv = atividade
         setTecnicasAtivas(novoEstado);
-        try {
-            await atualizarAtividade(atividade.idAtividade, {
-                Pomodoro_idStatus: novoEstado.pomodoro ? 1 : null,
-                Kanban_idAtividadeKanban: novoEstado.kanban ? 1 : null,
-                Eisenhower_idAtividadeEisenhower: novoEstado.eisenhower ? 1 : null,
-            });
-        } catch (err) {
-            console.error("Erro ao atualizar técnicas:", err);
-        }
 
     };
 
@@ -133,6 +124,8 @@ function AtividadeSelecionada({ atividade, onAtualizarAtividade }) {
 
         if (tipo == "eisenhower") {
             if (atividad.Eisenhower_idAtividadeEisenhower == null) {
+                const novoEstado = { ...tecnicasAtivas, [tipo]: !tecnicasAtivas[tipo] };
+                setTecnicasAtivas(novoEstado);
                 if (atividad.statusAtividade == 1) {
                     showOkToast('Não é possível adicionar atividades concluídas em técnicas', err)
                 } else {
@@ -173,6 +166,7 @@ function AtividadeSelecionada({ atividade, onAtualizarAtividade }) {
             }
         } else if (tipo == "kanban") {
             if (atividad.Kanban_idAtividadeKanban == null) {
+                
                 if (atividad.statusAtividade == 1) {
                     showOkToast('Não é possível adicionar atividades concluídas em técnicas', err)
                 } else {

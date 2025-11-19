@@ -224,6 +224,7 @@ export const BoxTarefas = styled.div`
     padding: 1rem;
     margin: 1px;
     flex-wrap: wrap;
+    
 `;
 export const BoxNomeTarefa = styled.div`
     position: relative;
@@ -231,9 +232,7 @@ export const BoxNomeTarefa = styled.div`
     width: 12vw;
     height: auto;
     color: rgba(255, 255, 255, 1);
-    display: flex;
-    justify-content: center;
-    flex-wrap: wrap;
+    display: block;
 `;
 
 export const NomeTarefa = styled.h2`
@@ -241,6 +240,10 @@ export const NomeTarefa = styled.h2`
     align-self: center;
     color: rgba(255, 255, 255, 1);
     font-size: 18px;
+    width: 10vw;
+    white-space: normal;
+word-wrap: break-word;
+overflow-wrap: break-word;
 `;
 export const QuadroEisen = styled.div`
     height: 2vh;

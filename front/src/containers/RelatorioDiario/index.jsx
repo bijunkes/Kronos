@@ -29,21 +29,30 @@ function RelatorioDiario() {
 
         try {
             const todasAtividadesEmKanban = await listarAtividadesEmKanban();
-
-            const todasAtividades = await listarAtividades();
-            console.log(todasAtividadesEmKanban);
-            const matrizMap = new Map();
-            todasAtividadesEmKanban.forEach(item => {
-                if (item.dataAlteracao.substring(0, 10) == capturaData()) {
-                    matrizMap.set(item.idAtividadeKanban, item.classificacao)
-                }
-            })
-            const atividadesEmKanban = todasAtividades.filter(atv => matrizMap.has(atv.Kanban_idAtividadeKanban)).map(atv => ({
-                ...atv,
-                coluna: parseInt(matrizMap.get(atv.Kanban_idAtividadeKanban)),
-                nome: atv.nomeAtividade,
-                idAtividade: atv.idAtividade,
-            }))
+                        const todasAtividades = await listarAtividades();
+                        console.log(todasAtividadesEmKanban);
+                        const matrizMap = new Map();
+                        todasAtividadesEmKanban.forEach(item => {
+                            matrizMap.set(item.idAtividadeKanban, item.classificacao)
+                        })
+                        console.log("chablau: "+[...matrizMap.values()]);
+                        const verificaConclusao = (atividade) => {
+                            console.log("LIAWYUuiwquiqwfuiwbf: "+atividade);
+                            if (atividade.statusAtividade == 1) {
+                                return 3;
+                            }
+                            console.log("awrlkhhfguiwvbuiw4eb:  "+matrizMap.get(atividade.Kanban_idAtividadeKanban))
+                            return parseInt(matrizMap.get(atividade.Kanban_idAtividadeKanban));
+                        }
+                        console.log(matrizMap.has(7))
+                        todasAtividades.forEach(a => {
+                            console.log(a)
+                        })
+                        const atividadesEmKanban = todasAtividades.filter(atv => matrizMap.has(atv.Kanban_idAtividadeKanban)).map(atv => ({
+                            ...atv,
+                            coluna: verificaConclusao(atv),
+                            nome: atv.nomeAtividade,
+                        }))
             setAtividades(atividadesEmKanban);
 
 

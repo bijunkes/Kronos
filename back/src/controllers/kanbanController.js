@@ -24,7 +24,7 @@ export const adicionarAtividade = async (req, res) => {
         );
         const idAtividadeKanban = resultado.insertId;
         
-        res.status(201).json({idAtividadeKanban, message: "Atividade adicionada ao Kanban"});
+        res.status(201).json({idAtividadeKanban});
     } catch (err) {
         console.error(err);
         res.status(500).json({ error: "Erro ao adicionar atividade ao Kanban" });
@@ -85,7 +85,7 @@ export const deletarAtividadeDeKanban = async (req, res) => {
         await pool.query("SET foreign_key_checks = 0;");
         await pool.query("DELETE FROM kanban WHERE idAtividadeKanban = ?", [id]);
         await pool.query("SET foreign_key_checks = 1;");
-        res.json({message: "Atividade deletada"});
+        
     } catch (err) {
         console.error(err);
         res.status(500).json({error: "Erro ao deletar atividade"});

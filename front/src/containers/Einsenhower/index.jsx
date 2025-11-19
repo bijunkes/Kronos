@@ -30,6 +30,7 @@ function Eisenhower() {
     const [quadranteSelecionado, setQuadranteSelecionado] = useState(null);
     const [carregando, setCarregando] = useState(true);
     const [erro, setErro] = useState('');
+    const [hoverId, setHoverId] = useState('');
 
     const capturaData = () => {
         const dataAtual = new Date();
@@ -302,10 +303,10 @@ function Eisenhower() {
                     .map(
                         (atividade) =>
 
-                            <Atividade key={atividade.idAtividade}>
+                            <Atividade key={atividade.idAtividade} onMouseEnter={()=> setHoverId(atividade.idAtividade)} onMouseLeave={()=> setHoverId(null)}>
                                 <BoxNomeTarefa>{atividade.nome || atividade.nomeAtividade}</BoxNomeTarefa>
-                                <BoxIcones>{renderIcons(`icones${atividade.quadrante}`, atividade.idAtividade)}</BoxIcones>
-
+                                <BoxIcones>{hoverId === atividade.idAtividade && renderIcons(`icones${atividade.quadrante}`, atividade.idAtividade)}</BoxIcones>
+                                
                             </Atividade>
                     )}</Lista> <AdicionarTarefa onClick={() => handleClick(1)} id="Adicionar">Adicionar atividade</AdicionarTarefa></ImportanteUrgente>
 
@@ -315,9 +316,9 @@ function Eisenhower() {
                         .map(
                             (atividade) =>
 
-                                <Atividade key={atividade.idAtividade}>
+                                <Atividade key={atividade.idAtividade} onMouseEnter={()=> setHoverId(atividade.idAtividade)} onMouseLeave={()=> setHoverId(null)}>
                                     <BoxNomeTarefa>{atividade.nome || atividade.nomeAtividade}</BoxNomeTarefa>
-                                    <BoxIcones>{renderIcons(`icones${atividade.quadrante}`, atividade.idAtividade)}</BoxIcones>
+                                    <BoxIcones>{hoverId === atividade.idAtividade && renderIcons(`icones${atividade.quadrante}`, atividade.idAtividade)}</BoxIcones>
                                 </Atividade>
                         )}</Lista> <AdicionarTarefa onClick={() => handleClick(2)} id="Adicionar">Adicionar atividade</AdicionarTarefa>
                 </ImportanteNaoUrgente>
@@ -328,9 +329,9 @@ function Eisenhower() {
                         .map(
                             (atividade) =>
 
-                                <Atividade key={atividade.idAtividade}>
+                                <Atividade key={atividade.idAtividade} onMouseEnter={()=> setHoverId(atividade.idAtividade)} onMouseLeave={()=> setHoverId(null)}>
                                     <BoxNomeTarefa>{atividade.nome || atividade.nomeAtividade}</BoxNomeTarefa>
-                                    <BoxIcones>{renderIcons(`icones${atividade.quadrante}`, atividade.idAtividade)}</BoxIcones>
+                                    <BoxIcones>{hoverId === atividade.idAtividade && renderIcons(`icones${atividade.quadrante}`, atividade.idAtividade)}</BoxIcones>
                                 </Atividade>
                         )}</Lista> <AdicionarTarefa onClick={() => handleClick(3)} id="Adicionar">Adicionar atividade</AdicionarTarefa>
                 </NaoImportanteUrgente>
@@ -341,9 +342,9 @@ function Eisenhower() {
                         .map(
                             (atividade) =>
 
-                                <Atividade key={atividade.idAtividade}>
+                                <Atividade key={atividade.idAtividade} onMouseEnter={()=> setHoverId(atividade.idAtividade)} onMouseLeave={()=> setHoverId(null)}>
                                     <BoxNomeTarefa>{atividade.nome || atividade.nomeAtividade}</BoxNomeTarefa>
-                                    <BoxIcones>{renderIcons(`icones${atividade.quadrante}`, atividade.idAtividade)}</BoxIcones>
+                                    <BoxIcones>{hoverId === atividade.idAtividade && renderIcons(`icones${atividade.quadrante}`, atividade.idAtividade)}</BoxIcones>
                                 </Atividade>
                         )}</Lista> <AdicionarTarefa onClick={() => handleClick(4)} id="Adicionar">Adicionar Tarefa</AdicionarTarefa>
                 </NaoImportanteNaoUrgente>
