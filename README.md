@@ -18,16 +18,16 @@ O sistema Kronos tem como objetivo auxiliar jovens na gestão eficiente do tempo
 ## Interface
 <table>
   <tr>
-    <td><img src=".src/assets/Tela0.png" alt="Tela de Cadastro" width="300"></td>
-    <td><img src=".src/assets/Tela1.png" alt="Tela de Atividades" width="300"></td>
+    <td><img src="front\src\assets\Tela0.png" alt="Tela de Cadastro" width="300"></td>
+    <td><img src="front\src\assets\Tela1.png" alt="Tela de Atividades" width="300"></td>
   </tr>
   <tr>
-    <td><img src=".src/assets/Tela3.png" alt="Tela do Pomodoro" width="300"></td>
-    <td><img src=".src/assets/Tela4.png" alt="Tela do Kanban" width="300"></td>
+    <td><img src="front\src\assets\Tela2.png" alt="Tela do Pomodoro" width="300"></td>
+    <td><img src="front\src\assets\Tela3.png" alt="Tela do Kanban" width="300"></td>
   </tr>
   <tr>
-    <td><img src=".src/assets/Tela4.png" alt="Tela do Eisenhower" width="300"></td>
-    <td><img src=".src/assets/Tela5.png" alt="Tela de Relatório" width="300"></td>
+    <td><img src="front\src\assets\Tela4.png"alt="Tela do Eisenhower" width="300"></td>
+    <td><img src="front\src\assets\Tela5.png" alt="Tela de Relatório" width="300"></td>
   </tr>
 </table>
 
