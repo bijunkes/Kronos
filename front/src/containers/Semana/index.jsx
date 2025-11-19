@@ -135,7 +135,7 @@ function Semana() {
         {dias.map((d) => (
           <DiaColuna key={d.iso}>
             <DiaHeader>
-              <DiaTitulo>
+              <DiaTitulo style={{cursor: 'default'}}>
                 {d.nome.charAt(0).toUpperCase() + d.nome.slice(1)}
               </DiaTitulo>
 
@@ -167,7 +167,7 @@ function Semana() {
               }}
             >
               {atividadesPorDia(d.iso).length === 0 ? (
-                <div style={{ color: "#999", textAlign: "center" }}>
+                <div style={{ color: "#999", textAlign: "center", cursor: 'default' }}>
                   Sem atividades
                 </div>
               ) : (

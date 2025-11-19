@@ -86,4 +86,40 @@ export const garantirListaAtividades = async (usuarioUsername) => {
     return { idLista: result.insertId, nomeLista: "Atividades", Usuarios_username: usuarioUsername };
 }
 
+export const atualizarLista = async (req, res) => {
+    const { id } = req.params;
+    const { nome } = req.body;
+    const usuarioUsername = req.usuarioUsername;
+
+    if (!nome || !nome.trim()) {
+        return res.status(400).json({ error: "Nome da lista é obrigatório" });
+    }
+
+    try {
+        const [listasExistentes] = await pool.query(
+            'SELECT idLista FROM ListaAtividades WHERE Usuarios_username = ? AND nomeLista = ? AND idLista <> ?',
+            [usuarioUsername, nome, id]
+        );
+
+        if (listasExistentes.length > 0) {
+            return res.status(400).json({ error: 'Já existe uma lista com esse nome' });
+        }
+
+        const [resultado] = await pool.query(
+            "UPDATE listaatividades SET nomeLista = ? WHERE idLista = ? AND Usuarios_username = ?",
+            [nome, id, usuarioUsername]
+        );
+
+        if (resultado.affectedRows === 0) {
+            return res.status(404).json({ error: "Lista não encontrada" });
+        }
+
+        res.json({ message: "Lista atualizada com sucesso", idLista: id, nomeLista: nome });
+
+    } catch (err) {
+        console.log("Erro ao atualizar lista:", err);
+        res.status(500).json({ error: "Erro ao atualizar lista" });
+    }
+};
+
 

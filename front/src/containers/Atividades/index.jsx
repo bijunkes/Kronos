@@ -159,7 +159,7 @@ function Atividades() {
         <Background>
             <ContainerLista>
                 <Header>
-                    <NomeLista>Atividades</NomeLista>
+                    <NomeLista style={{cursor: 'default'}}>Atividades</NomeLista>
                     <Botoes>
                         <span
                             className="material-symbols-outlined"
@@ -214,7 +214,7 @@ function Atividades() {
                 </Conteudo>
 
                 <Pesquisar>
-                    <span className="material-symbols-outlined">search</span>
+                    <span style={{cursor: 'default'}} className="material-symbols-outlined">search</span>
                     <Input
                         type="text"
                         placeholder="Pesquisar..."

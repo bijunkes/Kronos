@@ -135,7 +135,7 @@ function Hoje() {
     <Background>
       <ContainerLista>
         <Header>
-          <NomeLista>Hoje</NomeLista>
+          <NomeLista style={{cursor: 'default'}}>Hoje</NomeLista>
         </Header>
 
         <Conteudo>
@@ -184,7 +184,7 @@ function Hoje() {
         </Conteudo>
 
         <Pesquisar>
-          <span className="material-symbols-outlined">search</span>
+          <span style={{cursor: 'default'}} className="material-symbols-outlined">search</span>
           <Input
             type="text"
             placeholder="Pesquisar..."

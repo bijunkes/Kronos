@@ -12,7 +12,7 @@ export const Container = styled.div`
 `;
 
 export const Excluir = styled.div`
-  &:hover{color: #B3261E};
+  &:hover{color: #B3261E; cursor: pointer;};
 `;
 
 export const Header = styled.div`
@@ -37,6 +37,7 @@ export const NomeAtividade = styled.input`
 export const Status = styled.div`
   font-size: 16px;
   opacity: 50%;
+  cursor: default;
 `;
 
 export const Datas = styled.div`
@@ -156,6 +157,7 @@ export const Tecnicas = styled.div`
   border: none;
   background: transparent;
   width: 100%;
+  cursor: default;
 `;
 
 export const Tecnica = styled.div`

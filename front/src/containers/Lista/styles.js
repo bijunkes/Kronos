@@ -65,6 +65,7 @@ export const Botoes = styled.div`
   #delete{
     &:hover{
       color:  #B3261E;
+      cursor: pointer;
     }
   }
 `;
