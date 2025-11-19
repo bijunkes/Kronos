@@ -69,7 +69,7 @@ function ModalAtividades({ aberto, onFechar, atividades, onAdicionar }) {
   return (
     <Overlay>
       <ContainerLista>
-        <ModalHeader>
+        <ModalHeader style={{cursor: 'default'}}>
           Atividades
           <span class="material-symbols-outlined" onClick={onFechar}>
             close
@@ -109,7 +109,7 @@ function ModalAtividades({ aberto, onFechar, atividades, onAdicionar }) {
 
         </Conteudo>
         <Pesquisar>
-          <span className="material-symbols-outlined">search</span>
+          <span style={{cursor: 'default'}} className="material-symbols-outlined">search</span>
           <Input
             type="text"
             placeholder="Pesquisar..."

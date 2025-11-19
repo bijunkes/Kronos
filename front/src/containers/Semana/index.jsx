@@ -159,10 +159,9 @@ function Semana() {
                 flexDirection: "column",
                 justifyContent: "flex-start",
                 alignItems: "center",
-                marginTop: "1.5vh",
+                marginTop: "2vh",
                 overflowY: "auto",
                 width: "100%",
-                paddingRight: "6px",
                 color: "var(--cor-texto)",
               }}
             >
@@ -187,28 +186,31 @@ function Semana() {
                         justifyContent: "space-between",
                         alignItems: "center",
                         background: "var(--fundo-menu-ativo)",
-                        padding: "20px 25px",
+                        padding: "0vh 2vh",
                         borderRadius: 20,
                         cursor: "pointer",
+                        height: '7vh',
                       }}
                     >
 
                       <div
                         style={{
                           display: "flex",
-                          gap: 10,
+                          gap: '1vh',
                           alignItems: "center",
+                          fontSize: '18px'
                         }}
                         onClick={() => concluirAtividade(a)}
                       >
-                        <span className="material-symbols-outlined">
+                        <span style={{fontSize: '20px'}}
+                        className="material-symbols-outlined">
                           {a.statusAtividade === 1
                             ? "radio_button_checked"
                             : "radio_button_unchecked"}
                         </span>
                         <span>{a.nomeAtividade}</span>
                       </div>
-                      <div style={{ color: "#fffefe" }}>
+                      <div style={{ color: "#fffefe", fontSize: '16px' }}>
                         {a.prazoIso
                           ? a.prazoIso.split("-").reverse().join("/")
                           : "Sem prazo"}

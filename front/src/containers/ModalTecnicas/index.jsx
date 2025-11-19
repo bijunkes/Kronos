@@ -70,7 +70,7 @@ function ModalTecnicas({ onClose, onAdicionar, onTecnica }) {
     return (
         <Overlay>
             <ContainerLista>
-                <ModalHeader>
+                <ModalHeader style={{ cursor: 'default'}}>
                     Atividades
                     <span className="material-symbols-outlined" onClick={onClose}>
                         close
@@ -91,23 +91,23 @@ function ModalTecnicas({ onClose, onAdicionar, onTecnica }) {
                             const isSelecionada = atividadeSelecionada?.idAtividade === a.idAtividade;
                             return (
                                 <>
-                                   
-                                        <Atividade onClick={() => onAdicionar(a, idPadrao)} key={a.idAtividade}>
-                                            <p><strong>{a.nomeAtividade}</strong></p>
-                                            <Prazo>
-                                                {a.prazoAtividade
-                                                    ? new Date(a.prazoAtividade.replace(' ', 'T')).toLocaleDateString()
-                                                    : 'Sem prazo'}
-                                            </Prazo>
-                                        </Atividade>
-                                    
+
+                                    <Atividade onClick={() => onAdicionar(a, idPadrao)} key={a.idAtividade}>
+                                        <p>{a.nomeAtividade}</p>
+                                        <Prazo>
+                                            {a.prazoAtividade
+                                                ? new Date(a.prazoAtividade.replace(' ', 'T')).toLocaleDateString()
+                                                : 'Sem prazo'}
+                                        </Prazo>
+                                    </Atividade>
+
                                 </>
                             );
                         })}
                     </AreaAtividades>
                 </Conteudo>
                 <Pesquisar>
-                    <span className="material-symbols-outlined">search</span>
+                    <span style={{ cursor: 'default', color: "var(--cor-texto)" }} className="material-symbols-outlined">search</span>
                     <Input
                         type="text"
                         placeholder="Pesquisar..."
