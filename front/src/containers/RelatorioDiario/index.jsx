@@ -9,7 +9,7 @@ import {
     BoxPomodoro,
     PainelTarefas
 } from './style'
-import { listarAtividadesEmKanban, listarAtividades, listarAtividadesEisenPorClassificacao } from "../../services/api.js";
+import { listarAtividadesEmKanban, listarAtividades, listarAtividadesEisenPorClassificacao, listarSessoes } from "../../services/api.js";
 
 function RelatorioDiario() {
 
@@ -144,6 +144,35 @@ function RelatorioDiario() {
     const textoClassificacao = 'Aqui estão organizadas as\natividades presentes na matriz de Eisenhower\nque foram modificadas hoje'
     const textoProgresso = 'Aqui são consideradas as atividades terminadas hoje e as ainda não concluídas\nConcluídas hoje/Não Concluídas'
     const textoPomodoro = 'Aqui estão o foco e descanso totais do Pomodoro de hoje'
+
+    const [sessoes, setSessoes] = useState([]);
+
+  const [tempos, setTempos] = useState({ foco: 0, descanso: 0 });
+  
+   useEffect(() => {
+  const carregarSessoesHoje = async () => {
+    const todasSessoes = await listarSessoes();
+
+    const hoje = new Date();
+    const diaHoje = hoje.toISOString().substring(0, 10);
+
+    const sessoesHoje = todasSessoes.filter(s => s.inicio.substring(0, 10) === diaHoje);
+
+    const somaSegundos = sessoesHoje.reduce((acc, s) => ({
+      foco: acc.foco + (s.duracaoRealFocoSegundos || 0),
+      descanso: acc.descanso + ((s.duracaoRealCurtoSegundos || 0) + (s.duracaoRealLongoSegundos || 0))
+    }), { foco: 0, descanso: 0 });
+
+    setTempos({
+      foco: Math.floor(somaSegundos.foco / 60),
+      descanso: Math.floor(somaSegundos.descanso / 60)
+    });
+  };
+
+  carregarSessoesHoje();
+}, []);
+
+
     return (
         <>
             <Container>
@@ -162,8 +191,8 @@ function RelatorioDiario() {
                     <span style={{ display: 'flex' }}>Pomodoro <Icones className="material-symbols-outlined" title={textoPomodoro}>
                         info
                     </Icones></span>
-                    <BoxPomodoro>Foco: </BoxPomodoro>
-                    <BoxPomodoro>Descanso: </BoxPomodoro>
+                    <BoxPomodoro>Foco: {tempos.foco} min</BoxPomodoro>
+                    <BoxPomodoro>Descanso: {tempos.descanso} min</BoxPomodoro>
                 </Pomodoro>
                 <Pendente><BoxTitulo>Pendente</BoxTitulo><PainelTarefas>{atividades.filter(atividade => atividade.coluna === 1).map(atividade => (
                     

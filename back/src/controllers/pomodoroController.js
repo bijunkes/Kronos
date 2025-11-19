@@ -21,7 +21,7 @@ export const criarSessaoPomodoro = async (req, res) => {
       console.log("⚠️ Sessão já existente — retornando:", existente[0].idStatus);
       return res.status(200).json({
         idStatus: existente[0].idStatus,
-        message: "Sessão já existente retornada."
+        message: ""
       });
     }
 
@@ -43,7 +43,7 @@ export const criarSessaoPomodoro = async (req, res) => {
 
     res.status(201).json({
       idStatus: result.insertId,
-      message: "Sessão criada com sucesso."
+      message: ""
     });
   } catch (err) {
     console.error("❌ Erro ao criar sessão Pomodoro:", err);
@@ -121,7 +121,7 @@ export const iniciarSessaoPomodoro = async (req, res) => {
     );
 
     res.json({
-      message: "Sessão iniciada com sucesso!",
+      message: "",
       sessao: sessaoAtualizada[0]
     });
 
@@ -234,7 +234,7 @@ export const salvarAtividadesSessao = async (req, res) => {
       );
     }
 
-    res.json({ message: "Atividades salvas com sucesso!", atividades });
+    res.json({ message: "", atividades });
 
   } catch (err) {
     console.error("Erro ao salvar atividades:", err);
@@ -301,7 +301,7 @@ export const finalizarSessaoPomodoro = async (req, res) => {
       ]
     );
 
-    res.json({ message: "Sessão finalizada com sucesso!" });
+    res.json({ message: "Sessão finalizada." });
   } catch (err) {
     console.error("Erro ao finalizar sessão Pomodoro:", err);
     res.status(500).json({ error: "Erro ao finalizar sessão Pomodoro" });
@@ -410,4 +410,24 @@ export const atualizarParcial = async (req, res) => {
     res.status(500).json({ erro: "Erro ao salvar progresso parcial." });
   }
 };
+
+export const listarSessoes = async (req, res) => {
+  const username = req.usuarioUsername;
+
+  try {
+    const [rows] = await pool.query(
+      `SELECT duracaoRealFocoSegundos, duracaoRealCurtoSegundos, duracaoRealLongoSegundos, inicio
+       FROM pomodoro
+       WHERE Usuarios_username = ?
+       ORDER BY inicio DESC`,
+      [username]
+    );
+
+    res.json(rows);
+  } catch (err) {
+    console.error("Erro ao listar sessões:", err);
+    res.status(500).json({ error: "Erro ao listar sessões" });
+  }
+};
+
 

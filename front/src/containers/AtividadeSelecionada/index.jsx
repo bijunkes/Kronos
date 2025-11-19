@@ -76,10 +76,9 @@ function AtividadeSelecionada({ atividade, onAtualizarAtividade }) {
     useEffect(() => {
         const carregarUltimaSessao = async () => {
             try {
-                const sessao = await obterUltimaSessaoPomodoro(); // sua função já exportada (retorna dados)
+                const sessao = await obterUltimaSessaoPomodoro();
                 if (!sessao) return;
 
-                // atividadesVinculadas pode ser [1,2] ou [{idAtividade:1}, ...] — cobrimos ambos
                 const vinculadas = sessao.atividadesVinculadas ?? [];
                 const isLinked = vinculadas.includes?.(atividade.idAtividade) ||
                     vinculadas.some?.(a => a?.idAtividade === atividade.idAtividade);
@@ -90,7 +89,6 @@ function AtividadeSelecionada({ atividade, onAtualizarAtividade }) {
             }
         };
 
-        // só tenta se houver atividade (evita chamadas desnecessárias)
         if (atividade?.idAtividade) carregarUltimaSessao();
     }, [atividade]);
 
@@ -101,7 +99,6 @@ function AtividadeSelecionada({ atividade, onAtualizarAtividade }) {
 
             const idSessao = sessao.idStatus;
 
-            // Se vier null ou vazio, nada a remover
             const atuais = Array.isArray(sessao.atividadesVinculadas)
                 ? sessao.atividadesVinculadas
                 : [];
@@ -116,7 +113,6 @@ function AtividadeSelecionada({ atividade, onAtualizarAtividade }) {
             return false;
         }
     };
-
 
     const capturaData = () => {
         const dataAtual = new Date();
@@ -164,13 +160,13 @@ function AtividadeSelecionada({ atividade, onAtualizarAtividade }) {
             else {
                 await excluirDeTecnicas("eisenhower", atividade)
                 await atualizarIdEisenAtividade(atividad.idAtividade, {
-                            Eisenhower_idAtividadeEisenhower: null,
-                            Usuarios_username: atividad.Usuarios_username,
-                            idAtividade: atividad.idAtividade
+                    Eisenhower_idAtividadeEisenhower: null,
+                    Usuarios_username: atividad.Usuarios_username,
+                    idAtividade: atividad.idAtividade
 
-                        })
+                })
                 showOkToast('Atividade retirada de Eisenhower')
-                
+
                 return;
             }
         } else if (tipo == "kanban") {
@@ -205,11 +201,11 @@ function AtividadeSelecionada({ atividade, onAtualizarAtividade }) {
             else {
                 await excluirDeTecnicas("kanban", atividade)
                 await atualizarIdKanbanAtividade(atividad.idAtividade, {
-                            Kanban_idAtividadeKanban: null,
-                            Usuarios_username: atividad.Usuarios_username,
-                            idAtividade: atividad.idAtividade
+                    Kanban_idAtividadeKanban: null,
+                    Usuarios_username: atividad.Usuarios_username,
+                    idAtividade: atividad.idAtividade
 
-                        })
+                })
                 showOkToast('Atividade retirada de Kanban')
                 return;
             }
@@ -221,13 +217,13 @@ function AtividadeSelecionada({ atividade, onAtualizarAtividade }) {
             try {
                 let sessao;
 
-try {
-    sessao = await obterUltimaSessaoPomodoro();
-} catch (err) {
-    sessao = await criarSessaoPomodoro();
-}
+                try {
+                    sessao = await obterUltimaSessaoPomodoro();
+                } catch (err) {
+                    sessao = await criarSessaoPomodoro();
+                }
 
-const idSessao = sessao.idStatus;
+                const idSessao = sessao.idStatus;
 
                 if (!atividad?.idAtividade) {
                     console.error("ERRO: atividade.idAtividade undefined:", atividad);
@@ -235,7 +231,6 @@ const idSessao = sessao.idStatus;
                     return;
                 }
 
-                // SE JÁ ESTÁ ATIVO → REMOVER
                 if (tecnicasAtivas.pomodoro) {
                     await removerAtividadeDoPomodoro(atividad.idAtividade);
 
@@ -246,7 +241,6 @@ const idSessao = sessao.idStatus;
                     return;
                 }
 
-                // SE NÃO ESTÁ → ADICIONAR
                 const res = await salvarAtividadesSessao(idSessao, [{ idAtividade: atividad.idAtividade }]);
 
                 setTecnicasAtivas(prev => ({ ...prev, pomodoro: true }));
@@ -261,9 +255,7 @@ const idSessao = sessao.idStatus;
 
             return;
         }
-
     };
-
 
     const excluirDeTecnicas = async (tipo, atividade) => {
         if (tipo == "kanban") {
@@ -323,7 +315,7 @@ const idSessao = sessao.idStatus;
                 await excluirDeTecnicas("kanban", atividade)
             }
             if (atividade.Eisenhower_idAtividadeEisenhower !== null) {
-                await excluirDeMatriz("eisenhower",atividade)
+                await excluirDeTecnicas("eisenhower", atividade)
             }
             await deletarAtividade(atividade.idAtividade);
             onAtualizarAtividade?.(null);
@@ -460,11 +452,10 @@ const idSessao = sessao.idStatus;
             <Tecnicas>
                 Técnicas
             </Tecnicas>
-            <Tecnica
-                tipo="pomodoro"
-                ativo={tecnicasAtivas.pomodoro}
+            <Pomodoro
+                $tipo="pomodoro"
+                $ativo={tecnicasAtivas.pomodoro}
                 onClick={() => botaoTecnicas("pomodoro")}
-                onDoubleClick={async () => await excluirDeTecnicas("pomodoro",atividade)}
             >
                 Pomodoro
             </Pomodoro>
@@ -473,7 +464,7 @@ const idSessao = sessao.idStatus;
                 id='kanban'
                 ativo={tecnicasAtivas.kanban}
                 onClick={() => botaoTecnicas("kanban")}
-                onDoubleClick={async () => await excluirDeTecnicas("kanban",atividade)}
+                onDoubleClick={async () => await excluirDeTecnicas("kanban", atividade)}
             >
                 Kanban
             </Tecnica>
@@ -482,7 +473,7 @@ const idSessao = sessao.idStatus;
                 id='eisenhower'
                 ativo={tecnicasAtivas.eisenhower}
                 onClick={() => botaoTecnicas("eisenhower")}
-                onDoubleClick={async () => await excluirDeTecnicas("eisenhower",atividade)}
+                onDoubleClick={async () => await excluirDeTecnicas("eisenhower", atividade)}
 
 
             >

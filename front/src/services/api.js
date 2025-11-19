@@ -294,7 +294,7 @@ export const obterUltimaSessaoPomodoro = async () => {
     return res.data;
   } catch (err) {
     if (err.response?.status === 404) {
-      return null; // <--- aqui retorna NULL quando não existe sessão
+      return null;
     }
     throw err;
   }
@@ -307,6 +307,16 @@ export async function salvarTempoRealParcial(idSessao, tempoReal) {
     longo: tempoReal.longo
   });
 }
+
+export const listarSessoes = async () => {
+  try {
+    const { data } = await api.get("/pomodoro/sessoes");
+    return data;
+  } catch (err) {
+    console.error("Erro ao listar sessões:", err);
+    return [];
+  }
+};
 
 
 export default api;

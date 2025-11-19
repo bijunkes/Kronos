@@ -82,6 +82,8 @@ export const Atividade = styled.div`
   border-radius: 20px;
   gap: 1vh;
   cursor: pointer;
+
+  opacity: ${(props) => (props.concluido ? 0.5 : 1)};
 `;
 
 export const Prazo = styled.div`

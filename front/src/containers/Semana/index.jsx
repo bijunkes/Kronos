@@ -5,7 +5,7 @@ import {
   DiaColuna,
   DiaHeader,
   DiaTitulo,
-  BotaoAdd, 
+  BotaoAdd,
   ListaAtividades
 } from "./styles.js";
 import { listarTodasAtividades, listarListas } from "../../services/api.js";
@@ -130,111 +130,113 @@ function Semana() {
     atividades.filter((a) => a.prazoIso === iso);
 
   return (
-  <Background>
-    <SemanaScroll ref={scrollRef}>
-      {dias.map((d) => (
-        <DiaColuna key={d.iso}>
-          <DiaHeader>
-            <DiaTitulo>
-              {d.nome.charAt(0).toUpperCase() + d.nome.slice(1)}
-            </DiaTitulo>
+    <Background>
+      <SemanaScroll ref={scrollRef}>
+        {dias.map((d) => (
+          <DiaColuna key={d.iso}>
+            <DiaHeader>
+              <DiaTitulo>
+                {d.nome.charAt(0).toUpperCase() + d.nome.slice(1)}
+              </DiaTitulo>
 
-            <BotaoAdd
-              id="add"
-              className="material-symbols-outlined"
-              onClick={() => {
-                setDiaSelecionado(d.iso);
-                setModalAberto(true);
+              <BotaoAdd
+                id="add"
+                className="material-symbols-outlined"
+                onClick={() => {
+                  setDiaSelecionado(d.iso);
+                  setModalAberto(true);
+                }}
+                aria-label={`Adicionar atividade para ${d.iso}`}
+              >
+                add
+              </BotaoAdd>
+            </DiaHeader>
+
+            <div
+              style={{
+                flex: 1,
+                display: "flex",
+                flexDirection: "column",
+                justifyContent: "flex-start",
+                alignItems: "center",
+                marginTop: "1.5vh",
+                overflowY: "auto",
+                width: "100%",
+                paddingRight: "6px",
+                color: "var(--cor-texto)",
               }}
-              aria-label={`Adicionar atividade para ${d.iso}`}
             >
-              add
-            </BotaoAdd>
-          </DiaHeader>
-
-          <div
-            style={{
-             flex: 1,
-            display: "flex",
-            flexDirection: "column",
-            justifyContent: "flex-start",
-            alignItems: "center",
-            marginTop: "1.5vh",
-            overflowY: "auto",
-            width: "100%",
-            paddingRight: "6px",
-            color: "var(--cor-texto)",
-            }}
-          >
-            {atividadesPorDia(d.iso).length === 0 ? (
-              <div style={{ color: "#999", textAlign: "center" }}>
-                Sem atividades
-              </div>
-            ) : (
-              atividadesPorDia(d.iso).map((a) => (
-                <div
-                  key={a.idAtividade}
-                  style={{
-                    width: "100%",
-                    marginBottom: 12,
-                    flexShrink: 0,
-                  }}
-                >
+              {atividadesPorDia(d.iso).length === 0 ? (
+                <div style={{ color: "#999", textAlign: "center" }}>
+                  Sem atividades
+                </div>
+              ) : (
+                atividadesPorDia(d.iso).map((a) => (
                   <div
+                    key={a.idAtividade}
                     style={{
-                      display: "flex",
-                      justifyContent: "space-between",
-                      alignItems: "center",
-                      background: "var(--fundo-menu-ativo)",
-                      padding: "20px 25px",
-                      borderRadius: 20,
-                      cursor: "pointer",
+                      width: "100%",
+                      marginBottom: 12,
+                      flexShrink: 0,
+                      opacity: a.statusAtividade === 1 ? 0.5 : 1,
                     }}
                   >
                     <div
                       style={{
                         display: "flex",
-                        gap: 10,
+                        justifyContent: "space-between",
                         alignItems: "center",
+                        background: "var(--fundo-menu-ativo)",
+                        padding: "20px 25px",
+                        borderRadius: 20,
+                        cursor: "pointer",
                       }}
-                      onClick={() => concluirAtividade(a)}
                     >
-                      <span className="material-symbols-outlined">
-                        {a.statusAtividade === 1
-                          ? "radio_button_checked"
-                          : "radio_button_unchecked"}
-                      </span>
-                      <span>{a.nomeAtividade}</span>
-                    </div>
-                    <div style={{ color: "#fffefe" }}>
-                      {a.prazoIso
-                        ? a.prazoIso.split("-").reverse().join("/")
-                        : "Sem prazo"}
+
+                      <div
+                        style={{
+                          display: "flex",
+                          gap: 10,
+                          alignItems: "center",
+                        }}
+                        onClick={() => concluirAtividade(a)}
+                      >
+                        <span className="material-symbols-outlined">
+                          {a.statusAtividade === 1
+                            ? "radio_button_checked"
+                            : "radio_button_unchecked"}
+                        </span>
+                        <span>{a.nomeAtividade}</span>
+                      </div>
+                      <div style={{ color: "#fffefe" }}>
+                        {a.prazoIso
+                          ? a.prazoIso.split("-").reverse().join("/")
+                          : "Sem prazo"}
+                      </div>
                     </div>
                   </div>
-                </div>
-              ))
-            )}
-          </div>
-        </DiaColuna>
-      ))}
-    </SemanaScroll>
+                ))
+              )}
+            </div>
+          </DiaColuna>
+        ))}
+      </SemanaScroll>
 
-    {modalAberto && (
-      <ModalCriarAtividade
-        isOpen={modalAberto}
-        onClose={() => {
-          setModalAberto(false);
-          setDiaSelecionado(null);
-        }}
-        onAtividadeCriada={handleAtividadeCriada}
-        listaId={listaPadrao?.idLista || 1}
-        dataSelecionada={diaSelecionado}
-        origem="semana"
-      />
-    )}
-  </Background>
-);
+      {modalAberto && (
+        <ModalCriarAtividade
+          isOpen={modalAberto}
+          onClose={() => {
+            setModalAberto(false);
+            setDiaSelecionado(null);
+          }}
+          onAtividadeCriada={handleAtividadeCriada}
+          listaId={listaPadrao?.idLista || 1}
+          dataSelecionada={diaSelecionado}
+          origem="semana"
+        />
+      )}
+    </Background>
+  );
 
 }
 

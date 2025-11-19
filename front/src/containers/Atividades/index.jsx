@@ -122,8 +122,8 @@ function Atividades() {
         try {
             if (atividade.Eisenhower_idAtividadeEisenhower !== null) { await deletarAtividadeDeMatriz(atividade.Eisenhower_idAtividadeEisenhower); }
 
-            
-            
+
+
 
             await atualizarAtividade(atividade.idAtividade, {
                 nomeAtividade: atividade.nomeAtividade,
@@ -136,10 +136,10 @@ function Atividades() {
                 Kanban_idAtividadeKanban: atividade.Kanban_idAtividadeKanban,
                 Eisenhower_idAtividadeEisenhower: null
             });
-            if(novoStatus == 0 && atividade.Kanban_idAtividadeKanban !== null ){
+            if (novoStatus == 0 && atividade.Kanban_idAtividadeKanban !== null) {
                 console.log("aaiiaoiaoiosioaispoia")
-                await atualizarAtividadeEmKanban(atividade.Kanban_idAtividadeKanban, 1,formatarDataMySQL(new Date()))
-                
+                await atualizarAtividadeEmKanban(atividade.Kanban_idAtividadeKanban, 1, formatarDataMySQL(new Date()))
+
             }
 
         } catch (err) {
@@ -178,6 +178,7 @@ function Atividades() {
                             return (
                                 <Atividade
                                     key={a.idAtividade || index}
+                                    concluido={a.concluido}
                                     onClick={() =>
                                         setAtividadeSelecionada(isSelecionada ? null : a)
                                     }
@@ -206,6 +207,7 @@ function Atividades() {
                                             : 'Sem prazo'}
                                     </Prazo>
                                 </Atividade>
+
                             );
                         })}
                     </AreaAtividades>

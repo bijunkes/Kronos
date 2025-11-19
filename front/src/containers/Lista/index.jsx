@@ -76,20 +76,20 @@ function Lista() {
         if (!idLista) return;
 
         const ok = await showConfirmToast(
-        'Tem certeza que deseja excluir esta lista? As atividades dentro da lista também serão excluídas e não serão contabilizadas nos relatórios ',
-         { confirmLabel: 'Excluir', cancelLabel: 'Cancelar' }
-    );
+            'Tem certeza que deseja excluir esta lista? As atividades dentro da lista também serão excluídas e não serão contabilizadas nos relatórios ',
+            { confirmLabel: 'Excluir', cancelLabel: 'Cancelar' }
+        );
 
-    if (!ok) return;
+        if (!ok) return;
 
-    try {
-        await deletarLista(idLista);
-        window.dispatchEvent(new Event('listasAtualizadas'));
-        navigate('/home');
-    } catch (err) {
-        console.error('Erro ao deletar lista', err);
-        alert('Não foi possível deletar a lista');
-     }
+        try {
+            await deletarLista(idLista);
+            window.dispatchEvent(new Event('listasAtualizadas'));
+            navigate('/home');
+        } catch (err) {
+            console.error('Erro ao deletar lista', err);
+            alert('Não foi possível deletar a lista');
+        }
     };
 
     const toggleConcluido = async (index) => {
@@ -131,10 +131,10 @@ function Lista() {
 
         if (novaAtividade.ListaAtividades_idLista === idLista) {
             setAtividades(prev =>
-            ordenarAtividades([
-                ...prev,
-                { ...novaAtividade, concluido: novaAtividade.statusAtividade === 1 }
-            ])
+                ordenarAtividades([
+                    ...prev,
+                    { ...novaAtividade, concluido: novaAtividade.statusAtividade === 1 }
+                ])
             );
         } else {
             await atualizarAtividades(idLista);
@@ -164,8 +164,10 @@ function Lista() {
                                 <Atividade
                                     key={a.idAtividade || index}
                                     onClick={() => setAtividadeSelecionada(isSelecionada ? null : a)}
+                                    concluido={a.concluido}
                                     style={{ backgroundColor: isSelecionada ? 'var(--cinza-claro)' : 'var(--fundo-menu-ativo)' }}
                                 >
+
                                     <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
                                         <span
                                             className="material-symbols-outlined"
@@ -189,7 +191,7 @@ function Lista() {
                 </Pesquisar>
             </ContainerLista>
 
-            <ModalCriarAtividade 
+            <ModalCriarAtividade
                 isOpen={mostrarModal}
                 onClose={() => setMostrarModal(false)}
                 onAtividadeCriada={handleAtividadeCriada}

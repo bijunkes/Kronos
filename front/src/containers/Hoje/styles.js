@@ -70,6 +70,7 @@ export const Atividade = styled.div`
   justify-content: space-between;
   align-items: center;
   transition: background-color 0.2s ease-in-out;
+  opacity: ${props => (props.concluido ? 0.5 : 1)};
 
   &:hover {
     background-color: #383838;

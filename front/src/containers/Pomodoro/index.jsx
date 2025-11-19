@@ -4,6 +4,7 @@ import ModalAtividades from '../ModalAtividades';
 import api, { listarTodasAtividades, listarAtividadesSessao, salvarAtividadesSessao, obterUltimaSessaoPomodoro, salvarTempoRealParcial } from '../../services/api.js';
 
 function Pomodoro() {
+  
   const [modo, setModo] = useState("foco");
   const [config, setConfig] = useState({
     foco: 25 * 60,
@@ -126,24 +127,23 @@ function Pomodoro() {
   const tempoRealRef = useRef(tempoReal);
 
   useEffect(() => {
-  tempoRealRef.current = tempoReal;
-}, [tempoReal]);
+    tempoRealRef.current = tempoReal;
+  }, [tempoReal]);
 
-useEffect(() => {
-  if (!idSessao) return;
+  useEffect(() => {
+    if (!idSessao) return;
 
-  console.log("🟢 ENTROU NO AUTOSAVE USEEFFECT");
+    console.log("🟢 ENTROU NO AUTOSAVE USEEFFECT");
 
-  const interval = setInterval(() => {
-    console.log("🔁 Rodando autosave... tempoReal:", tempoRealRef.current);
-    salvarTempoRealParcial(idSessao, tempoRealRef.current);
-  }, 5000);
+    const interval = setInterval(() => {
+      console.log("🔁 Rodando autosave... tempoReal:", tempoRealRef.current);
+      salvarTempoRealParcial(idSessao, tempoRealRef.current);
+    }, 5000);
 
-  return () => clearInterval(interval);
-}, [idSessao]);
+    return () => clearInterval(interval);
+  }, [idSessao]);
 
-
-
+  
 
   useEffect(() => {
     console.log("🚀 Carregando última sessão...");

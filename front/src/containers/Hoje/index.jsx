@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react'; 
+import React, { useEffect, useState } from 'react';
 import {
   Background,
   ContainerLista,
@@ -151,12 +151,14 @@ function Hoje() {
                 <Atividade
                   key={a.idAtividade || index}
                   onClick={() => setAtividadeSelecionada(isSelecionada ? null : a)}
+                  concluido={a.concluido}
                   style={{
                     backgroundColor: isSelecionada
                       ? 'var(--cinza-claro)'
                       : 'var(--fundo-menu-ativo)',
                   }}
                 >
+
                   <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
                     <span
                       className="material-symbols-outlined"
