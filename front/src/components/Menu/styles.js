@@ -136,10 +136,17 @@ export const OpcoesAbaixo = styled.div`
   width: 100%;
   margin-top: auto;
 
-  #notificacao, #sino, #logout {
+  #notificacao, #sino {
     cursor: pointer;
     &:hover{
       color: rgba(255, 255, 255, 0.4);
+    }
+  }
+
+  #logout {
+    cursor: pointer;
+    &:hover{
+      color: var(--Importante-Urgente);
     }
   }
 `

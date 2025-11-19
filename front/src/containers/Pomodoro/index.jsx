@@ -4,7 +4,7 @@ import ModalAtividades from '../ModalAtividades';
 import api, { listarTodasAtividades, listarAtividadesSessao, salvarAtividadesSessao, obterUltimaSessaoPomodoro, salvarTempoRealParcial } from '../../services/api.js';
 
 function Pomodoro() {
-  
+
   const [modo, setModo] = useState("foco");
   const [config, setConfig] = useState({
     foco: 25 * 60,
@@ -114,7 +114,7 @@ function Pomodoro() {
 
       const id = res.data.idStatus;
       setIdSessao(id);
-      console.log("🟢 Sessão criada com base nas atividades! ID:", id);
+      console.log("Sessão criada com base nas atividades ID:", id);
       return id;
     } catch (err) {
       console.error("Erro ao criar sessão:", err);
@@ -133,17 +133,18 @@ function Pomodoro() {
   useEffect(() => {
     if (!idSessao) return;
 
-    console.log("🟢 ENTROU NO AUTOSAVE USEEFFECT");
-
     const interval = setInterval(() => {
-      console.log("🔁 Rodando autosave... tempoReal:", tempoRealRef.current);
-      salvarTempoRealParcial(idSessao, tempoRealRef.current);
+      const agora = new Date().toISOString().slice(0, 19).replace("T", " ");
+      console.log("🔁 Rodando autosave... tempoReal:", tempoRealRef.current, "dataFimSessao:", agora);
+
+      salvarTempoRealParcial(idSessao, {
+        ...tempoRealRef.current,
+        dataFimSessao: agora,
+      });
     }, 5000);
 
     return () => clearInterval(interval);
   }, [idSessao]);
-
-  
 
   useEffect(() => {
     console.log("🚀 Carregando última sessão...");
@@ -438,20 +439,23 @@ function Pomodoro() {
       { ...atividade, foco: atividade.foco ?? 25, ciclos: 1, concluido: false }
     ];
 
-    setAtividadesSelecionadas(novasAtivs);
+    setAtividadesSelecionadas(novasAtivs); 
 
     try {
-      await new Promise((resolve) => setTimeout(resolve, 0));
-
       const sessao = await garantirSessao(novasAtivs);
-
       if (!sessao) return;
+
       await salvarAtividadesSessao(sessao, novasAtivs);
+
+      const listaAtualizada = await listarAtividadesSessao(sessao);
+      setAtividadesSelecionadas(listaAtualizada);
+
       console.log("Atividades atualizadas com sucesso!");
     } catch (err) {
       console.error("Erro ao salvar atividades:", err);
     }
   };
+
 
   const [sessaoIniciada, setSessaoIniciada] = useState(false);
 
@@ -530,10 +534,10 @@ function Pomodoro() {
           }))
       };
 
-      console.log("📦 PATCH /iniciar body:", body);
+      console.log("PATCH /iniciar body:", body);
       await api.patch(`/pomodoro/${sessao}/iniciar`, body);
 
-      console.log("✅ Sessão iniciada com sucesso!");
+      console.log("Sessão iniciada");
       setSessaoIniciada(true);
       setAtivo(true);
 
@@ -594,13 +598,13 @@ function Pomodoro() {
           setTempo(converterTempoParaMinutos(dados.duracaoFoco, 25) * 60);
         }
 
-        console.log("🔁 Sessão atualizada após iniciar:", dados);
+        console.log("Sessão atualizada após iniciar:", dados);
       } catch (err) {
         console.error("Erro ao atualizar sessão após iniciar:", err);
       }
 
     } catch (err) {
-      console.error("❌ Erro ao iniciar pomodoro:", err);
+      console.error("Erro ao iniciar pomodoro:", err);
     }
   };
 
@@ -639,12 +643,12 @@ function Pomodoro() {
   };
 
   const togglePlayPause = async () => {
-    console.log("🟨 togglePlayPause — ativo:", ativo);
+    console.log("togglePlayPause — ativo:", ativo);
     if (!ativo) {
-      console.log("🟢 Iniciando play...");
+      console.log("Iniciando play...");
       await handlePlay();
     } else {
-      console.log("⏸️ Pausando...");
+      console.log("Pausando...");
       setAtivo(false);
     }
   };
