@@ -373,9 +373,9 @@ export async function detalhesLembrete(req, res) {
 
 
 cron.schedule(
-  "0 11 * * *",
+  "0 19 * * *",
   async () => {
-    console.log("Gerando lembretes de atividades próximas (12h)...");
+    console.log("Gerando lembretes de atividades próximas (19h)...");
     await gerarLembretesAtividadesProximas();
   },
   { timezone: "America/Sao_Paulo" }

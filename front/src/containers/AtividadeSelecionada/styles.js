@@ -65,7 +65,14 @@ export const Input = styled.input`
   background-color: transparent;
   width: 100%;
   text-align: right;
+  color: var(--texto);
+
+  &::-webkit-calendar-picker-indicator {
+      filter: invert(1);
+      cursor: pointer;
+  }
 `;
+
 
 export const Desc = styled.div`
   display: flex;

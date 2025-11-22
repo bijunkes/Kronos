@@ -46,7 +46,12 @@ export const ModalInput = styled.input`
         color: #999;
         font-size: 18px;
     }
+
+    &::-webkit-calendar-picker-indicator {
+        filter: invert(1);    
+    }
 `;
+
 
 export const ModalButton = styled.div`
     display: flex;
