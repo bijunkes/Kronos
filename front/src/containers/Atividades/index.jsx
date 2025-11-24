@@ -120,11 +120,7 @@ function Atividades() {
         }
 
         try {
-            if (atividade.Eisenhower_idAtividadeEisenhower !== null) { await deletarAtividadeDeMatriz(atividade.Eisenhower_idAtividadeEisenhower); }
-
-
-
-
+            console.log("8g6mky,6v6ij,kv")
             await atualizarAtividade(atividade.idAtividade, {
                 nomeAtividade: atividade.nomeAtividade,
                 descricaoAtividade: atividade.descricaoAtividade,
@@ -136,6 +132,16 @@ function Atividades() {
                 Kanban_idAtividadeKanban: atividade.Kanban_idAtividadeKanban,
                 Eisenhower_idAtividadeEisenhower: null
             });
+            console.log("gvwayi78era")
+            if (!!atividade.Eisenhower_idAtividadeEisenhower) {
+
+                try {
+                    await deletarAtividadeDeMatriz(atividade.Eisenhower_idAtividadeEisenhower);
+                } catch (err) {
+                    console.warn("Falhou ao remover da matriz, mas seguir atualizando atividade");
+                }
+            }
+
             if (novoStatus == 0 && atividade.Kanban_idAtividadeKanban !== null) {
                 console.log("aaiiaoiaoiosioaispoia")
                 await atualizarAtividadeEmKanban(atividade.Kanban_idAtividadeKanban, 1, formatarDataMySQL(new Date()))
@@ -159,7 +165,7 @@ function Atividades() {
         <Background>
             <ContainerLista>
                 <Header>
-                    <NomeLista style={{cursor: 'default'}}>Atividades</NomeLista>
+                    <NomeLista style={{ cursor: 'default' }}>Atividades</NomeLista>
                     <Botoes>
                         <span
                             className="material-symbols-outlined"
@@ -214,7 +220,7 @@ function Atividades() {
                 </Conteudo>
 
                 <Pesquisar>
-                    <span style={{cursor: 'default'}} className="material-symbols-outlined">search</span>
+                    <span style={{ cursor: 'default' }} className="material-symbols-outlined">search</span>
                     <Input
                         type="text"
                         placeholder="Pesquisar..."
