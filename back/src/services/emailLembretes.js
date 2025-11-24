@@ -25,7 +25,7 @@ export async function enviarEmailNovoLembrete({ nome, email, tipo }) {
       ${mensagem}
     </p>
 
-    <a href="${process.env.APP_BASE_URL}/login?email=${encodeURIComponent(usuario.email)}"
+    <a href="${process.env.APP_BASE_URL}/login?email=${encodeURIComponent(email)}"
       style="display: inline-block; padding: 12px 24px; background-color: ${corBotao}; color: #ffffff; 
       text-decoration: none; font-weight: 600; border-radius: 6px;">
       Acessar Kronos
