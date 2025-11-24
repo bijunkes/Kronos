@@ -1,7 +1,7 @@
 import { React, useState, useEffect } from 'react';
 import { Container, Painel, BoxTitulo, BoxTarefa, NomeTarefa, Icones, BoxAdicionar, BoxNomeTarefa, BoxIcones, PainelTarefas } from './style.js';
 import ModalTecnicas from "../ModalTecnicas/index.jsx";
-import { listarAtividadesEmMatriz, deletarAtividadeDeMatriz, atualizarAtividade, adicionarAtividadeEmKanban, atualizarAtividadeEmKanban, listarAtividadesEmKanban, listarAtividades, atualizarIdKanbanAtividade, deletarAtividadeDeKanban } from "../../services/api.js";
+import { listarAtividadesEmMatriz, deletarAtividadeDeMatriz, atualizarAtividade, adicionarAtividadeEmKanban, atualizarAtividadeEmKanban, listarAtividadesEmKanban, listarAtividades, atualizarIdKanbanAtividade, deletarAtividadeDeKanban, listarSessoes, getPerfil } from "../../services/api.js";
 
 
 function Kanban() {
@@ -15,6 +15,10 @@ function Kanban() {
     const [carregando, setCarregando] = useState(true);
     const [erro, setErro] = useState('');
     const [hoverId, setHoverId] = useState('');
+
+    
+
+
 
     const capturaData = () => {
         const dataAtual = new Date();
@@ -31,6 +35,8 @@ function Kanban() {
 
     const buscarAtividades = async () => {
 
+        const perfil = await getPerfil();
+        
         try {
             const todasAtividadesEmKanban = await listarAtividadesEmKanban();
             const todasAtividades = await listarAtividades();
@@ -48,8 +54,8 @@ function Kanban() {
                 console.log("awrlkhhfguiwvbuiw4eb:  " + matrizMap.get(atividade.Kanban_idAtividadeKanban))
                 return parseInt(matrizMap.get(atividade.Kanban_idAtividadeKanban));
             }
-            
-            const atividadesEmKanban = todasAtividades.filter(atv => matrizMap.has(atv.Kanban_idAtividadeKanban)).map(atv => ({
+
+            const atividadesEmKanban = todasAtividades.filter(atv => matrizMap.has(atv.Kanban_idAtividadeKanban) && atv.Usuarios_username == perfil.username).map(atv => ({
                 ...atv,
                 coluna: verificaConclusao(atv),
                 nome: atv.nomeAtividade,
@@ -75,6 +81,7 @@ function Kanban() {
 
 
     useEffect(() => {
+
         buscarAtividades();
     }, []);
 
@@ -161,13 +168,23 @@ function Kanban() {
                     ListaAtividades_idLista: atividade.ListaAtividades_idLista
                 });
                 const listaMatriz = await listarAtividadesEmMatriz();
+                const listaSessoes = await listarSessoes();
                 const atividadeEisen = listaMatriz.find(a => a.idAtividadeEisenhower == atividade.Eisenhower_idAtividadeEisenhower);
-                            if (!atividadeEisen) {
-                                console.warn("Atividade não encontrada na Matriz:", atividade.Eisenhower_idAtividadeEisenhower);
-                                return;
-                            }
-                            console.log("Excluindo da Matriz:", atividade.idAtividadeEisenhower);
-                            await deletarAtividadeDeMatriz(atividade.Eisenhower_idAtividadeEisenhower);
+                if (!atividadeEisen) {
+                    console.warn("Atividade não encontrada na Matriz:", atividade.Eisenhower_idAtividadeEisenhower);
+                    return;
+                } else {
+                    console.log("Excluindo da Matriz:", atividade.idAtividadeEisenhower);
+                    await deletarAtividadeDeMatriz(atividade.Eisenhower_idAtividadeEisenhower);
+                }
+                const atvPomodoro = listaSessoes.find(a => a.idStatus == atividade.Pomodoro_idStatus)
+                if (!atvPomodoro) {
+                    console.warn("Atividade não encontrada em Pomodoro:", atividade.Pomodoro_idStatus);
+                    return;
+                } else {
+
+                }
+
 
             } catch (err) {
                 console.error('Erro ao atualizar atividade:', err);
@@ -307,58 +324,72 @@ function Kanban() {
         }
     };
 
-        const adicionarAtividade = async (atividade) => {
-            if (verificaAtividadeEmLista(atividade.idAtividade)) {
-                showOkToast("Atividade já inserida no Kanban!", "error");
-                setMostrarModal(false);
-                return;
-            }
-
-            const paraDataPrazo = (v) => v ? new Date(v.replace(" ", "T")) : new Date("9999-12-31");
-
-            try {
-                const res = await adicionarAtividadeEmKanban({
-                    classificacao: colunaSelecionada,
-                    dataAlteracao: capturaData()
-                });
-
-                const idKanban = res.idAtividadeKanban;
-
-                const novaAtividade = {
-                    ...atividade,
-                    coluna: colunaSelecionada,
-                    nome: atividade.nomeAtividade,
-                    Kanban_idAtividadeKanban: idKanban,
-                    Usuarios_username: atividade?.Usuarios_username ?? null,
-                    dataAlteracao: capturaData()
-                };
-
-                await atualizarIdKanbanAtividade(atividade.idAtividade, {
-                    Kanban_idAtividadeKanban: idKanban,
-                    Usuarios_username: novaAtividade.Usuarios_username,
-                    idAtividade: atividade.idAtividade
-                });
-
-                setAtividades((prev) => {
-                    const lista = [...prev, novaAtividade];
-                    return lista.sort((a, b) =>
-                        paraDataPrazo(a.prazoAtividade) - paraDataPrazo(b.prazoAtividade)
-                    );
-                });
-
-                setAtividadesAdicionadas((prev) => {
-                    const lista = [...prev, novaAtividade];
-                    return lista.sort((a, b) =>
-                        paraDataPrazo(a.prazoAtividade) - paraDataPrazo(b.prazoAtividade)
-                    );
-                });
-
-            } catch (err) {
-                console.error("Erro ao adicionar ou atualizar atividade: ", err);
-            }
-
+    const adicionarAtividade = async (atividade) => {
+        if (verificaAtividadeEmLista(atividade.idAtividade)) {
+            showOkToast("Atividade já inserida no Kanban!", "error");
             setMostrarModal(false);
-        };
+            return;
+        }
+
+        const paraDataPrazo = (v) => v ? new Date(v.replace(" ", "T")) : new Date("9999-12-31");
+
+        try {
+            const res = await adicionarAtividadeEmKanban({
+                classificacao: colunaSelecionada,
+                dataAlteracao: capturaData()
+            });
+
+            const idKanban = res.idAtividadeKanban;
+
+            const novaAtividade = {
+                ...atividade,
+                coluna: colunaSelecionada,
+                nome: atividade.nomeAtividade,
+                Kanban_idAtividadeKanban: idKanban,
+                Usuarios_username: atividade?.Usuarios_username ?? null,
+                dataAlteracao: capturaData()
+            };
+
+            if (novaAtividade.coluna == 3) {
+                await atualizarAtividade(atividade.idAtividade, {
+                    nomeAtividade: atividade.nomeAtividade,
+                    descricaoAtividade: atividade.descricaoAtividade,
+                    prazoAtividade: formatarDataMySQL(atividade.prazoAtividade),
+                    dataConclusao: capturaData(),
+                    statusAtividade: 1,
+                    Pomodorostatus: atividade.Pomodorostatus,
+                    Kanban_idAtividadeKanban: atividade.Kanban_idAtividadeKanban,
+                    Eisenhower_idAtividadeEisenhower: null,
+                    ListaAtividades_idLista: atividade.ListaAtividades_idLista
+                });
+            }
+
+            await atualizarIdKanbanAtividade(atividade.idAtividade, {
+                Kanban_idAtividadeKanban: idKanban,
+                Usuarios_username: novaAtividade.Usuarios_username,
+                idAtividade: atividade.idAtividade
+            });
+
+            setAtividades((prev) => {
+                const lista = [...prev, novaAtividade];
+                return lista.sort((a, b) =>
+                    paraDataPrazo(a.prazoAtividade) - paraDataPrazo(b.prazoAtividade)
+                );
+            });
+
+            setAtividadesAdicionadas((prev) => {
+                const lista = [...prev, novaAtividade];
+                return lista.sort((a, b) =>
+                    paraDataPrazo(a.prazoAtividade) - paraDataPrazo(b.prazoAtividade)
+                );
+            });
+
+        } catch (err) {
+            console.error("Erro ao adicionar ou atualizar atividade: ", err);
+        }
+
+        setMostrarModal(false);
+    };
 
     return (
         <>

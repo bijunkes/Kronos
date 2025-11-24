@@ -9,7 +9,7 @@ import {
     BoxPomodoro,
     PainelTarefas
 } from './style'
-import { listarAtividadesEmKanban, listarAtividades, listarAtividadesEisenPorClassificacao, listarSessoes } from "../../services/api.js";
+import { listarAtividadesEmKanban, listarAtividades, listarAtividadesEisenPorClassificacao, listarSessoes, getPerfil } from "../../services/api.js";
 
 function RelatorioDiario() {
 
@@ -25,34 +25,40 @@ function RelatorioDiario() {
         4: 0
     });
     const [contAtvs, setContAtvs] = useState('');
+
+
     const buscarAtividadesKanban = async () => {
 
+        const perfil = await getPerfil();
+        
         try {
             const todasAtividadesEmKanban = await listarAtividadesEmKanban();
-                        const todasAtividades = await listarAtividades();
-                        console.log(todasAtividadesEmKanban);
-                        const matrizMap = new Map();
-                        todasAtividadesEmKanban.forEach(item => {
-                            matrizMap.set(item.idAtividadeKanban, item.classificacao)
-                        })
-                        console.log("chablau: "+[...matrizMap.values()]);
-                        const verificaConclusao = (atividade) => {
-                            console.log("LIAWYUuiwquiqwfuiwbf: "+atividade);
-                            if (atividade.statusAtividade == 1) {
-                                return 3;
-                            }
-                            console.log("awrlkhhfguiwvbuiw4eb:  "+matrizMap.get(atividade.Kanban_idAtividadeKanban))
-                            return parseInt(matrizMap.get(atividade.Kanban_idAtividadeKanban));
-                        }
-                        console.log(matrizMap.has(7))
-                        todasAtividades.forEach(a => {
-                            console.log(a)
-                        })
-                        const atividadesEmKanban = todasAtividades.filter(atv => matrizMap.has(atv.Kanban_idAtividadeKanban)).map(atv => ({
-                            ...atv,
-                            coluna: verificaConclusao(atv),
-                            nome: atv.nomeAtividade,
-                        }))
+            const todasAtividades = await listarAtividades();
+            console.log(todasAtividadesEmKanban);
+            const matrizMap = new Map();
+            todasAtividadesEmKanban.forEach(item => {
+                if (item.dataAlteracao.substring(0, 10) == capturaData()) {
+                    matrizMap.set(item.idAtividadeKanban, item.classificacao)
+                }
+            })
+            console.log("chablau: " + [...matrizMap.values()]);
+            const verificaConclusao = (atividade) => {
+                console.log("LIAWYUuiwquiqwfuiwbf: " + atividade);
+                if (atividade.statusAtividade == 1) {
+                    return 3;
+                }
+                console.log("awrlkhhfguiwvbuiw4eb:  " + matrizMap.get(atividade.Kanban_idAtividadeKanban))
+                return parseInt(matrizMap.get(atividade.Kanban_idAtividadeKanban));
+            }
+
+            todasAtividades.forEach(a => {
+                console.log(a)
+            })
+            const atividadesEmKanban = todasAtividades.filter(atv => matrizMap.has(atv.Kanban_idAtividadeKanban) && atv.Usuarios_username == perfil.username).map(atv => ({
+                ...atv,
+                coluna: verificaConclusao(atv),
+                nome: atv.nomeAtividade,
+            }))
             setAtividades(atividadesEmKanban);
 
 
@@ -135,8 +141,11 @@ function RelatorioDiario() {
         console.log(`${capturaData()}`);
         const listaMatriz = await listarAtividadesEisenPorClassificacao(classificacao);
         let quantidade = 0;
+        const todasAtividades = await listarAtividades();
+        const perfil = await getPerfil();
         listaMatriz.forEach(atv => {
-            if (atv.dataAlteracao.substring(0, 10) == capturaData()) {
+            const atividade = todasAtividades.find( a => a.Eisenhower_idAtividadeEisenhower == atv.idAtividadeEisenhower)
+            if (!!atividade && atv.dataAlteracao.substring(0, 10) == capturaData() && atividade.Usuarios_username == perfil.username) {
 
                 console.log(`contando...`);
                 quantidade++;
@@ -149,37 +158,37 @@ function RelatorioDiario() {
         return tamanho;
 
     }
-    const textoKanban = 'Aqui estão organizadas as\natividades do Kanban modificadas hoje'
+    const textoKanban = 'Aqui estão organizadas as\natividades presentes no Kanban modificadas hoje'
     const textoClassificacao = 'Aqui estão organizadas as\natividades presentes na matriz de Eisenhower\nque foram modificadas hoje'
     const textoProgresso = 'Aqui são consideradas as atividades terminadas hoje e as ainda não concluídas\nConcluídas hoje/Não Concluídas'
     const textoPomodoro = 'Aqui estão o foco e descanso totais do Pomodoro de hoje'
 
     const [sessoes, setSessoes] = useState([]);
 
-  const [tempos, setTempos] = useState({ foco: 0, descanso: 0 });
-  
-   useEffect(() => {
-  const carregarSessoesHoje = async () => {
-    const todasSessoes = await listarSessoes();
+    const [tempos, setTempos] = useState({ foco: 0, descanso: 0 });
 
-    const hoje = new Date();
-    const diaHoje = hoje.toISOString().substring(0, 10);
+    useEffect(() => {
+        const carregarSessoesHoje = async () => {
+            const todasSessoes = await listarSessoes();
 
-    const sessoesHoje = todasSessoes.filter(s => s.inicio.substring(0, 10) === diaHoje);
+            const hoje = new Date();
+            const diaHoje = hoje.toISOString().substring(0, 10);
 
-    const somaSegundos = sessoesHoje.reduce((acc, s) => ({
-      foco: acc.foco + (s.duracaoRealFocoSegundos || 0),
-      descanso: acc.descanso + ((s.duracaoRealCurtoSegundos || 0) + (s.duracaoRealLongoSegundos || 0))
-    }), { foco: 0, descanso: 0 });
+            const sessoesHoje = todasSessoes.filter(s => s.inicio.substring(0, 10) === diaHoje);
 
-    setTempos({
-      foco: Math.floor(somaSegundos.foco / 60),
-      descanso: Math.floor(somaSegundos.descanso / 60)
-    });
-  };
+            const somaSegundos = sessoesHoje.reduce((acc, s) => ({
+                foco: acc.foco + (s.duracaoRealFocoSegundos || 0),
+                descanso: acc.descanso + ((s.duracaoRealCurtoSegundos || 0) + (s.duracaoRealLongoSegundos || 0))
+            }), { foco: 0, descanso: 0 });
 
-  carregarSessoesHoje();
-}, []);
+            setTempos({
+                foco: Math.floor(somaSegundos.foco / 60),
+                descanso: Math.floor(somaSegundos.descanso / 60)
+            });
+        };
+
+        carregarSessoesHoje();
+    }, []);
 
 
     return (
@@ -204,33 +213,33 @@ function RelatorioDiario() {
                     <BoxPomodoro>Descanso: {tempos.descanso} min</BoxPomodoro>
                 </Pomodoro>
                 <Pendente><BoxTitulo>Pendente</BoxTitulo><PainelTarefas>{atividades.filter(atividade => atividade.coluna === 1).map(atividade => (
-                    
-                        <BoxTarefas key={atividade.Kanban_idAtividadeKanban} id={atividade.idAtividade}>
 
-                            <BoxNomeTarefa><NomeTarefa>{atividade.nome}</NomeTarefa></BoxNomeTarefa>
+                    <BoxTarefas key={atividade.Kanban_idAtividadeKanban} id={atividade.idAtividade}>
 
-                        </BoxTarefas>
-                   
+                        <BoxNomeTarefa><NomeTarefa>{atividade.nome}</NomeTarefa></BoxNomeTarefa>
+
+                    </BoxTarefas>
+
 
                 ))} </PainelTarefas></Pendente>
                 <Andamento><BoxTitulo>Em Andamento</BoxTitulo><PainelTarefas>{atividades.filter(atividade => atividade.coluna === 2).map(atividade => (
-                    
-                        <BoxTarefas key={atividade.Kanban_idAtividadeKanban} id={atividade.idAtividade}>
 
-                            <BoxNomeTarefa><NomeTarefa>{atividade.nome}</NomeTarefa></BoxNomeTarefa>
+                    <BoxTarefas key={atividade.Kanban_idAtividadeKanban} id={atividade.idAtividade}>
 
-                        </BoxTarefas>
-                   
+                        <BoxNomeTarefa><NomeTarefa>{atividade.nome}</NomeTarefa></BoxNomeTarefa>
+
+                    </BoxTarefas>
+
 
                 ))} </PainelTarefas></Andamento>
                 <Concluido><BoxTitulo>Concluído</BoxTitulo><PainelTarefas>{atividades.filter(atividade => atividade.coluna === 3).map(atividade => (
-                    
-                        <BoxTarefas key={atividade.Kanban_idAtividadeKanban} id={atividade.idAtividade}>
 
-                            <BoxNomeTarefa><NomeTarefa>{atividade.nome}</NomeTarefa></BoxNomeTarefa>
+                    <BoxTarefas key={atividade.Kanban_idAtividadeKanban} id={atividade.idAtividade}>
 
-                        </BoxTarefas>
-                   
+                        <BoxNomeTarefa><NomeTarefa>{atividade.nome}</NomeTarefa></BoxNomeTarefa>
+
+                    </BoxTarefas>
+
 
                 ))} </PainelTarefas></Concluido>
                 <Classificacao>

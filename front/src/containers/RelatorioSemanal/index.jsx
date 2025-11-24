@@ -9,7 +9,7 @@ import {
     BoxPomodoro,
     PainelTarefas
 } from './style'
-import { listarAtividadesEmKanban, listarAtividades, listarAtividadesEisenPorClassificacao, listarSessoes } from "../../services/api.js";
+import { listarAtividadesEmKanban, listarAtividades, listarAtividadesEisenPorClassificacao, listarSessoes, getPerfil } from "../../services/api.js";
 
 function RelatorioSemanal() {
 
@@ -25,15 +25,21 @@ function RelatorioSemanal() {
         4: 0
     });
     const [contAtvs, setContAtvs] = useState('');
+    
+
     const buscarAtividadesKanban = async () => {
 
+        const perfil = await getPerfil();
+        
         try {
             const todasAtividadesEmKanban = await listarAtividadesEmKanban();
             const todasAtividades = await listarAtividades();
             console.log(todasAtividadesEmKanban);
             const matrizMap = new Map();
             todasAtividadesEmKanban.forEach(item => {
-                matrizMap.set(item.idAtividadeKanban, item.classificacao)
+                if (verificaDataNoIntervalo(item.dataAlteracao)) {
+                    matrizMap.set(item.idAtividadeKanban, item.classificacao)
+                }
             })
             console.log("chablau: " + [...matrizMap.values()]);
             const verificaConclusao = (atividade) => {
@@ -48,7 +54,7 @@ function RelatorioSemanal() {
             todasAtividades.forEach(a => {
                 console.log(a)
             })
-            const atividadesEmKanban = todasAtividades.filter(atv => matrizMap.has(atv.Kanban_idAtividadeKanban)).map(atv => ({
+            const atividadesEmKanban = todasAtividades.filter(atv => matrizMap.has(atv.Kanban_idAtividadeKanban) && atv.Usuarios_username == perfil.username).map(atv => ({
                 ...atv,
                 coluna: verificaConclusao(atv),
                 nome: atv.nomeAtividade,
@@ -186,8 +192,12 @@ function RelatorioSemanal() {
         let quantidade = 0;
         const listaMatriz = await listarAtividadesEisenPorClassificacao(classificacao);
 
+        const todasAtividades = await listarAtividades();
+
+        const perfil = await getPerfil();
         listaMatriz.forEach(atv => {
-            if (verificaDataNoIntervalo(atv.dataAlteracao.substring(0, 10))) {
+            const atividade = todasAtividades.find( a => a.Eisenhower_idAtividadeEisenhower == atv.idAtividadeEisenhower)
+            if (!!atividade && verificaDataNoIntervalo(atv.dataAlteracao.substring(0, 10)) && atividade.Usuarios_username == perfil.username) {
 
                 quantidade++;
 
@@ -198,7 +208,7 @@ function RelatorioSemanal() {
         return tamanho;
 
     }
-    const textoKanban = 'Aqui estão organizadas as\natividades do Kanban modificadas na semana'
+    const textoKanban = 'Aqui estão organizadas as\natividades presentes no Kanban modificadas na semana'
     const textoClassificacao = 'Aqui estão organizadas as\natividades presentes na matriz de Eisenhower\nque foram modificadas na semana'
     const textoProgresso = 'Aqui são consideradas as atividades terminadas na semana e as ainda não concluídas\nConcluídas na semana/Não Concluídas'
     const textoPomodoro = 'Aqui estão o foco e descanso totais do Pomodoro dessa semana'

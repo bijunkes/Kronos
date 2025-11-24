@@ -17,7 +17,7 @@ import {
     BoxIcones,
     BoxNomeTarefa
 } from "./style.js"
-import { adicionarAtividadeEmMatriz, atualizarAtividadeEmMatriz, listarAtividadesEmMatriz, listarAtividades, atualizarIdEisenAtividade, deletarAtividadeDeMatriz } from "../../services/api.js";
+import { adicionarAtividadeEmMatriz, atualizarAtividadeEmMatriz, listarAtividadesEmMatriz, listarAtividades, atualizarIdEisenAtividade, deletarAtividadeDeMatriz, getPerfil } from "../../services/api.js";
 import ModalTecnicas from "../ModalTecnicas/index.jsx";
 import { showOkToast } from "../../components/showToast.jsx";
 
@@ -47,6 +47,7 @@ function Eisenhower() {
 
     const buscarAtividades = async () => {
 
+        const perfil = await getPerfil();
         try {
             const todasAtividadesEmMatriz = await listarAtividadesEmMatriz();
             const todasAtividades = await listarAtividades();
@@ -55,7 +56,7 @@ function Eisenhower() {
             todasAtividadesEmMatriz.forEach(item => {
                 matrizMap.set(item.idAtividadeEisenhower, item.classificacao)
             })
-            const atividadesEmMatriz = todasAtividades.filter(atv => matrizMap.has(atv.Eisenhower_idAtividadeEisenhower)).map(atv => ({
+            const atividadesEmMatriz = todasAtividades.filter(atv => matrizMap.has(atv.Eisenhower_idAtividadeEisenhower) && atv.Usuarios_username == perfil.username).map(atv => ({
                 ...atv,
                 quadrante: parseInt(matrizMap.get(atv.Eisenhower_idAtividadeEisenhower)),
                 nome: atv.nomeAtividade,
