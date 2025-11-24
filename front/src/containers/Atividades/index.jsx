@@ -32,6 +32,7 @@ function Atividades() {
   const [mostrarModal, setMostrarModal] = useState(false);
   const [filtro, setFiltro] = useState("");
 
+  // Função para ordenar atividades
   const ordenarAtividades = (lista) => {
     return [...lista].sort((a, b) => {
       if (a.concluido !== b.concluido) return a.concluido ? 1 : -1;
@@ -44,6 +45,7 @@ function Atividades() {
     });
   };
 
+  // Formata data para MySQL
   const formatarDataMySQL = (data) => {
     if (!data) return null;
     const d = new Date(data);
@@ -56,6 +58,7 @@ function Atividades() {
     return `${yyyy}-${mm}-${dd} ${hh}:${mi}:${ss}`;
   };
 
+  // Recarrega todas as atividades do backend
   const carregarAtividades = async () => {
     try {
       const todas = await listarTodasAtividades();
@@ -65,6 +68,7 @@ function Atividades() {
       }));
       setAtividades(ordenarAtividades(todasComConcluido));
 
+      // Atualiza a atividade selecionada, se existir
       if (atividadeSelecionada) {
         const atualizada = todas.find(a => a.idAtividade === atividadeSelecionada.idAtividade);
         setAtividadeSelecionada(atualizada || null);
@@ -74,6 +78,7 @@ function Atividades() {
     }
   };
 
+  // Carrega lista padrão e atividades no início
   useEffect(() => {
     const init = async () => {
       try {
@@ -88,6 +93,7 @@ function Atividades() {
     init();
   }, []);
 
+  // Toggle concluir atividade
   const toggleConcluido = async (index) => {
     const atividade = atividades[index];
     if (!atividade) return;
@@ -96,6 +102,7 @@ function Atividades() {
     const novoStatus = !atividade.concluido ? 1 : 0;
 
     try {
+      // Remove do Pomodoro se necessário
       if (atividade.Pomodoro_idStatus) {
         const sessao = await obterUltimaSessaoPomodoro();
         if (sessao?.idStatus) {
@@ -104,6 +111,7 @@ function Atividades() {
         }
       }
 
+      // Atualiza atividade no backend
       await atualizarAtividade(atividade.idAtividade, {
         nomeAtividade: atividade.nomeAtividade,
         descricaoAtividade: atividade.descricaoAtividade,
@@ -116,10 +124,12 @@ function Atividades() {
         Eisenhower_idAtividadeEisenhower: null
       });
 
+      // Atualiza Kanban se necessário
       if (novoStatus === 0 && atividade.Kanban_idAtividadeKanban) {
         await atualizarAtividadeEmKanban(atividade.Kanban_idAtividadeKanban, 1, formatarDataMySQL(new Date()));
       }
 
+      // Recarrega todas as atividades do backend
       await carregarAtividades();
     } catch (err) {
       console.error("Erro ao atualizar atividade:", err);
