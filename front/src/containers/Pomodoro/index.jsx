@@ -431,7 +431,7 @@ function Pomodoro() {
     if (name === modo) setTempo(novoValor * 60);
   };
 
-    const adicionarAtividadeSessao = async (atividade) => {
+  const adicionarAtividadeSessao = async (atividade) => {
     if (atividadesSelecionadas.some(a => a.idAtividade === atividade.idAtividade)) return;
 
     const paraDataPrazo = (v) =>
@@ -622,18 +622,36 @@ function Pomodoro() {
     }
   };
 
-  const handleExcluirAtividade = (idAtividade) => {
-    console.log("exluir clicado")
-    const novasAtivs = atividadesSelecionadas.filter(a => a.idAtividade !== idAtividade);
+  const handleExcluirAtividade = async (idAtividade) => {
 
+    const novasAtivs = atividadesSelecionadas.filter(a => a.idAtividade !== idAtividade);
     setAtividadesSelecionadas(novasAtivs);
 
-    if (idSessao) {
-      salvarAtividadesSessao(idSessao, novasAtivs);
-    } else {
-      setSessaoTemplate(prev => ({ ...prev, atividadesSelecionadas: novasAtivs }));
+
+    try {
+      console.error("criando nova sessao");
+      const novaSessaoId = await garantirSessao(novasAtivs);
+      console.error("criando nova sessao");
+
+      if (!novaSessaoId) {
+        console.error("Falha ao criar nova sessão após exclusão");
+        return;
+      }
+
+      setIdSessao(novaSessaoId);
+
+      await salvarAtividadesSessao(novaSessaoId, novasAtivs);
+
+      const listaAtualizada = await listarAtividadesSessao(novaSessaoId);
+      setAtividadesSelecionadas(listaAtualizada);
+
+      console.log("Sessão recriada sem a atividade excluída:", novaSessaoId);
+
+    } catch (err) {
+      console.error("Erro ao atualizar sessão após excluir atividade:", err);
     }
   };
+
 
   const temAtividades = atividadesSelecionadas.length > 0;
 

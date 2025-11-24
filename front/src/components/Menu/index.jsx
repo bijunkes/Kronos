@@ -149,16 +149,17 @@ function Menu() {
   }, [iconUrl, imgVer]);
 
   const handleClick = (item, temRota = true) => {
-    if (submenuAberto === item) {
-      setSubmenuAberto('');
-      setSubmenuSelecionado({ pai: '', item: '' });
-      if (temRota) navigate('/home');
-    } else {
-      setSubmenuAberto(item);
-      setSubmenuSelecionado({ pai: '', item: '' });
-      if (temRota) navigate('/' + item);
-    }
-  };
+  if (submenuAberto === item) {
+    setSubmenuAberto('');
+    setSubmenuSelecionado({ pai: '', item: '' });
+    navigate('/home');
+  } else {
+    setSubmenuAberto(item);
+    setSubmenuSelecionado({ pai: '', item: '' });
+    if (temRota) navigate('/' + item);
+  }
+};
+
 
 
   const handleSubmenuClick = (pai, item, idLista = null) => {
@@ -186,7 +187,11 @@ function Menu() {
   const atualizarListas = async () => {
     try {
       const listas = await listarListas();
-      setListas(listas);
+      const ordenadas = [...listas].sort((a, b) =>
+        a.nomeLista.localeCompare(b.nomeLista, 'pt-BR')
+      );
+      setListas(ordenadas);
+
       localStorage.setItem('atualizarListas', Date.now());
     } catch (err) {
       console.error('Erro ao buscar listas:', err);

@@ -13,7 +13,7 @@ import {
   Pesquisar,
   Input
 } from '../Atividades/styles.js';
-import { listarTodasAtividades, atualizarAtividade } from '../../services/api.js';
+import { listarTodasAtividades, atualizarAtividade, obterUltimaSessaoPomodoro, salvarAtividadesSessao } from '../../services/api.js';
 import AtividadeSelecionada from '../AtividadeSelecionada/index.jsx';
 
 function Hoje() {
@@ -92,6 +92,10 @@ function Hoje() {
       : null;
     const novoStatus = !atividade.concluido ? 1 : 0;
 
+    if (atividade.Pomodoro_idStatus && novoStatus === 1) {
+      await removerAtividadeDoPomodoro(atividade.idAtividade);
+    }
+
     const novaAtividade = {
       ...atividade,
       concluido: !atividade.concluido,
@@ -117,8 +121,10 @@ function Hoje() {
         prazoAtividade: formatarDataMySQL(atividade.prazoAtividade),
         dataConclusao: novaConclusao,
         statusAtividade: novoStatus,
-        ListaAtividades_idLista: atividade.ListaAtividades_idLista
+        ListaAtividades_idLista: atividade.ListaAtividades_idLista,
+        Pomodoro_idStatus: null
       });
+
 
       await carregarAtividadesHoje();
     } catch (err) {
@@ -131,11 +137,36 @@ function Hoje() {
     (a.nomeAtividade || '').toLowerCase().startsWith(filtro.toLowerCase())
   );
 
+  const removerAtividadeDoPomodoro = async (atividadeId) => {
+    try {
+      const sessao = await obterUltimaSessaoPomodoro();
+      if (!sessao || !sessao.idStatus) return;
+
+      const idSessao = sessao.idStatus;
+      const atuais = Array.isArray(sessao.atividadesVinculadas)
+        ? sessao.atividadesVinculadas
+        : [];
+
+      const filtradas = atuais.filter((id) => id !== atividadeId);
+
+      await salvarAtividadesSessao(
+        idSessao,
+        filtradas.map((id) => ({ idAtividade: id }))
+      );
+
+      return true;
+    } catch (err) {
+      console.error("Erro ao remover atividade do Pomodoro:", err);
+      return false;
+    }
+  };
+
+
   return (
     <Background>
       <ContainerLista>
         <Header>
-          <NomeLista style={{cursor: 'default'}}>Hoje</NomeLista>
+          <NomeLista style={{ cursor: 'default' }}>Hoje</NomeLista>
         </Header>
 
         <Conteudo>
@@ -184,7 +215,7 @@ function Hoje() {
         </Conteudo>
 
         <Pesquisar>
-          <span style={{cursor: 'default'}} className="material-symbols-outlined">search</span>
+          <span style={{ cursor: 'default' }} className="material-symbols-outlined">search</span>
           <Input
             type="text"
             placeholder="Pesquisar..."
@@ -210,7 +241,13 @@ function Hoje() {
             setAtividades(prev => ordenarAtividades(
               prev.map(a =>
                 a.idAtividade === atividadeAtualizada.idAtividade
-                  ? { ...atividadeAtualizada, concluido: !!atividadeAtualizada.dataConclusao }
+                  ? {
+                    ...a,
+                    ...atividadeAtualizada,
+                    concluido: !!atividadeAtualizada.dataConclusao,
+                    Pomodoro_idStatus: atividadeAtualizada.Pomodoro_idStatus ?? null
+                  }
+
                   : a
               )
             ));

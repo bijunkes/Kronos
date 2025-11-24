@@ -8,7 +8,7 @@ import {
   BotaoAdd,
   ListaAtividades
 } from "./styles.js";
-import { listarTodasAtividades, listarListas } from "../../services/api.js";
+import { listarTodasAtividades, listarListas, obterUltimaSessaoPomodoro, salvarAtividadesSessao } from "../../services/api.js";
 import api from "../../services/api.js";
 import ModalCriarAtividade from "../ModalCriarAtividade";
 
@@ -79,39 +79,47 @@ function Semana() {
   }, []);
 
   const concluirAtividade = async (atividade) => {
-    try {
-      if (!listaPadrao?.idLista) {
-        alert("Lista padrão 'Atividades' não encontrada!");
-        return;
-      }
+  try {
+    if (!listaPadrao?.idLista) {
+      alert("Lista padrão 'Atividades' não encontrada!");
+      return;
+    }
 
-      const prazoFormatado = atividade.prazoAtividade
-        ? typeof atividade.prazoAtividade === "string"
-          ? atividade.prazoAtividade
-          : String(atividade.prazoAtividade)
+    const prazoFormatado = atividade.prazoAtividade
+      ? typeof atividade.prazoAtividade === "string"
+        ? atividade.prazoAtividade
+        : String(atividade.prazoAtividade)
+      : null;
+
+    const novoStatus = atividade.statusAtividade === 1 ? 0 : 1;
+    const novaConclusao =
+      novoStatus === 1
+        ? new Date().toISOString().slice(0, 19).replace("T", " ")
         : null;
 
-      const novoStatus = atividade.statusAtividade === 1 ? 0 : 1;
-      const novaConclusao =
-        novoStatus === 1
-          ? new Date().toISOString().slice(0, 19).replace("T", " ")
-          : null;
+    // 🔥 NOVO: remover do pomodoro se estiver lá
+    if (atividade.Pomodoro_idStatus && novoStatus === 1) {
+      await removerAtividadeDoPomodoro(atividade.idAtividade);
+    }
+
 
       await api.put(`/atividades/${atividade.idAtividade}`, {
-        nomeAtividade: atividade.nomeAtividade,
-        descricaoAtividade: atividade.descricaoAtividade || null,
-        prazoAtividade: prazoFormatado,
-        statusAtividade: novoStatus,
-        dataConclusao: novaConclusao,
-        ListaAtividades_idLista:
-          atividade.ListaAtividades_idLista || listaPadrao.idLista,
-        ListaAtividades_Usuarios_username:
-          atividade.ListaAtividades_Usuarios_username ||
-          atividade.Usuarios_username ||
-          listaPadrao.Usuarios_username ||
-          listaPadrao.Usuarios?.username ||
-          "admin"
-      });
+  nomeAtividade: atividade.nomeAtividade,
+  descricaoAtividade: atividade.descricaoAtividade || null,
+  prazoAtividade: prazoFormatado,
+  statusAtividade: novoStatus,
+  dataConclusao: novaConclusao,
+  ListaAtividades_idLista:
+    atividade.ListaAtividades_idLista || listaPadrao.idLista,
+  ListaAtividades_Usuarios_username:
+    atividade.ListaAtividades_Usuarios_username ||
+    atividade.Usuarios_username ||
+    listaPadrao.Usuarios_username ||
+    listaPadrao.Usuarios?.username ||
+    "admin",
+  Pomodoro_idStatus: null, // 🔥 NOVO
+});
+
 
       await carregarAtividades();
     } catch (err) {
@@ -128,6 +136,31 @@ function Semana() {
 
   const atividadesPorDia = (iso) =>
     atividades.filter((a) => a.prazoIso === iso);
+
+  const removerAtividadeDoPomodoro = async (atividadeId) => {
+  try {
+    const sessao = await obterUltimaSessaoPomodoro();
+    if (!sessao || !sessao.idStatus) return;
+
+    const idSessao = sessao.idStatus;
+    const atuais = Array.isArray(sessao.atividadesVinculadas)
+      ? sessao.atividadesVinculadas
+      : [];
+
+    const filtradas = atuais.filter((id) => id !== atividadeId);
+
+    await salvarAtividadesSessao(
+      idSessao,
+      filtradas.map((id) => ({ idAtividade: id }))
+    );
+
+    return true;
+  } catch (err) {
+    console.error("Erro ao remover atividade do Pomodoro:", err);
+    return false;
+  }
+};
+
 
   return (
     <Background>

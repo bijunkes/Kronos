@@ -25,7 +25,6 @@ function AtividadeSelecionada({ atividade, onAtualizarAtividade }) {
     });
 
     const botaoTecnicas = (tipo) => {
-        // toggleTecnica(tipo);
 
         alterarAtividadeEmTecnica(tipo, atividade);
     }
@@ -48,22 +47,21 @@ function AtividadeSelecionada({ atividade, onAtualizarAtividade }) {
     }, []);
 
     useEffect(() => {
-        if (atividade) {
-            setNome(atividade.nomeAtividade || '');
-            setStatus(Number(atividade.statusAtividade) || 0);
-            setPrazo(atividade.prazoAtividade || '');
-            setConclusao(atividade.dataConclusao || '');
-            setDescricao(atividade.descricaoAtividade || '');
-            setListaSelecionada(atividade.ListaAtividades_idLista || listas[0]?.idLista); // ✅ atualizar
-        } else {
-            setNome('');
-            setStatus(0);
-            setPrazo('');
-            setConclusao('');
-            setDescricao('');
-            setListaSelecionada(listas[0]?.idLista || '');
-        }
+        if (!atividade) return;
+
+        setNome(atividade.nomeAtividade || '');
+        setStatus(Number(atividade.statusAtividade) || 0);
+        setPrazo(atividade.prazoAtividade || '');
+        setConclusao(atividade.dataConclusao || '');
+        setDescricao(atividade.descricaoAtividade || '');
+        setListaSelecionada(atividade.ListaAtividades_idLista || listas[0]?.idLista);
+        setTecnicasAtivas({
+            pomodoro: !!atividade.Pomodoro_idStatus,
+            kanban: !!atividade.Kanban_idAtividadeKanban,
+            eisenhower: !!atividade.Eisenhower_idAtividadeEisenhower,
+        });
     }, [atividade, listas]);
+
 
     useEffect(() => {
         if (!atividade) return;
@@ -267,7 +265,7 @@ function AtividadeSelecionada({ atividade, onAtualizarAtividade }) {
 
                 if (!atividad?.idAtividade) {
                     console.error("ERRO: atividade.idAtividade undefined:", atividad);
-                    
+
                     return;
                 }
 
@@ -290,7 +288,7 @@ function AtividadeSelecionada({ atividade, onAtualizarAtividade }) {
 
             } catch (err) {
                 console.error("Erro ao adicionar/remover do Pomodoro:", err);
-                
+
             }
 
             return;
@@ -384,7 +382,7 @@ function AtividadeSelecionada({ atividade, onAtualizarAtividade }) {
             showOkToast('Atividade excluída de Eisenhower');
         } catch (err) {
             console.error('Erro ao excluir atividade', err);
-            
+
         }
     };
 
@@ -481,11 +479,25 @@ function AtividadeSelecionada({ atividade, onAtualizarAtividade }) {
                             setConclusao(novaData);
                             const novoStatus = novaData ? 1 : 0;
                             setStatus(novoStatus);
+                            console.log("oi")
+
                             await atualizarCampo({
                                 dataConclusao: formatarDataMySQL(novaData),
                                 statusAtividade: novoStatus,
                             });
+
+                            if (novoStatus === 1 && tecnicasAtivas.pomodoro) {
+                                const ok = await removerAtividadeDoPomodoro(atividade.idAtividade);
+
+                                if (ok) {
+                                    setTecnicasAtivas(prev => ({ ...prev, pomodoro: false }));
+                                    onAtualizarAtividade?.({ ...atividade, Pomodoro_idStatus: null });
+
+                                    showOkToast("Atividade concluída e removida do Pomodoro!");
+                                }
+                            }
                         }}
+
                     />
                 </Data>
             </Datas>

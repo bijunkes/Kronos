@@ -115,7 +115,6 @@ export const ListasHeader = styled.div`
 export const BotaoAdicionar = styled.button`
   all: unset;
   margin-right: 2vh;
-  font-weight: bold;
   cursor: pointer;
   transition: background-color 0.3s ease;
   color: #FFFFFF;
