@@ -36,7 +36,7 @@ export const SemanaScroll = styled.div`
   scroll-behavior: smooth;
 
   &::-webkit-scrollbar {
-    height: 5px;
+    height: 6px;
   }
 
   &::-webkit-scrollbar-thumb {

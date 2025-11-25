@@ -128,7 +128,7 @@ export const PainelTarefas = styled.div`
   height: 80%;
   position: relativo;
   padding: 1%;
-  gap: 10%;
+  gap: 3%;
   align-items: center;
   overflow-y: scroll;
   scroll-behavior: smooth;
