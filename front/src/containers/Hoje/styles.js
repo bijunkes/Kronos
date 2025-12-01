@@ -6,17 +6,16 @@ export const Background = styled.div`
   align-items: flex-start;
   min-height: 100vh;
   width: 100%;
-  background-color: var(--fundo-principal, #121212);
+  background-color: var(--fundo-menu);
   color: #fff;
   padding-top: 40px;
 `;
 
 export const ContainerLista = styled.div`
-  background-color: var(--fundo-menu, #1e1e1e);
+  background-color: var(--fundo-menu);
   width: 600px;
   border-radius: 16px;
-  box-shadow: 0 0 15px rgba(0, 0, 0, 0.4);
-  padding: 25px 30px;
+  padding: 3vh;
   display: flex;
   flex-direction: column;
   gap: 18px;
@@ -35,9 +34,8 @@ export const Conteudo = styled.div`
 `;
 
 export const NomeLista = styled.h2`
-  font-size: 1.4rem;
-  font-weight: 600;
-  color: var(--azul-claro, #60a5fa);
+  font-size: 20px;
+  font-weight: bold;
 `;
 
 export const AreaAtividades = styled.div`
@@ -63,7 +61,7 @@ export const AreaAtividades = styled.div`
 
 export const Atividade = styled.div`
   background-color: var(--fundo-menu-ativo, #2a2a2a);
-  padding: 12px 16px;
+  padding: 3vh;
   border-radius: 10px;
   display: flex;
   justify-content: space-between;

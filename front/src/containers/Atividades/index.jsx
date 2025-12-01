@@ -13,14 +13,14 @@ import {
   Pesquisar,
   Input
 } from './styles.js';
-import { 
-  listarTodasAtividades, 
-  listarListas, 
-  atualizarAtividade, 
-  deletarAtividadeDeMatriz, 
-  atualizarAtividadeEmKanban, 
-  obterUltimaSessaoPomodoro, 
-  salvarAtividadesSessao 
+import {
+  listarTodasAtividades,
+  listarListas,
+  atualizarAtividade,
+  deletarAtividadeDeMatriz,
+  atualizarAtividadeEmKanban,
+  obterUltimaSessaoPomodoro,
+  salvarAtividadesSessao
 } from '../../services/api.js';
 import ModalCriarAtividade from '../ModalCriarAtividade/index.jsx';
 import AtividadeSelecionada from '../AtividadeSelecionada/index.jsx';
@@ -32,7 +32,6 @@ function Atividades() {
   const [mostrarModal, setMostrarModal] = useState(false);
   const [filtro, setFiltro] = useState("");
 
-  // Função para ordenar atividades
   const ordenarAtividades = (lista) => {
     return [...lista].sort((a, b) => {
       if (a.concluido !== b.concluido) return a.concluido ? 1 : -1;
@@ -45,7 +44,6 @@ function Atividades() {
     });
   };
 
-  // Formata data para MySQL
   const formatarDataMySQL = (data) => {
     if (!data) return null;
     const d = new Date(data);
@@ -157,7 +155,12 @@ function Atividades() {
         </Header>
 
         <Conteudo>
-          <AreaAtividades>
+          <AreaAtividades style={{alignItems: 'center'}}>
+            {atividadesFiltradas.length === 0 && (
+              <div style={{ color: '#999', cursor: 'default', fontSize: '16px' }}>
+                Sem atividades
+              </div>
+            )}
             {atividadesFiltradas.map((a, index) => {
               const isSelecionada = atividadeSelecionada?.idAtividade === a.idAtividade;
               return (

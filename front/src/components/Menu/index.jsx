@@ -241,11 +241,7 @@ function Menu() {
     <MenuWrapper>
       <Usuario>
         <IconUsuario
-          onClick={() => {
-            setSubmenuAberto('');
-            setSubmenuSelecionado({ pai: '', item: '' });
-            navigate(`/${usuario.username}`);
-          }}
+          onClick={() => handleClick('perfil', true)}
         >
           <img
             key={displaySrc}

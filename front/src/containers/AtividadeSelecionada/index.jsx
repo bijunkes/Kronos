@@ -39,9 +39,16 @@ function AtividadeSelecionada({ atividade, onAtualizarAtividade }) {
         const carregarListas = async () => {
             try {
                 const dados = await listarListas();
-                setListas(dados);
-            } catch (err) {
-            }
+
+                const ordenadas = [...dados].sort((a, b) => {
+                    if (a.nomeLista === "Atividades") return -1;
+                    if (b.nomeLista === "Atividades") return 1;
+
+                    return a.nomeLista.localeCompare(b.nomeLista, 'pt-BR', { numeric: true });
+                });
+
+                setListas(ordenadas);
+            } catch (err) { }
         };
         carregarListas();
     }, []);

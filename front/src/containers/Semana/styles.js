@@ -8,6 +8,7 @@ export const Background = styled.div`
   overflow: hidden;
   display: flex;
 `;
+
 export const ListaAtividades = styled.div`
   flex: 1;
   display: flex;
@@ -20,7 +21,6 @@ export const ListaAtividades = styled.div`
   overflow-x: hidden;
   width: calc(100% + 8px);  
   margin-right: -8px;  
-       
 `;
 
 export const SemanaScroll = styled.div`
@@ -46,9 +46,9 @@ export const SemanaScroll = styled.div`
 
   &::-webkit-scrollbar-thumb:hover {
     background-color: rgba(255, 255, 255, 0.25);
+    cursor: pointer;
   }
 `;
-
 
 export const DiaColuna = styled.div`
   padding: 2vh 3vh 3vh 3vh;

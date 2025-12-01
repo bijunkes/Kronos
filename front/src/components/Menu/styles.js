@@ -40,7 +40,7 @@ export const NomeUsuario = styled.p`
 `;
 
 export const Username = styled.p`
-  font-size: 16px;
+  font-size: 14px;
   opacity: 0.8;
 `;
 
@@ -72,14 +72,14 @@ export const ItemMenor = styled.li.attrs(props => ({
 `;
 
 export const ItemMaior = styled.li
-`
+  `
   font-size: 20px;
   font-weight: bold;
   box-sizing: border-box;
   padding: 1.6vh 1vh 1.6vh 3vh;
   width: 100%;    
   cursor: pointer;
-  color: ${({ ativo}) => (ativo ? corativa || 'var(--cor-texto-ativo)' : 'var(--cor-texto)')};
+  color: ${({ ativo }) => (ativo ? corativa || 'var(--cor-texto-ativo)' : 'var(--cor-texto)')};
 
   &:hover {
     background-color: var(--fundo-menu-ativo);
@@ -92,8 +92,8 @@ export const Submenu = styled.div`
   transition: max-height 0.3s ease;
 `;
 
-export const SubmenuItem =  styled.li
-`
+export const SubmenuItem = styled.li
+  `
   width: 100%;    
   cursor: pointer;
   font-size: 16px;
@@ -119,11 +119,13 @@ export const BotaoAdicionar = styled.button`
   transition: background-color 0.3s ease;
   color: #FFFFFF;
   font-size: 20.5px;
-  
-  &:hover {
-    background-color: var(--fundo-menu-ativo);
-    color: #AF52DE;
-  }
+  transition: transform 0.2s ease, color 0.2s ease;
+
+&:hover {
+  transform: scale(1.3);
+  color: #AF52DE;
+}
+
 `;
 
 export const OpcoesAbaixo = styled.div`

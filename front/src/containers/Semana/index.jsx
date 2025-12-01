@@ -18,6 +18,7 @@ function Semana() {
   const [diaSelecionado, setDiaSelecionado] = useState(null);
   const [listaPadrao, setListaPadrao] = useState(null);
   const scrollRef = useRef(null);
+  const [atividadeArrastada, setAtividadeArrastada] = useState(null);
 
   useEffect(() => {
     gerarDiasSemana();
@@ -39,6 +40,31 @@ function Semana() {
       arr.push({ iso, nome });
     }
     setDias(arr);
+  };
+
+  const moverAtividadeParaDia = async (novoDiaISO) => {
+    if (!atividadeArrastada) return;
+
+    try {
+      await api.put(`/atividades/${atividadeArrastada.idAtividade}`, {
+        nomeAtividade: atividadeArrastada.nomeAtividade,
+        descricaoAtividade: atividadeArrastada.descricaoAtividade,
+        prazoAtividade: novoDiaISO,
+        statusAtividade: atividadeArrastada.statusAtividade,
+        ListaAtividades_idLista:
+          atividadeArrastada.ListaAtividades_idLista || listaPadrao?.idLista,
+        ListaAtividades_Usuarios_username:
+          atividadeArrastada.ListaAtividades_Usuarios_username ||
+          listaPadrao?.Usuarios_username ||
+          "admin",
+        Pomodoro_idStatus: null
+      });
+
+      setAtividadeArrastada(null);
+      carregarAtividades();
+    } catch (err) {
+      console.error("Erro ao mover atividade:", err);
+    }
   };
 
   const carregarAtividades = async () => {
@@ -164,7 +190,11 @@ function Semana() {
     <Background>
       <SemanaScroll ref={scrollRef}>
         {dias.map((d) => (
-          <DiaColuna key={d.iso}>
+          <DiaColuna
+            key={d.iso}
+            onDragOver={(e) => e.preventDefault()}
+            onDrop={() => moverAtividadeParaDia(d.iso)}
+          >
             <DiaHeader>
               <DiaTitulo style={{ cursor: 'default' }}>
                 {d.nome.charAt(0).toUpperCase() + d.nome.slice(1)}
@@ -204,6 +234,8 @@ function Semana() {
                 atividadesPorDia(d.iso).map((a) => (
                   <div
                     key={a.idAtividade}
+                    draggable
+                    onDragStart={() => setAtividadeArrastada(a)}
                     style={{
                       width: "100%",
                       marginBottom: 12,

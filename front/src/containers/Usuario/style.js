@@ -1,26 +1,26 @@
 import styled from 'styled-components';
 
-
 const FORM_W = '560px';
-
 
 export const Container = styled.div`
   width: 40%;
-  min-height: calc(100vh - 8vh);
+  height: 100vh;
   display: flex;
   justify-content: flex-start;
   align-items: flex-start;
-  padding: 4vh 3vh;
+  padding: 4vh;
 `;
 
-
 export const Card = styled.div`
-  width: 90vh;
-  max-width: 96%;
+  width: 100%;
+  height: 100%;
   background-color: var(--fundo-menu);
   color: var(--cor-texto);
   border-radius: 20px;
   padding: 3vh;
+
+  display: flex;
+  flex-direction: column;
 `;
 
 
@@ -29,9 +29,9 @@ export const Header = styled.div`
   align-items: center;
   gap: 2vh;
   padding-bottom: 2vh;
+  height: 16vh;
   border-bottom: 1px solid rgba(255,255,255,0.06);
 `;
-
 
 export const Avatar = styled.div`
   position: relative;
@@ -59,57 +59,55 @@ export const Avatar = styled.div`
   }
 `;
 
-
-
-
 export const HeaderText = styled.div`
   display: flex;
   flex-direction: column;
   gap: .8vh;
 
-
   h2 {
     margin: 0;
-    font-size: 2.6vh;
+    font-size: 20px;
     font-weight: bold;
     color: var(--cor-texto);
   }
   p {
     margin: 0;
-    font-size: 1.8vh;
-    opacity: .75;
+    font-size: 14px;
+    opacity: 0.8;
   }
 `;
 
-
 export const Form = styled.form`
-  padding-top: 2.5vh;
+  padding-top: 1.5vh;
   max-width: ${FORM_W};
   width: 100%;
-`;
 
+  display: flex;
+  flex-direction: column;
+
+  flex: 1;
+`;
 
 export const Field = styled.div`
   display: flex;
   flex-direction: column;
-  margin-bottom: 2vh;
+  margin-bottom: 1.5vh;
   max-width: ${FORM_W};
   width: 100%;
 `;
 
-
 export const Label = styled.label`
-  font-size: 1.8vh;
+  font-size: 16px;
   color: var(--cor-texto);
-  margin: 0 0 1vh 0;
-  opacity: .9;
+  margin-top: 1.5vh;
+  margin-bottom: 1vh;
+  opacity: 0.9;
 `;
-
 
 export const Input = styled.input`
   width: 100%;
   height: 7vh;
-  font-size: 2vh;
+  font-size: 16px;
   color: var(--cor-texto);
   background-color: var(--fundo-campo);
   border-radius: 20px;
@@ -123,22 +121,20 @@ export const Input = styled.input`
 
   &::placeholder {
     color: #999;
-    font-size: 1.9vh;
+    font-size: 16px;
   }
 `;
-
-
 
 export const InputWithIcon = styled.div`
   position: relative;
   max-width: ${FORM_W};
   width: 100%;
 
-
   ${Input} {
     padding-right: 6.5vh;
   }
 `;
+
 export const EyeIcon = styled.img.withConfig({
   shouldForwardProp: (prop) => prop !== '$disabled',
 })`
@@ -153,16 +149,16 @@ export const EyeIcon = styled.img.withConfig({
   pointer-events: ${(p) => (p.$disabled ? 'none' : 'auto')};
 `;
 
-
 export const ButtonRow = styled.div`
   display: flex;
   flex-direction: row;
-  padding-top: 2vh;
   gap: 1.5vh;
   justify-content: flex-end;
+
   max-width: ${FORM_W};
   width: 100%;
 
+  margin-top: auto;
 
   @media (max-width: 680px) {
     flex-direction: column;
@@ -170,11 +166,10 @@ export const ButtonRow = styled.div`
   }
 `;
 
-
 export const Button = styled.button.attrs((props) => ({
   type: props.type ?? 'button',
 }))`
-  font-size: 2vh;
+  font-size: 16px;
   color: var(--cor-texto);
   background-color: var(--fundo-campo);
   border-radius: 20px;
@@ -182,7 +177,6 @@ export const Button = styled.button.attrs((props) => ({
   padding: 0 3vh;
   cursor: pointer;
   border: none;
-
 
   &#cancelar:hover {
     background-color: var(--Importante-Urgente);
@@ -197,7 +191,6 @@ export const Button = styled.button.attrs((props) => ({
     background-color: var(--Importante-Urgente);
   }
 `;
-
 
 export const Loading = styled.div`
   padding: 2vh 0;
