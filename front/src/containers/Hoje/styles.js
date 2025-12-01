@@ -34,7 +34,6 @@ export const Conteudo = styled.div`
   gap: 12px;
 `;
 
-
 export const NomeLista = styled.h2`
   font-size: 1.4rem;
   font-weight: 600;

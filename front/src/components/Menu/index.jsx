@@ -46,7 +46,6 @@ function Menu() {
   const [submenuAberto, setSubmenuAberto] = useState('');
   const [submenuSelecionado, setSubmenuSelecionado] = useState({ pai: '', item: '' });
 
-  // 🔔 novo estado para controlar notificações não lidas
   const [temNotificacoes, setTemNotificacoes] = useState(false);
 
   const withVersion = (url, ver) => {
@@ -149,18 +148,16 @@ function Menu() {
   }, [iconUrl, imgVer]);
 
   const handleClick = (item, temRota = true) => {
-  if (submenuAberto === item) {
-    setSubmenuAberto('');
-    setSubmenuSelecionado({ pai: '', item: '' });
-    navigate('/home');
-  } else {
-    setSubmenuAberto(item);
-    setSubmenuSelecionado({ pai: '', item: '' });
-    if (temRota) navigate('/' + item);
-  }
-};
-
-
+    if (submenuAberto === item) {
+      setSubmenuAberto('');
+      setSubmenuSelecionado({ pai: '', item: '' });
+      navigate('/home');
+    } else {
+      setSubmenuAberto(item);
+      setSubmenuSelecionado({ pai: '', item: '' });
+      if (temRota) navigate('/' + item);
+    }
+  };
 
   const handleSubmenuClick = (pai, item, idLista = null) => {
     if (submenuSelecionado.pai === pai && submenuSelecionado.item === item) {
@@ -216,7 +213,6 @@ function Menu() {
       window.dispatchEvent(new Event('listasAtualizadas'));
       navigate(`/listas/${encodeURIComponent(novaLista.nomeLista)}`);
 
-      // 🔔 sempre que criar algo novo, marcar notificações não lidas
       setTemNotificacoes(true);
     } catch (err) {
       const msg = err?.response?.data?.error || 'Erro inesperado ao criar lista';
@@ -237,7 +233,6 @@ function Menu() {
   };
 
   const handleLembretes = () => {
-    // 🔔 ao abrir lembretes, marca notificações como lidas
     setTemNotificacoes(false);
     navigate('/lembretes');
   };
@@ -269,7 +264,7 @@ function Menu() {
           />
         </IconUsuario>
 
-        <InfoUsuario>
+        <InfoUsuario style={{cursor: 'default'}}>
           <NomeUsuario>{usuario.nome}</NomeUsuario>
           <Username>@{usuario.username}</Username>
         </InfoUsuario>

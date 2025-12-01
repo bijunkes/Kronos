@@ -8,10 +8,9 @@ function SubmenuEscolherAcao({ isOpen, onClose, onCriar, onSelecionar, anchorRef
     if (isOpen && anchorRef?.current) {
       const rect = anchorRef.current.getBoundingClientRect();
 
-      // posição exata do botão +
       setPos({
         top: rect.top + window.scrollY,
-        left: rect.right + window.scrollX + 8 // 8px de espaço
+        left: rect.right + window.scrollX + 8 
       });
     }
   }, [isOpen, anchorRef]);
@@ -20,7 +19,6 @@ function SubmenuEscolherAcao({ isOpen, onClose, onCriar, onSelecionar, anchorRef
 
   return (
     <>
-      {/* Fundo para fechar ao clicar fora */}
       <div
         onClick={onClose}
         style={{
@@ -30,10 +28,9 @@ function SubmenuEscolherAcao({ isOpen, onClose, onCriar, onSelecionar, anchorRef
         }}
       />
 
-      {/* Submenu */}
       <MenuContainer style={{ top: pos.top, left: pos.left }}>
         <MenuItem onClick={onCriar}>Criar atividade</MenuItem>
-        <MenuItem onClick={onSelecionar}>Selecionar existente</MenuItem>
+        <MenuItem onClick={onSelecionar}>Adicionar existente</MenuItem>
       </MenuContainer>
     </>
   );

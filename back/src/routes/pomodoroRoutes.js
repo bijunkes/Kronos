@@ -11,7 +11,6 @@ router.get("/:id/atividades", listarAtividadesSessao);
 router.put("/:id/tempo", registrarTempoPomodoro);
 router.patch("/:id/finalizar", finalizarSessaoPomodoro);
 router.patch("/:id/iniciar", iniciarSessaoPomodoro);
-// router.post("/pomodoro/:id/atividades", verificarToken, adicionarAtividadeSessao);
 router.get("/ultima", verificarToken, obterUltimaSessaoPomodoro);
 router.patch("/:id/atualizar-parcial", atualizarParcial);
 router.get("/sessoes", verificarToken, listarSessoes);

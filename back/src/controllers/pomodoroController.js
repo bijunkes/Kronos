@@ -1,14 +1,9 @@
 import pool from "../db.js";
 
-/**
- * ✅ Cria uma nova sessão Pomodoro se o usuário não tiver uma em andamento.
- * Retorna a existente se já houver (evita duplicação no banco).
- */
 export const criarSessaoPomodoro = async (req, res) => {
   const username = req.usuarioUsername;
 
   try {
-    // 1️⃣ Verifica se já existe uma sessão sem fim
     const [existente] = await pool.query(
       `SELECT idStatus FROM pomodoro 
        WHERE Usuarios_username = ? AND fim IS NULL 
@@ -24,13 +19,9 @@ export const criarSessaoPomodoro = async (req, res) => {
         message: ""
       });
     }
-
-    // 2️⃣ Caso não haja sessão, cria uma nova limpa
     const atividadesVinculadas = JSON.stringify([]);
     const duracaoFoco = JSON.stringify([25]);
     const ciclosFoco = JSON.stringify([4]);
-
-    // 1 ciclo padrão
 
     const [result] = await pool.query(
       `INSERT INTO pomodoro 
@@ -39,22 +30,18 @@ export const criarSessaoPomodoro = async (req, res) => {
       [username, atividadesVinculadas, duracaoFoco, ciclosFoco]
     );
 
-    console.log("🆕 Nova sessão criada:", result.insertId);
+    console.log("Nova sessão criada:", result.insertId);
 
     res.status(201).json({
       idStatus: result.insertId,
       message: ""
     });
   } catch (err) {
-    console.error("❌ Erro ao criar sessão Pomodoro:", err);
+    console.error("Erro ao criar sessão Pomodoro:", err);
     res.status(500).json({ error: "Falha ao criar sessão Pomodoro." });
   }
 };
 
-
-/**
- * ✅ Inicia sessão existente com as atividades e durações.
- */
 export const iniciarSessaoPomodoro = async (req, res) => {
   const { id } = req.params;
   const {
@@ -68,7 +55,6 @@ export const iniciarSessaoPomodoro = async (req, res) => {
   } = req.body;
 
   try {
-    // Busca os valores atuais da sessão
     const [atual] = await pool.query(
       `SELECT duracaoFoco, ciclosFoco, atividadesVinculadas 
        FROM pomodoro WHERE idStatus = ?`,
@@ -84,18 +70,15 @@ export const iniciarSessaoPomodoro = async (req, res) => {
     let atividadesVinculadas;
 
     if (atividades.length === 0) {
-      // 🔹 Caso sem atividades, usa os valores do front ou mantém os existentes
       duracaoFoco = duracaoFocoFront != null ? JSON.stringify([duracaoFocoFront]) : atual[0].duracaoFoco || JSON.stringify([25]);
       ciclosFoco = ciclosFocoFront != null ? JSON.stringify([ciclosFocoFront]) : atual[0].ciclosFoco || JSON.stringify([4]);
-      atividadesVinculadas = JSON.stringify([]); // Sem atividades
+      atividadesVinculadas = JSON.stringify([]);
     } else {
-      // 🔹 Caso com atividades, monta arrays com os valores de cada atividade
       duracaoFoco = JSON.stringify(atividades.map(a => a.foco ?? 25));
       ciclosFoco = JSON.stringify(atividades.map(a => a.ciclos ?? 1));
       atividadesVinculadas = JSON.stringify(atividades.map(a => a.idAtividade));
     }
 
-    // Atualiza a sessão
     await pool.query(
       `UPDATE pomodoro
        SET duracaoFoco = ?, duracaoIntervaloCurto = ?, duracaoIntervaloLongo = ?,
@@ -114,7 +97,6 @@ export const iniciarSessaoPomodoro = async (req, res) => {
       ]
     );
 
-    // Retorna sessão atualizada
     const [sessaoAtualizada] = await pool.query(
       `SELECT * FROM pomodoro WHERE idStatus = ?`,
       [id]
@@ -126,18 +108,11 @@ export const iniciarSessaoPomodoro = async (req, res) => {
     });
 
   } catch (err) {
-    console.error("❌ Erro ao iniciar sessão Pomodoro:", err);
+    console.error("Erro ao iniciar sessão Pomodoro:", err);
     res.status(500).json({ error: "Erro ao iniciar sessão Pomodoro." });
   }
 };
 
-
-
-
-/**
- * ✅ Retorna atividades de uma sessão específica.
- * Corrigido para suportar formato antigo e novo.
- */
 export const listarAtividadesSessao = async (req, res) => {
   const idSessao = req.params.id;
 
@@ -151,7 +126,6 @@ export const listarAtividadesSessao = async (req, res) => {
 
     const row = rows[0];
 
-    // Helper
     const toMinutes = (val, def = 25) => {
       if (val == null) return def;
       if (typeof val === "number") return val;
@@ -174,7 +148,7 @@ export const listarAtividadesSessao = async (req, res) => {
     }
 
     if (!Array.isArray(atividadesSalvas) || atividadesSalvas.length === 0) {
-      return res.json([]); // nenhuma atividade
+      return res.json([]);
     }
 
     const ids = atividadesSalvas.map(a =>
@@ -188,7 +162,6 @@ export const listarAtividadesSessao = async (req, res) => {
 
     let duracaoFocoArr = JSON.parse(row.duracaoFoco || "[]"); let ciclosFocoArr = JSON.parse(row.ciclosFoco || "[]");
 
-    // Defaults
     if (!Array.isArray(duracaoFocoArr) || duracaoFocoArr.length === 0) duracaoFocoArr = ids.map(() => 25); if (!Array.isArray(ciclosFocoArr) || ciclosFocoArr.length === 0) ciclosFocoArr = ids.map(() => 1);
 
     const atividades = ids.map((id, i) => {
@@ -204,29 +177,23 @@ export const listarAtividadesSessao = async (req, res) => {
 
     res.json(atividades);
   } catch (err) {
-    console.error("❌ Erro ao listar atividades:", err);
+    console.error("Erro ao listar atividades:", err);
     res.status(500).json({ error: "Erro ao listar atividades" });
   }
 };
 
-
-/**
- * ✅ Resto dos endpoints — permanecem iguais
- */
 export const salvarAtividadesSessao = async (req, res) => {
-  const { atividades } = req.body; // array de IDs
+  const { atividades } = req.body;
   const idSessao = req.params.id;
 
   try {
     const atividadesJSON = JSON.stringify(atividades || []);
 
-    // 1️⃣ Atualiza a sessão
     await pool.query(
       `UPDATE pomodoro SET atividadesVinculadas = ? WHERE idStatus = ?`,
       [atividadesJSON, idSessao]
     );
 
-    // 2️⃣ Vincula as atividades à sessão correta
     if (atividades && atividades.length > 0) {
       await pool.query(
         `UPDATE atividades SET Pomodoro_idStatus = ? WHERE idAtividade IN (?)`,
@@ -241,7 +208,6 @@ export const salvarAtividadesSessao = async (req, res) => {
     res.status(500).json({ error: "Erro ao salvar atividades" });
   }
 };
-
 
 export const registrarTempoPomodoro = async (req, res) => {
   const { idSessao } = req.params;
@@ -308,47 +274,6 @@ export const finalizarSessaoPomodoro = async (req, res) => {
   }
 };
 
-/*
-export const adicionarAtividadeSessao = async (req, res) => {
-  const { id } = req.params;
-  const { idAtividade } = req.body;
-
-  try {
-    const [result] = await pool.query(
-      `SELECT atividadesVinculadas FROM pomodoro WHERE idStatus = ?`,
-      [id]
-    );
-
-    let atuais = [];
-    try {
-      atuais = JSON.parse(result[0]?.atividadesVinculadas || "[]");
-    } catch {
-      atuais = [];
-    }
-
-    if (typeof atuais[0] === "number") {
-      atuais = atuais.map(num => ({ idAtividade: num }));
-    }
-
-    if (!atuais.some(a => a.idAtividade === idAtividade)) {
-      atuais.push({ idAtividade });
-    }
-
-    await pool.query(
-      `UPDATE pomodoro SET atividadesVinculadas = ? WHERE idStatus = ?`,
-      [JSON.stringify(atuais), id]
-    );
-
-    res.json({
-      message: "Atividade vinculada com sucesso!",
-      atividades: atuais
-    });
-  } catch (err) {
-    console.error("❌ Erro ao adicionar atividade:", err);
-    res.status(500).json({ error: "Erro ao vincular atividade à sessão." });
-  }
-};
-*/
 export const obterUltimaSessaoPomodoro = async (req, res) => {
   const username = req.usuarioUsername;
 
@@ -420,7 +345,6 @@ export const atualizarParcial = async (req, res) => {
   }
 };
 
-
 export const listarSessoes = async (req, res) => {
   const username = req.usuarioUsername;
 
@@ -439,5 +363,3 @@ export const listarSessoes = async (req, res) => {
     res.status(500).json({ error: "Erro ao listar sessões" });
   }
 };
-
-

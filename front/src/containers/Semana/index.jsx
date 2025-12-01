@@ -5,8 +5,7 @@ import {
   DiaColuna,
   DiaHeader,
   DiaTitulo,
-  BotaoAdd,
-  ListaAtividades
+  BotaoAdd
 } from "./styles.js";
 import { listarTodasAtividades, listarListas, obterUltimaSessaoPomodoro, salvarAtividadesSessao } from "../../services/api.js";
 import api from "../../services/api.js";
@@ -79,46 +78,45 @@ function Semana() {
   }, []);
 
   const concluirAtividade = async (atividade) => {
-  try {
-    if (!listaPadrao?.idLista) {
-      alert("Lista padrão 'Atividades' não encontrada!");
-      return;
-    }
+    try {
+      if (!listaPadrao?.idLista) {
+        alert("Lista padrão 'Atividades' não encontrada!");
+        return;
+      }
 
-    const prazoFormatado = atividade.prazoAtividade
-      ? typeof atividade.prazoAtividade === "string"
-        ? atividade.prazoAtividade
-        : String(atividade.prazoAtividade)
-      : null;
-
-    const novoStatus = atividade.statusAtividade === 1 ? 0 : 1;
-    const novaConclusao =
-      novoStatus === 1
-        ? new Date().toISOString().slice(0, 19).replace("T", " ")
+      const prazoFormatado = atividade.prazoAtividade
+        ? typeof atividade.prazoAtividade === "string"
+          ? atividade.prazoAtividade
+          : String(atividade.prazoAtividade)
         : null;
 
-    // 🔥 NOVO: remover do pomodoro se estiver lá
-    if (atividade.Pomodoro_idStatus && novoStatus === 1) {
-      await removerAtividadeDoPomodoro(atividade.idAtividade);
-    }
+      const novoStatus = atividade.statusAtividade === 1 ? 0 : 1;
+      const novaConclusao =
+        novoStatus === 1
+          ? new Date().toISOString().slice(0, 19).replace("T", " ")
+          : null;
+
+      if (atividade.Pomodoro_idStatus && novoStatus === 1) {
+        await removerAtividadeDoPomodoro(atividade.idAtividade);
+      }
 
 
       await api.put(`/atividades/${atividade.idAtividade}`, {
-  nomeAtividade: atividade.nomeAtividade,
-  descricaoAtividade: atividade.descricaoAtividade || null,
-  prazoAtividade: prazoFormatado,
-  statusAtividade: novoStatus,
-  dataConclusao: novaConclusao,
-  ListaAtividades_idLista:
-    atividade.ListaAtividades_idLista || listaPadrao.idLista,
-  ListaAtividades_Usuarios_username:
-    atividade.ListaAtividades_Usuarios_username ||
-    atividade.Usuarios_username ||
-    listaPadrao.Usuarios_username ||
-    listaPadrao.Usuarios?.username ||
-    "admin",
-  Pomodoro_idStatus: null, // 🔥 NOVO
-});
+        nomeAtividade: atividade.nomeAtividade,
+        descricaoAtividade: atividade.descricaoAtividade || null,
+        prazoAtividade: prazoFormatado,
+        statusAtividade: novoStatus,
+        dataConclusao: novaConclusao,
+        ListaAtividades_idLista:
+          atividade.ListaAtividades_idLista || listaPadrao.idLista,
+        ListaAtividades_Usuarios_username:
+          atividade.ListaAtividades_Usuarios_username ||
+          atividade.Usuarios_username ||
+          listaPadrao.Usuarios_username ||
+          listaPadrao.Usuarios?.username ||
+          "admin",
+        Pomodoro_idStatus: null,
+      });
 
 
       await carregarAtividades();
@@ -138,28 +136,28 @@ function Semana() {
     atividades.filter((a) => a.prazoIso === iso);
 
   const removerAtividadeDoPomodoro = async (atividadeId) => {
-  try {
-    const sessao = await obterUltimaSessaoPomodoro();
-    if (!sessao || !sessao.idStatus) return;
+    try {
+      const sessao = await obterUltimaSessaoPomodoro();
+      if (!sessao || !sessao.idStatus) return;
 
-    const idSessao = sessao.idStatus;
-    const atuais = Array.isArray(sessao.atividadesVinculadas)
-      ? sessao.atividadesVinculadas
-      : [];
+      const idSessao = sessao.idStatus;
+      const atuais = Array.isArray(sessao.atividadesVinculadas)
+        ? sessao.atividadesVinculadas
+        : [];
 
-    const filtradas = atuais.filter((id) => id !== atividadeId);
+      const filtradas = atuais.filter((id) => id !== atividadeId);
 
-    await salvarAtividadesSessao(
-      idSessao,
-      filtradas.map((id) => ({ idAtividade: id }))
-    );
+      await salvarAtividadesSessao(
+        idSessao,
+        filtradas.map((id) => ({ idAtividade: id }))
+      );
 
-    return true;
-  } catch (err) {
-    console.error("Erro ao remover atividade do Pomodoro:", err);
-    return false;
-  }
-};
+      return true;
+    } catch (err) {
+      console.error("Erro ao remover atividade do Pomodoro:", err);
+      return false;
+    }
+  };
 
 
   return (
@@ -168,7 +166,7 @@ function Semana() {
         {dias.map((d) => (
           <DiaColuna key={d.iso}>
             <DiaHeader>
-              <DiaTitulo style={{cursor: 'default'}}>
+              <DiaTitulo style={{ cursor: 'default' }}>
                 {d.nome.charAt(0).toUpperCase() + d.nome.slice(1)}
               </DiaTitulo>
 
@@ -235,8 +233,8 @@ function Semana() {
                         }}
                         onClick={() => concluirAtividade(a)}
                       >
-                        <span style={{fontSize: '20px'}}
-                        className="material-symbols-outlined">
+                        <span style={{ fontSize: '20px' }}
+                          className="material-symbols-outlined">
                           {a.statusAtividade === 1
                             ? "radio_button_checked"
                             : "radio_button_unchecked"}

@@ -343,25 +343,38 @@ function Pomodoro() {
   const calcularDuracoesPorCiclo = (ativs) => {
     const sequencia = [];
 
-    if (!ativs || ativs.length === 0) {
-      for (let i = 0; i < config.ciclos; i++) {
-        sequencia.push({ tipo: "foco", duracao: config.foco });
-        if (i < config.ciclos - 1) sequencia.push({ tipo: "curto", duracao: config.curto });
-      }
-      sequencia.push({ tipo: "longo", duracao: config.longo });
-      return sequencia;
-    }
+    const totalCiclos = ativs && ativs.length > 0
+      ? Math.max(...ativs.map(a => a.ciclos || 1))
+      : config.ciclos;
 
-    const maxCiclos = Math.max(...ativs.map(a => a.ciclos || 1));
-    for (let i = 0; i < maxCiclos; i++) {
-      let duracaoCiclo = 0;
-      ativs.forEach(a => {
-        if (i < (a.ciclos || 1)) duracaoCiclo += (a.foco || 25) * 60;
-      });
-      sequencia.push({ tipo: "foco", duracao: duracaoCiclo });
-      if (i < maxCiclos - 1) sequencia.push({ tipo: "curto", duracao: config.curto });
+    for (let i = 0; i < totalCiclos; i++) {
+      let duracaoFoco = 0;
+
+      if (!ativs || ativs.length === 0) {
+        duracaoFoco = config.foco;
+      } else {
+        ativs.forEach(a => {
+          if (i < (a.ciclos || 1)) {
+            duracaoFoco += (a.foco || 25) * 60;
+          }
+        });
+      }
+
+      sequencia.push({ tipo: "foco", duracao: duracaoFoco });
+
+      const cicloNumero = i + 1;
+      const ehUltimoCiclo = cicloNumero === totalCiclos;
+
+      if (cicloNumero % 4 === 0) {
+        sequencia.push({ tipo: "longo", duracao: config.longo });
+
+      } else if (ehUltimoCiclo) {
+        sequencia.push({ tipo: "curto", duracao: config.curto });
+
+      } else {
+        sequencia.push({ tipo: "curto", duracao: config.curto });
+      }
     }
-    sequencia.push({ tipo: "longo", duracao: config.longo });
 
     return sequencia;
   };

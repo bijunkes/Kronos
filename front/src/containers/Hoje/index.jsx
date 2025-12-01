@@ -170,10 +170,10 @@ function Hoje() {
         </Header>
 
         <Conteudo>
-          <AreaAtividades>
+          <AreaAtividades style={{alignItems: 'center'}}>
             {atividadesFiltradas.length === 0 && (
-              <div style={{ padding: '1rem', color: '#888' }}>
-                Nenhuma atividade para hoje.
+              <div style={{color: '#999', cursor: 'default', fontSize: '16px'}}>
+                Sem atividades
               </div>
             )}
             {atividadesFiltradas.map((a, index) => {
