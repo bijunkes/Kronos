@@ -23,7 +23,12 @@ import {
   obterUltimaSessaoPomodoro,
   salvarAtividadesSessao
 } from '../../services/api.js';
+import api from "../../services/api.js";
+
 import ModalCriarAtividade from '../ModalCriarAtividade/index.jsx';
+import ModalEscolherAcao from '../ModalEscolher/index.jsx';
+import ModalTodasAtividades from '../ModalTodasAtividades/index.jsx';
+
 import AtividadeSelecionada from '../AtividadeSelecionada/index.jsx';
 import { showConfirmToast } from '../../components/showToast.jsx';
 
@@ -39,6 +44,12 @@ function Lista() {
 
   const [editandoNome, setEditandoNome] = useState(false);
   const [novoNome, setNovoNome] = useState(nomeLista);
+
+  const [mostrarEscolha, setMostrarEscolha] = useState(false);
+  const [mostrarModalSelecionar, setMostrarModalSelecionar] = useState(false);
+  const [mostrarModalTodas, setMostrarModalTodas] = useState(false);
+  const [todasAtividades, setTodasAtividades] = useState([]);
+
 
   const ordenarAtividades = (lista) => {
     return [...lista].sort((a, b) => {
@@ -68,6 +79,14 @@ function Lista() {
       setAtividades([]);
     }
   };
+
+  useEffect(() => {
+    if (mostrarModalTodas) {
+      api.get("/atividades")
+        .then(res => setTodasAtividades(res.data))
+        .catch(err => console.log(err));
+    }
+  }, [mostrarModalTodas]);
 
   useEffect(() => {
     const init = async () => {
@@ -107,6 +126,20 @@ function Lista() {
       console.error('Erro ao atualizar nome da lista', err);
       alert('Não foi possível atualizar o nome da lista');
       setNovoNome(nomeLista);
+    }
+  };
+
+  const handleSelecionarAtividade = async (atividade) => {
+    try {
+      await atualizarAtividade(atividade.idAtividade, {
+        ...atividade,
+        ListaAtividades_idLista: idLista,
+      });
+
+      await carregarAtividades(idLista);
+      setMostrarModalTodas(false);
+    } catch (e) {
+      console.error("Erro ao mover atividade:", e);
     }
   };
 
@@ -197,7 +230,7 @@ function Lista() {
 
           <Botoes>
             <span className="material-symbols-outlined" id="delete" onClick={handleExcluir}>delete</span>
-            <span className="material-symbols-outlined" id="add" onClick={() => setMostrarModal(true)}>add</span>
+            <span className="material-symbols-outlined" id="add" onClick={() => setMostrarEscolha(true)}>add</span>
           </Botoes>
         </Header>
 
@@ -235,12 +268,33 @@ function Lista() {
         </Pesquisar>
       </ContainerLista>
 
+      <ModalEscolherAcao
+        isOpen={mostrarEscolha}
+        onClose={() => setMostrarEscolha(false)}
+
+        onCriar={() => {
+          setMostrarEscolha(false);
+          setMostrarModal(true);
+        }}
+
+        onSelecionar={() => {
+          setMostrarEscolha(false);
+          setMostrarModalTodas(true);
+        }}
+      />
+
       <ModalCriarAtividade
         isOpen={mostrarModal}
         onClose={() => setMostrarModal(false)}
         onAtividadeCriada={handleAtividadeCriada}
         origem="lista"
         listaId={idLista}
+      />
+
+      <ModalTodasAtividades
+        aberto={mostrarModalTodas}
+        onFechar={() => setMostrarModalTodas(false)}
+        onSelecionarAtividade={handleSelecionarAtividade}
       />
 
       <Parte2>
