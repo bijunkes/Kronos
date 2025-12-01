@@ -13,7 +13,12 @@ import {
 
 import { listarAtividades } from "../../services/api";
 
-export default function ModalTodasAtividades({ aberto, onFechar, onSelecionarAtividade }) {
+export default function ModalTodasAtividades({
+    aberto,
+    onFechar,
+    onSelecionarAtividade,
+    atividadesJaSelecionadas = []
+}) {
     const [atividades, setAtividades] = useState([]);
     const [filtro, setFiltro] = useState("");
 
@@ -34,9 +39,16 @@ export default function ModalTodasAtividades({ aberto, onFechar, onSelecionarAti
 
     if (!aberto) return null;
 
-    const filtradas = atividades.filter(a =>
-        a.nomeAtividade.toLowerCase().includes(filtro.toLowerCase())
+    // 🔥 Remover do modal as atividades já selecionadas
+    const idsJaSelecionados = new Set(
+        atividadesJaSelecionadas.map(a => a.idAtividade)
     );
+
+    const filtradas = atividades
+        .filter(a => !idsJaSelecionados.has(a.idAtividade)) // ← remove já adicionadas
+        .filter(a =>
+            a.nomeAtividade.toLowerCase().includes(filtro.toLowerCase())
+        );
 
     return (
         <Overlay>
@@ -64,6 +76,12 @@ export default function ModalTodasAtividades({ aberto, onFechar, onSelecionarAti
                                 </Prazo>
                             </Atividade>
                         ))}
+
+                        {filtradas.length === 0 && (
+                            <p style={{ textAlign: "center", opacity: 0.6 }}>
+                                Nenhuma atividade disponível
+                            </p>
+                        )}
                     </AreaAtividades>
                 </Conteudo>
 
@@ -83,4 +101,3 @@ export default function ModalTodasAtividades({ aberto, onFechar, onSelecionarAti
         </Overlay>
     );
 }
-

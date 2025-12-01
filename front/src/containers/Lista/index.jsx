@@ -1,5 +1,5 @@
 import { useParams, useNavigate } from 'react-router-dom';
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import {
   Background,
   ContainerLista,
@@ -25,8 +25,9 @@ import {
 } from '../../services/api.js';
 import api from "../../services/api.js";
 
+import SubmenuEscolherAcao from "../SubmenuEscolherAcao/index.jsx";
+
 import ModalCriarAtividade from '../ModalCriarAtividade/index.jsx';
-import ModalEscolherAcao from '../ModalEscolher/index.jsx';
 import ModalTodasAtividades from '../ModalTodasAtividades/index.jsx';
 
 import AtividadeSelecionada from '../AtividadeSelecionada/index.jsx';
@@ -50,6 +51,8 @@ function Lista() {
   const [mostrarModalTodas, setMostrarModalTodas] = useState(false);
   const [todasAtividades, setTodasAtividades] = useState([]);
 
+  const [openMenu, setOpenMenu] = useState(false);
+  const plusRef = useRef(null);
 
   const ordenarAtividades = (lista) => {
     return [...lista].sort((a, b) => {
@@ -230,7 +233,15 @@ function Lista() {
 
           <Botoes>
             <span className="material-symbols-outlined" id="delete" onClick={handleExcluir}>delete</span>
-            <span className="material-symbols-outlined" id="add" onClick={() => setMostrarEscolha(true)}>add</span>
+            <span
+              className="material-symbols-outlined"
+              id="add"
+              ref={plusRef}
+              onClick={() => setOpenMenu((prev) => !prev)}
+            >
+              add
+            </span>
+
           </Botoes>
         </Header>
 
@@ -268,19 +279,18 @@ function Lista() {
         </Pesquisar>
       </ContainerLista>
 
-      <ModalEscolherAcao
-        isOpen={mostrarEscolha}
-        onClose={() => setMostrarEscolha(false)}
-
+      <SubmenuEscolherAcao
+        isOpen={openMenu}
+        onClose={() => setOpenMenu(false)}
         onCriar={() => {
-          setMostrarEscolha(false);
+          setOpenMenu(false);
           setMostrarModal(true);
         }}
-
         onSelecionar={() => {
-          setMostrarEscolha(false);
+          setOpenMenu(false);
           setMostrarModalTodas(true);
         }}
+        anchorRef={plusRef}
       />
 
       <ModalCriarAtividade
