@@ -36,11 +36,7 @@ export const Intervalo = styled.div`
   padding: 1.5vh;
   border-radius: 16px;
   cursor: default;
-  
-  /* 
-    Use o $ativo (com cifrão) para aplicar estilos condicionais
-    sem que o atributo seja passado ao DOM:
-  */
+ 
   background-color: ${({ $ativo }) =>
     $ativo ? 'var(--fundo-menu-ativo)' : 'transparent'};
 
