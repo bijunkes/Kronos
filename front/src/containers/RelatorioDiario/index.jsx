@@ -7,7 +7,8 @@ import {
     RelatorioKanban,
     Icones,
     BoxPomodoro,
-    PainelTarefas
+    PainelTarefas,
+    Background
 } from './style'
 import { listarAtividadesEmKanban, listarAtividades, listarAtividadesEisenPorClassificacao, listarSessoes, getPerfil } from "../../services/api.js";
 
@@ -30,7 +31,7 @@ function RelatorioDiario() {
     const buscarAtividadesKanban = async () => {
 
         const perfil = await getPerfil();
-        
+
         try {
             const todasAtividadesEmKanban = await listarAtividadesEmKanban();
             const todasAtividades = await listarAtividades();
@@ -144,7 +145,7 @@ function RelatorioDiario() {
         const todasAtividades = await listarAtividades();
         const perfil = await getPerfil();
         listaMatriz.forEach(atv => {
-            const atividade = todasAtividades.find( a => a.Eisenhower_idAtividadeEisenhower == atv.idAtividadeEisenhower)
+            const atividade = todasAtividades.find(a => a.Eisenhower_idAtividadeEisenhower == atv.idAtividadeEisenhower)
             if (!!atividade && atv.dataAlteracao.substring(0, 10) == capturaData() && atividade.Usuarios_username == perfil.username) {
 
                 console.log(`contando...`);
@@ -192,7 +193,7 @@ function RelatorioDiario() {
 
 
     return (
-        <>
+        <Background>
             <Container>
                 <Titulo>Relatório Diário</Titulo>
                 <RelatorioKanban>Atividades do Kanban <Icones className="material-symbols-outlined" title={textoKanban}>
@@ -252,8 +253,9 @@ function RelatorioDiario() {
                     <NaoImportanteNaoUrgente style={{ width: `${tamanhos[4]}vw` }} title='Não importante e Não urgente'>{tamanhos[4] / 5}</NaoImportanteNaoUrgente>
                 </Classificacao>
             </Container>
-        </>
-    )
+        </Background>
+    );
 }
+
 
 export default RelatorioDiario;
