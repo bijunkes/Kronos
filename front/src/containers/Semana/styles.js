@@ -1,49 +1,32 @@
-
 import styled from 'styled-components';
 
 export const Background = styled.div`
   width: 100%;
   min-height: 100vh;
   background: var(--fundo);
-  overflow: hidden;
+  overflow: visible;
   display: flex;
-`;
-
-export const ListaAtividades = styled.div`
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-  justify-content: flex-start;
-  align-items: center;
-  color: #999;
-  margin-top: 1vh;
-  overflow-y: auto;
-  overflow-x: hidden;
-  width: calc(100% + 8px);  
-  margin-right: -8px;  
 `;
 
 export const SemanaScroll = styled.div`
   margin-left: var(--sidebar-width);
-  padding: 4vh; 
+  padding: 4vh;
   box-sizing: border-box;
   display: flex;
   align-items: flex-start;
   gap: 2.5vh;
-  height: calc(100vh - 2vh);
+  height: calc(100vh - 4vh);
   overflow-x: auto;
-  overflow-y: hidden;
+  overflow-y: visible;
   scroll-behavior: smooth;
 
   &::-webkit-scrollbar {
     height: 6px;
   }
-
   &::-webkit-scrollbar-thumb {
     background-color: rgba(255, 255, 255, 0.15);
     border-radius: 10px;
   }
-
   &::-webkit-scrollbar-thumb:hover {
     background-color: rgba(255, 255, 255, 0.25);
     cursor: pointer;
@@ -51,7 +34,7 @@ export const SemanaScroll = styled.div`
 `;
 
 export const DiaColuna = styled.div`
-  padding: 2vh 3vh 3vh 3vh;
+padding: 2vh 0 2vh 3vh;
   min-width: 50vh;
   border-radius: 20px;
   background-color: var(--fundo-menu);
@@ -59,9 +42,12 @@ export const DiaColuna = styled.div`
   flex-direction: column;
   box-sizing: border-box;
   flex-shrink: 0;
-  overflow: hidden;
-  height: 92vh;
-  overflow-y: auto;
+
+  height: 100%;
+  max-height: 100%;
+
+  overflow: visible;
+  scroll-behavior: smooth;
 `;
 
 export const DiaHeader = styled.div`
@@ -94,16 +80,26 @@ export const BotaoAdd = styled.span`
   }
 `;
 
-export const AtividadesDia = styled.div`
+export const ListaDoDia = styled.div`
+  margin-top: 2vh;
   flex: 1;
   display: flex;
   flex-direction: column;
-  gap: 1vh;
+  width: 100%;
   overflow-y: auto;
   overflow-x: hidden;
-  padding-right: 8px;
-  width: 100%; 
-  height: 7vh;
+  box-sizing: border-box;
+  padding-right: 3vh;
+
+  &::-webkit-scrollbar {
+    width: 6px;
+  }
+  &::-webkit-scrollbar-thumb {
+    background-color: rgba(255, 255, 255, 0.15);
+    border-radius: 10px;
+  }
+  &::-webkit-scrollbar-thumb:hover {
+    background-color: rgba(255, 255, 255, 0.25);
+  }
 `;
-    
 

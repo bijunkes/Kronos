@@ -86,12 +86,18 @@ function RelatorioDiario() {
             setTamanhos(novoTamanho);
         };
 
-        setContAtvs(contagemAtividadesConcluidas())
+        const carregarContagem = async () => {
+            const valor = await contagemAtividadesConcluidas();
+            setContAtvs(valor);
+        };
+
+        carregarContagem();
+
 
         buscarAtividadesKanban();
         carregarTamanhos();
-
     }, []);
+
     const contagemAtividadesConcluidas = async () => {
         const todasAtividades = await listarAtividades();
         let cont = 0;
@@ -191,6 +197,16 @@ function RelatorioDiario() {
         carregarSessoesHoje();
     }, []);
 
+    let feitas = 0;
+    let total = 0;
+    let progresso = 0;
+
+    if (typeof contAtvs === "string" && contAtvs.includes("|")) {
+        const partes = contAtvs.split("|");
+        feitas = Number(partes[0]);
+        total = Number(partes[0]) + Number(partes[1]);
+        progresso = total > 0 ? feitas / total : 0;
+    }
 
     return (
         <Background>
@@ -204,7 +220,10 @@ function RelatorioDiario() {
                     <span style={{ display: 'flex' }}>Progresso <Icones className="material-symbols-outlined" title={textoProgresso}>
                         info
                     </Icones></span>
-                    <ProgressoBox>{contAtvs}</ProgressoBox>
+                    <ProgressoBox progresso={progresso}>
+                        {contAtvs}
+                    </ProgressoBox>
+
                 </Progresso>
                 <Pomodoro>
                     <span style={{ display: 'flex' }}>Pomodoro <Icones className="material-symbols-outlined" title={textoPomodoro}>

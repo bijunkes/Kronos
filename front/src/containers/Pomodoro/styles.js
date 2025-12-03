@@ -79,8 +79,8 @@ export const Cronometro = styled.div`
 export const Circulo = styled.div`
   display: flex;
   background-color: var(--cinza-claro);
-  width: 33vh;
-  height: 33vh;
+  width: 32vh;
+  height: 32vh;
   border-radius: 100%;
   font-size: 26px;
   align-items: center;

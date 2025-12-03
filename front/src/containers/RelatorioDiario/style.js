@@ -56,7 +56,7 @@ export const Data = styled.div`
     height: 6vh;
     background-color: #282828;
     border-radius: 16px;
-    font-size: 18px;
+    font-size: 16px;
     color: #FFFFFF;
     font-family: "Roboto", sans-serif;
     font-optical-sizing: auto;
@@ -141,9 +141,8 @@ export const PainelTarefas = styled.div`
   &::-webkit-scrollbar-thumb:hover {
     background-color: rgba(255, 255, 255, 0.25);
   }
-
-
 `;
+
 export const Pendente = styled(QuadroKanban)`
     grid-area: pendente;
 `;
@@ -153,57 +152,103 @@ export const Andamento = styled(QuadroKanban)`
 export const Concluido = styled(QuadroKanban)`
     grid-area: concluido;
 `;
+
 export const Classificacao = styled.div`
     grid-area: classificacao;
     width: 100%;
     height: 30vh;
     background-color: #282828;
     border-radius: 20px;
+
     display: flex;
     flex-direction: column;
     padding: 2.5vh;
     gap: 1.5vh;
     justify-content: center;
     align-items: start;
+
     font-size: 20px;
     color: #FFFFFF;
     font-family: "Roboto", sans-serif;
     font-optical-sizing: auto;
     font-weight: bold;
     font-style: normal;
-    font-variation-settings:
-    "wdth" 100;
+    font-variation-settings: "wdth" 100;
+
+    overflow-x: auto;
+    overflow-y: hidden;
+    flex-wrap: nowrap;
+
+    &::-webkit-scrollbar {
+        height: 5px;
+    }
+
+    &::-webkit-scrollbar-track {
+        background: var(--fundo-menu);
+        border-radius: 10px;
+    }
+
+    &::-webkit-scrollbar-thumb {
+        background-color: var(--cinza-claro);
+        border-radius: 10px;
+    }
+
+    &::-webkit-scrollbar-thumb:hover{
+      cursor: pointer;
+    }
 `;
+
 export const ProgressoBox = styled.div`
     width: 70%;
     height: 70%;
-    display:flex;
+    display: flex;
     justify-content: center;
     align-items: center;
-    background-color: #353535;
     position: relative;
+
     left: 50%;
-    top: 50%;
+    top: 48%;
     transform: translate(-50%, -50%);
-    font-size: 60px;
+
+    font-size: 52px;
     color: #FFFFFF;
     font-family: "Roboto", sans-serif;
-    font-optical-sizing: auto;
     font-weight: bold;
-    font-style: normal;
-    font-variation-settings:
-    "wdth" 100;
+
+    border-radius: 50%;
+    background-color: #353535;
+    z-index: 1;
+
+    &::before {
+        content: "";
+        position: absolute;
+        inset: 0;
+        padding: 6px;
+        border-radius: 50%;
+        background: ${({ progresso }) => `
+            conic-gradient(
+                #ffffff ${progresso * 360}deg,
+                #353535 ${progresso * 360}deg
+            )
+        `};
+        -webkit-mask: 
+            radial-gradient(farthest-side, transparent calc(100% - 5px), black 0);
+        mask:
+            radial-gradient(farthest-side, transparent calc(100% - 5px), black 0);
+        transition: background 0.6s ease-in-out;
+    }
 `;
+
 export const BoxTitulo = styled.div`
     position: relative;
     display: flex;
     align-items: center;
     justify-content: center;
     align-self: center;
-    height: 6vh;
+    height: 7vh;
     width: 100%;
     font-size: 20px;
-    background-color: rgba(255, 255, 255, 0.1);
+    background-color: var(--cinza-claro);
     border-radius: 16px;
     margin-bottom: 5%;
     color: rgba(255, 255, 255, 1);
@@ -211,15 +256,13 @@ export const BoxTitulo = styled.div`
 export const BoxTarefas = styled.div`
     height: 6vh;
     width: 100%;
-    background-color: rgba(255, 255, 255, 0.1);
-    opacity: 0.6;
-    font-size: 18px;
+    background-color: rgba(255, 255, 255, 0.06);
+    font-size: 16px;
     border-radius: 16px;
     position: relative;
     display: flex;
     justify-content: center;
-    padding: 1.5rem;
-    flex-wrap: wrap; 
+    padding: 2vh;
 `;
 export const BoxNomeTarefa = styled.div`
     position: relative;
@@ -235,11 +278,14 @@ export const NomeTarefa = styled.h2`
     align-self: center;
     color: rgba(255, 255, 255, 1);
     font-size: 18px;
-    width: 10vw;
+    width: 100%;
+    height: 100%;
     white-space: normal;
-word-wrap: break-word;
-overflow-wrap: break-word;
+    word-wrap: break-word;
+    overflow-wrap: break-word;
+    font-weight: 100;
 `;
+
 export const QuadroEisen = styled.div`
     height: 1vh;
     width: 1vh;
@@ -251,20 +297,8 @@ export const QuadroEisen = styled.div`
     align-items: center;
     justify-content: flex-end;
     color: #FFFFFF;
-    &::-webkit-scrollbar {
-    width: 5px;
-  }
-
-  &::-webkit-scrollbar-track {
-    background: var(--fundo-menu);
-    border-radius: 10px;
-  }
-
-  &::-webkit-scrollbar-thumb {
-    background-color: var(--fundo-menu-ativo);
-    border-radius: 10px;
-  }
 `;
+
 export const ImportanteUrgente = styled(QuadroEisen)`
   background-color: #B3261E;
 `;
@@ -280,8 +314,8 @@ export const NaoImportanteUrgente = styled(QuadroEisen)`
 
 export const NaoImportanteNaoUrgente = styled(QuadroEisen)`
   background-color: #34C759;
-
 `;
+
 export const Icones = styled.span`
     position: relative;
     left: 1vh;

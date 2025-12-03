@@ -25,12 +25,12 @@ function RelatorioSemanal() {
         4: 0
     });
     const [contAtvs, setContAtvs] = useState('');
-    
+
 
     const buscarAtividadesKanban = async () => {
 
         const perfil = await getPerfil();
-        
+
         try {
             const todasAtividadesEmKanban = await listarAtividadesEmKanban();
             const todasAtividades = await listarAtividades();
@@ -76,21 +76,27 @@ function RelatorioSemanal() {
     };
 
     useEffect(() => {
-        const carregarTamanhos = async () => {
-            const novoTamanho = {};
-            for (let i = 1; i <= 4; i++) {
-                novoTamanho[i] = await defineTamanho(i);
-            }
-            console.log("Tamanhos calculados:", novoTamanho);
-            setTamanhos(novoTamanho);
-        };
-
-        setContAtvs(contagemAtividadesConcluidas())
-
-        buscarAtividadesKanban();
-        carregarTamanhos();
-
-    }, []);
+            const carregarTamanhos = async () => {
+                const novoTamanho = {};
+                for (let i = 1; i <= 4; i++) {
+                    novoTamanho[i] = await defineTamanho(i);
+                }
+                console.log("Tamanhos calculados:", novoTamanho);
+                setTamanhos(novoTamanho);
+            };
+    
+            const carregarContagem = async () => {
+                const valor = await contagemAtividadesConcluidas();
+                setContAtvs(valor);
+            };
+    
+            carregarContagem();
+    
+    
+            buscarAtividadesKanban();
+            carregarTamanhos();
+        }, []);
+        
     const contagemAtividadesConcluidas = async () => {
         const todasAtividades = await listarAtividades();
         let cont = 0;
@@ -196,7 +202,7 @@ function RelatorioSemanal() {
 
         const perfil = await getPerfil();
         listaMatriz.forEach(atv => {
-            const atividade = todasAtividades.find( a => a.Eisenhower_idAtividadeEisenhower == atv.idAtividadeEisenhower)
+            const atividade = todasAtividades.find(a => a.Eisenhower_idAtividadeEisenhower == atv.idAtividadeEisenhower)
             if (!!atividade && verificaDataNoIntervalo(atv.dataAlteracao.substring(0, 10)) && atividade.Usuarios_username == perfil.username) {
 
                 quantidade++;
@@ -243,6 +249,18 @@ function RelatorioSemanal() {
 
         carregarSessoesSemana();
     }, []);
+
+    let feitas = 0;
+    let total = 0;
+    let progresso = 0;
+
+    if (typeof contAtvs === "string" && contAtvs.includes("|")) {
+        const partes = contAtvs.split("|");
+        feitas = Number(partes[0]);
+        total = Number(partes[0]) + Number(partes[1]);
+        progresso = total > 0 ? feitas / total : 0;
+    }
+
     return (
         <>
             <Container>
@@ -255,7 +273,9 @@ function RelatorioSemanal() {
                     <span style={{ display: 'flex' }}>Progresso <Icones className="material-symbols-outlined" title={textoProgresso}>
                         info
                     </Icones></span>
-                    <ProgressoBox>{contAtvs}</ProgressoBox>
+                    <ProgressoBox progresso={progresso}>
+                        {contAtvs}
+                    </ProgressoBox>
                 </Progresso>
                 <Pomodoro>
                     <span style={{ display: 'flex' }}>Pomodoro <Icones className="material-symbols-outlined" title={textoPomodoro}>
