@@ -101,6 +101,7 @@ export const ListaDoDia = styled.div`
   }
   &::-webkit-scrollbar-thumb:hover {
     background-color: rgba(255, 255, 255, 0.25);
+    cursor: pointer;
   }
 `;
 

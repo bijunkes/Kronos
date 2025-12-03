@@ -111,6 +111,7 @@ export const Lista = styled.ul`
 
   &::-webkit-scrollbar-thumb:hover {
     background-color: rgba(255, 255, 255, 0.25);
+    cursor: pointer;
   }
 
 `;
@@ -119,7 +120,7 @@ export const Atividade = styled.li`
   background: rgba(27, 27, 27, 0.1);
   display: flex;
   color: #FFFFFF;
-  height: 6vh;
+  min-height: 6vh;
   width: 100%;
   border-radius: 16px;
   flex-direction: row;

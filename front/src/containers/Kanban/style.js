@@ -40,10 +40,12 @@ export const PainelTarefas = styled.div`
   &::-webkit-scrollbar-thumb {
     background-color: rgba(255, 255, 255, 0.15);
     border-radius: 10px;
+
   }
 
   &::-webkit-scrollbar-thumb:hover {
     background-color: rgba(255, 255, 255, 0.25);
+    cursor: pointer;
   }
 `;
 
