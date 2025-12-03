@@ -1,5 +1,5 @@
 import { React, useState, useEffect } from 'react';
-import { Container, Painel, BoxTitulo, BoxTarefa, NomeTarefa, Icones, BoxAdicionar, BoxNomeTarefa, BoxIcones, PainelTarefas } from './style.js';
+import { Container, Painel, BoxTitulo, BoxTarefa, NomeTarefa, Icones, BoxAdicionar, BoxNomeTarefa, BoxIcones, PainelTarefas, Background } from './style.js';
 import ModalTecnicas from "../ModalTecnicas/index.jsx";
 import { listarAtividadesEmMatriz, deletarAtividadeDeMatriz, atualizarAtividade, adicionarAtividadeEmKanban, atualizarAtividadeEmKanban, listarAtividadesEmKanban, listarAtividades, atualizarIdKanbanAtividade, deletarAtividadeDeKanban, listarSessoes, getPerfil } from "../../services/api.js";
 
@@ -15,10 +15,6 @@ function Kanban() {
     const [carregando, setCarregando] = useState(true);
     const [erro, setErro] = useState('');
     const [hoverId, setHoverId] = useState('');
-
-    
-
-
 
     const capturaData = () => {
         const dataAtual = new Date();
@@ -78,8 +74,6 @@ function Kanban() {
         }
     };
 
-
-
     useEffect(() => {
 
         buscarAtividades();
@@ -88,38 +82,31 @@ function Kanban() {
     const atualizaKanban = async (id, classificacao, dataAlteracao) => {
         console.log(`id: ${id}; classificação: ${classificacao}`)
         await atualizarAtividadeEmKanban(id, classificacao, dataAlteracao);
-
     }
 
     const handleClick = (colunaId) => () => {
         setColunaSelecionada(colunaId);
         setMostrarModal(true);
     }
+
     const handleFecharModal = () => {
         setMostrarModal(false);
     }
 
     const verificaAtividadeEmLista = (atividadeId) => {
-
         return atividadesAdicionadas.some((atividade) => atividade.idAtividade === atividadeId)
-
     }
 
     const nulaId = async (atv) => {
-
-
         await atualizarIdKanbanAtividade(atv.idAtividade, {
             Kanban_idAtividadeKanban: null,
             Usuarios_username: atv.Usuarios_username,
             idAtividade: atv.idAtividade
 
         })
-
     }
 
-
     const deletar = async (atividadeId) => {
-
         setAtividades(prev => prev.filter(atividade => atividade.idAtividade !== atividadeId));
         setAtividadesAdicionadas(prev => prev.filter(atividade => atividade.idAtividade !== atividadeId));
         const atividadeDeletada = atividades.find(a => a.idAtividade == atividadeId);
@@ -131,8 +118,8 @@ function Kanban() {
         }
         console.log(atividadeDeletada.Kanban_idAtividadeKanban);
         await deletarAtividadeDeKanban(atividadeDeletada.Kanban_idAtividadeKanban);
-
     }
+
     const formatarDataMySQL = (data) => {
         if (!data) return null;
         if (data.length === 10) return `${data} 00:00:00`;
@@ -148,7 +135,6 @@ function Kanban() {
     };
 
     const atividadeEstaConcluida = async (atividadeKanban) => {
-
         console.log("Atividade KAnben: " + atividadeKanban)
         if (atividadeKanban.coluna == 3) {
             console.log("if funcionando")
@@ -184,8 +170,6 @@ function Kanban() {
                 } else {
 
                 }
-
-
             } catch (err) {
                 console.error('Erro ao atualizar atividade:', err);
                 setAtividades(atividades);
@@ -194,11 +178,9 @@ function Kanban() {
                 }
             }
         } else if (atividadeKanban.coluna !== 3) {
-
             console.log("Else if funcionando")
             const atividade = atividadeKanban;
             const novoStatus = 0;
-
             try {
                 await atualizarAtividade(atividade.idAtividade, {
                     nomeAtividade: atividade.nomeAtividade,
@@ -211,7 +193,6 @@ function Kanban() {
                     Eisenhower_idAtividadeEisenhower: atividade.Eisenhower_idAtividadeEisenhower,
                     ListaAtividades_idLista: atividade.ListaAtividades_idLista
                 });
-
             } catch (err) {
                 console.error('Erro ao atualizar atividade:', err);
                 setAtividades(atividades);
@@ -223,8 +204,8 @@ function Kanban() {
         return;
 
     }
-    const proximo = (atividadeId) => {
 
+    const proximo = (atividadeId) => {
         setAtividades((prev) => {
             const novaLista = prev.map(t =>
                 t.idAtividade === atividadeId
@@ -237,21 +218,16 @@ function Kanban() {
 
                     }
                     : t
-
             )
             const atividadeAtualizada = novaLista.find(t => t.idAtividade === atividadeId);
-
             console.log("Atividade KAnben: " + atividadeAtualizada.Kanban_idAtividadeKanban)
-
             atualizaKanban(atividadeAtualizada.Kanban_idAtividadeKanban, atividadeAtualizada.coluna, capturaData());
             atividadeEstaConcluida(atividadeAtualizada);
-
             return novaLista;
         });
-
     }
-    const anterior = (atividadeId) => {
 
+    const anterior = (atividadeId) => {
         setAtividades((prev) => {
             const novaLista = prev.map(t =>
                 t.idAtividade === atividadeId
@@ -261,49 +237,39 @@ function Kanban() {
                             t.coluna === 2 ? 1 :
                                 t.coluna === 3 ? 2 :
                                     t.coluna
-
                     }
                     : t
-
             )
             const atividadeAtualizada = novaLista.find(t => t.idAtividade === atividadeId);
-
-
-
             atualizaKanban(atividadeAtualizada.Kanban_idAtividadeKanban, atividadeAtualizada.coluna, capturaData());
             atividadeEstaConcluida(atividadeAtualizada);
             return novaLista;
         })
-
-
     }
+
     const renderIcons = (coluna, atividadeId) => {
-
-
         switch (coluna) {
             case 1:
                 return (
                     <BoxIcones>
-                        <Icones className="material-symbols-outlined" onClick={() => deletar(atividadeId)}>
+                        <Icones type="delete" className="material-symbols-outlined" onClick={() => deletar(atividadeId)}>
                             delete
                         </Icones>
-                        <Icones className="material-symbols-outlined" onClick={() => proximo(atividadeId)}>
+                        <Icones type="arrow" className="material-symbols-outlined" onClick={() => proximo(atividadeId)}>
                             arrow_forward
                         </Icones>
                     </BoxIcones>
-
-
                 );
             case 2:
                 return (
                     <BoxIcones>
-                        <Icones className="material-symbols-outlined" onClick={() => deletar(atividadeId)}>
+                        <Icones type="delete" className="material-symbols-outlined" onClick={() => deletar(atividadeId)}>
                             delete
                         </Icones>
-                        <Icones className="material-symbols-outlined" onClick={() => anterior(atividadeId)}>
+                        <Icones type="arrow" className="material-symbols-outlined" onClick={() => anterior(atividadeId)}>
                             arrow_back
                         </Icones>
-                        <Icones className="material-symbols-outlined" onClick={() => proximo(atividadeId)}>
+                        <Icones type="arrow" className="material-symbols-outlined" onClick={() => proximo(atividadeId)}>
                             arrow_forward
                         </Icones>
                     </BoxIcones>
@@ -311,10 +277,10 @@ function Kanban() {
             case 3:
                 return (
                     <BoxIcones>
-                        <Icones className="material-symbols-outlined" onClick={() => deletar(atividadeId)}>
+                        <Icones type="delete" className="material-symbols-outlined" onClick={() => deletar(atividadeId)}>
                             delete
                         </Icones>
-                        <Icones className="material-symbols-outlined" onClick={() => anterior(atividadeId)}>
+                        <Icones type="arrow" className="material-symbols-outlined" onClick={() => anterior(atividadeId)}>
                             arrow_back
                         </Icones>
                     </BoxIcones>
@@ -392,7 +358,7 @@ function Kanban() {
     };
 
     return (
-        <>
+        <Background>
             <Container>
                 <Painel id='1'>
                     <BoxTitulo>A Fazer</BoxTitulo>
@@ -428,7 +394,7 @@ function Kanban() {
             {mostrarModal && <ModalTecnicas onClose={handleFecharModal} onAdicionar={adicionarAtividade} onTecnica={"kanban"} />
             }
 
-        </>
+        </Background>
     )
 }
 

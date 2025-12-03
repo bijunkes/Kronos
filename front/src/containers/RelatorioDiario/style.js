@@ -322,6 +322,7 @@ export const Icones = styled.span`
     color: rgba(255, 255, 255, 1);
     cursor: pointer;
 `;
+
 export const BoxPomodoro = styled.div`
     width: 100%;
     height: 6vh;
@@ -331,4 +332,5 @@ export const BoxPomodoro = styled.div`
     border-radius: 16px;
     font-weight: 100;
     background-color: rgba(255, 255, 255, 0.1);
+    font-size: 18px;
 `;

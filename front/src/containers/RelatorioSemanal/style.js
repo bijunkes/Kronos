@@ -329,6 +329,7 @@ export const BoxPomodoro = styled.div`
     align-items:center;
     padding: 2.5vh;
     border-radius: 16px;
+    font-size: 18px;
     font-weight: 100;
     background-color: rgba(255, 255, 255, 0.1);
 `;
