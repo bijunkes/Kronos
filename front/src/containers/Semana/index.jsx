@@ -5,7 +5,8 @@ import {
   DiaColuna,
   DiaHeader,
   DiaTitulo,
-  BotaoAdd
+  BotaoAdd,
+  ListaDoDia
 } from "./styles.js";
 import { listarTodasAtividades, listarListas, obterUltimaSessaoPomodoro, salvarAtividadesSessao } from "../../services/api.js";
 import api from "../../services/api.js";
@@ -213,7 +214,7 @@ function Semana() {
               </BotaoAdd>
             </DiaHeader>
 
-            <div
+            <ListaDoDia
               style={{
                 flex: 1,
                 display: "flex",
@@ -282,7 +283,7 @@ function Semana() {
                   </div>
                 ))
               )}
-            </div>
+            </ListaDoDia>
           </DiaColuna>
         ))}
       </SemanaScroll>

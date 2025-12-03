@@ -56,7 +56,6 @@ function Atividades() {
     return `${yyyy}-${mm}-${dd} ${hh}:${mi}:${ss}`;
   };
 
-  // Recarrega todas as atividades do backend
   const carregarAtividades = async () => {
     try {
       const todas = await listarTodasAtividades();
@@ -66,7 +65,6 @@ function Atividades() {
       }));
       setAtividades(ordenarAtividades(todasComConcluido));
 
-      // Atualiza a atividade selecionada, se existir
       if (atividadeSelecionada) {
         const atualizada = todas.find(a => a.idAtividade === atividadeSelecionada.idAtividade);
         setAtividadeSelecionada(atualizada || null);
@@ -76,7 +74,6 @@ function Atividades() {
     }
   };
 
-  // Carrega lista padrão e atividades no início
   useEffect(() => {
     const init = async () => {
       try {
@@ -91,25 +88,40 @@ function Atividades() {
     init();
   }, []);
 
-  // Toggle concluir atividade
   const toggleConcluido = async (index) => {
     const atividade = atividades[index];
     if (!atividade) return;
 
-    const novaConclusao = !atividade.concluido ? formatarDataMySQL(new Date()) : null;
-    const novoStatus = !atividade.concluido ? 1 : 0;
+    const novoStatusLocal = !atividade.concluido;
+
+    setAtividades(prev =>
+      ordenarAtividades(
+        prev.map((item, i) =>
+          i === index ? { ...item, concluido: novoStatusLocal } : item
+        )
+      )
+    );
+
+    const novaConclusao = novoStatusLocal
+      ? formatarDataMySQL(new Date())
+      : null;
+
+    const novoStatus = novoStatusLocal ? 1 : 0;
 
     try {
-      // Remove do Pomodoro se necessário
       if (atividade.Pomodoro_idStatus) {
         const sessao = await obterUltimaSessaoPomodoro();
         if (sessao?.idStatus) {
-          const filtradas = (sessao.atividadesVinculadas || []).filter(id => id !== atividade.idAtividade);
-          await salvarAtividadesSessao(sessao.idStatus, filtradas.map(id => ({ idAtividade: id })));
+          const filtradas = (sessao.atividadesVinculadas || [])
+            .filter(id => id !== atividade.idAtividade);
+
+          await salvarAtividadesSessao(
+            sessao.idStatus,
+            filtradas.map(id => ({ idAtividade: id }))
+          );
         }
       }
 
-      // Atualiza atividade no backend
       await atualizarAtividade(atividade.idAtividade, {
         nomeAtividade: atividade.nomeAtividade,
         descricaoAtividade: atividade.descricaoAtividade,
@@ -122,17 +134,21 @@ function Atividades() {
         Eisenhower_idAtividadeEisenhower: null
       });
 
-      // Atualiza Kanban se necessário
       if (novoStatus === 0 && atividade.Kanban_idAtividadeKanban) {
-        await atualizarAtividadeEmKanban(atividade.Kanban_idAtividadeKanban, 1, formatarDataMySQL(new Date()));
+        await atualizarAtividadeEmKanban(
+          atividade.Kanban_idAtividadeKanban,
+          1,
+          formatarDataMySQL(new Date())
+        );
       }
 
-      // Recarrega todas as atividades do backend
       await carregarAtividades();
+
     } catch (err) {
       console.error("Erro ao atualizar atividade:", err);
     }
   };
+
 
   const atividadesFiltradas = atividades.filter(a =>
     (a.nomeAtividade || '').toLowerCase().startsWith(filtro.toLowerCase())
@@ -155,7 +171,7 @@ function Atividades() {
         </Header>
 
         <Conteudo>
-          <AreaAtividades style={{alignItems: 'center'}}>
+          <AreaAtividades style={{ alignItems: 'center' }}>
             {atividadesFiltradas.length === 0 && (
               <div style={{ color: '#999', cursor: 'default', fontSize: '16px' }}>
                 Sem atividades

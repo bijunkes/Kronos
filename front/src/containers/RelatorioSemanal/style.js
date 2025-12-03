@@ -1,29 +1,43 @@
 import styled from "styled-components";
 
-
+export const Background = styled.div`
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: row;
+  color: var(--cor-texto);
+  cursor: default;
+`;
 
 export const Container = styled.div`
   display: grid;
-  left: 58.5%;
-  top: 50%;
-  transform: translate(-50%, -50%);
+  margin: 4vh;
+  height: 92vh;
   grid-template-areas: "titulo relaKanban relaKanban relaKanban" 
   "data pendente andamento concluido"
   "progresso pendente andamento concluido"
   "pomodoro classificacao classificacao classificacao";
   gap: 1%;       
-  height: 95vh; 
-  width: 81vw;
-  padding: 2rem;
+  width: calc(100vw - 20%);
+  padding: 3vh;
   box-sizing: border-box;
   position: fixed;
-  border-radius: 1rem;
-  background-color: #212121;
+  border-radius: 20px;
+  background-color: var(--fundo-menu);
+`;
+
+export const Titulo = styled.h2`
+    grid-area: titulo;
+    font-size: 24px;
+    color: #FFFFFF;
+    font-family: "Roboto", sans-serif;
+    font-optical-sizing: auto;
+    font-weight: bold;
 `;
 
 export const RelatorioKanban = styled.h2`
     grid-area: relaKanban;
-    font-size: 27px;
+    font-size: 20px;
     display: flex;
     justify-content: center;
     color: #FFFFFF;
@@ -31,65 +45,24 @@ export const RelatorioKanban = styled.h2`
     font-optical-sizing: auto;
     font-weight: bold;
     font-style: normal;
-    font-variation-settings:
-    "wdth" 100;
-`;
-
-export const Titulo = styled.h2`
-    grid-area: titulo;
-    font-size: 33px;
-    color: #FFFFFF;
-    font-family: "Roboto", sans-serif;
-    font-optical-sizing: auto;
-    font-weight: bold;
-    font-style: normal;
-    font-variation-settings:
-    "wdth" 100;
 `;
 
 export const Data = styled.div`
     grid-area: data;
     display: flex;
     align-items: center;
-    padding: 1rem;
+    padding: 2.5vh;
     width: 18vw;
-    height: 5.30vh;
+    height: 6vh;
     background-color: #282828;
-    border-radius: 1rem;
-    font-size: 18px;
+    border-radius: 16px;
+    font-size: 16px;
     color: #FFFFFF;
     font-family: "Roboto", sans-serif;
     font-optical-sizing: auto;
     font-style: normal;
-    font-weight: 10%;
     font-variation-settings:
     "wdth" 100;
-`;
-export const PainelTarefas = styled.div`
-  display: flex;
-  flex-direction: column;
-  width: 95%;
-  height: 80%;
-  position: relativo;
-  padding: 1%;
-  gap: 3%;
-  align-items: center;
-  overflow-y: scroll;
-  scroll-behavior: smooth;
-  &::-webkit-scrollbar {
-    width: 6px;
-  }
-
-  &::-webkit-scrollbar-thumb {
-    background-color: rgba(255, 255, 255, 0.15);
-    border-radius: 10px;
-  }
-
-  &::-webkit-scrollbar-thumb:hover {
-    background-color: rgba(255, 255, 255, 0.25);
-  }
-
-
 `;
 
 export const Progresso = styled.div`
@@ -97,11 +70,11 @@ export const Progresso = styled.div`
     width: 18vw;
     height: 38vh;
     background-color: #282828;
-    border-radius: 1rem;
+    border-radius: 20px;
     display: flex;
     flex-direction: column;
-    padding: 1rem;
-    font-size: 27px;
+    padding: 2.5vh;
+    font-size: 20px;
     color: #FFFFFF;
     font-family: "Roboto", sans-serif;
     font-optical-sizing: auto;
@@ -116,15 +89,14 @@ export const Pomodoro = styled.div`
     width: 18vw;
     height: 30vh;
     background-color: #282828;
-    border-radius: 1rem;
+    border-radius: 20px;
     display: flex;
     flex-direction: column;
-    padding: 1rem;
-    gap: 1rem;
+    padding: 2.5vh;
     justify-content: flex-start;
     align-items: start;
-    font-size: 27px;
-    gap: 2rem;
+    font-size: 20px;
+    gap: 3vh;
     color: #FFFFFF;
     font-family: "Roboto", sans-serif;
     font-optical-sizing: auto;
@@ -137,14 +109,40 @@ export const QuadroKanban = styled.div`
     width: 18vw;
     height: 47vh;
     background-color: #282828;
-    border-radius: 1rem;
+    border-radius: 20px;
     display: flex;
     flex-direction: column;
     align-items: center;
-    padding: 1%;
-    gap: 7.5%;
-    
+    padding: 2.5vh;
+    gap: 0.5vh;
+    justify-content: flex-start;
 `;
+
+export const PainelTarefas = styled.div`
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  height: 100%;
+  position: relative;
+  gap: 1.5vh;
+  align-items: center;
+  overflow-y: scroll;
+  scroll-behavior: smooth;
+  
+  &::-webkit-scrollbar {
+    width: 5px;
+  }
+
+  &::-webkit-scrollbar-thumb {
+    background-color: rgba(255, 255, 255, 0.15);
+    border-radius: 10px;
+  }
+
+  &::-webkit-scrollbar-thumb:hover {
+    background-color: rgba(255, 255, 255, 0.25);
+  }
+`;
+
 export const Pendente = styled(QuadroKanban)`
     grid-area: pendente;
 `;
@@ -154,81 +152,125 @@ export const Andamento = styled(QuadroKanban)`
 export const Concluido = styled(QuadroKanban)`
     grid-area: concluido;
 `;
+
 export const Classificacao = styled.div`
     grid-area: classificacao;
-    width: 58vw;
+    width: 100%;
     height: 30vh;
     background-color: #282828;
-    border-radius: 1rem;
+    border-radius: 20px;
+
     display: flex;
     flex-direction: column;
-    padding: 1rem;
-    gap: 1rem;
+    padding: 2.5vh;
+    gap: 1.5vh;
     justify-content: center;
     align-items: start;
-    font-size: 27px;
+
+    font-size: 20px;
     color: #FFFFFF;
     font-family: "Roboto", sans-serif;
     font-optical-sizing: auto;
     font-weight: bold;
     font-style: normal;
-    font-variation-settings:
-    "wdth" 100;
+    font-variation-settings: "wdth" 100;
+
+    overflow-x: auto;
+    overflow-y: hidden;
+    flex-wrap: nowrap;
+
+    &::-webkit-scrollbar {
+        height: 5px;
+    }
+
+    &::-webkit-scrollbar-track {
+        background: var(--fundo-menu);
+        border-radius: 10px;
+    }
+
+    &::-webkit-scrollbar-thumb {
+        background-color: var(--cinza-claro);
+        border-radius: 10px;
+    }
+
+    &::-webkit-scrollbar-thumb:hover{
+      cursor: pointer;
+    }
 `;
+
 export const ProgressoBox = styled.div`
     width: 70%;
     height: 70%;
-    display:flex;
+    display: flex;
     justify-content: center;
     align-items: center;
-    background-color: #353535;
     position: relative;
+
     left: 50%;
-    top: 50%;
+    top: 48%;
     transform: translate(-50%, -50%);
-    font-size: 60px;
+
+    font-size: 52px;
     color: #FFFFFF;
     font-family: "Roboto", sans-serif;
-    font-optical-sizing: auto;
     font-weight: bold;
-    font-style: normal;
-    font-variation-settings:
-    "wdth" 100;
+
+    border-radius: 50%;
+    background-color: #353535;
+    z-index: 1;
+
+    &::before {
+        content: "";
+        position: absolute;
+        inset: 0;
+        padding: 6px;
+        border-radius: 50%;
+        background: ${({ progresso }) => `
+            conic-gradient(
+                #ffffff ${progresso * 360}deg,
+                #353535 ${progresso * 360}deg
+            )
+        `};
+        -webkit-mask: 
+            radial-gradient(farthest-side, transparent calc(100% - 5px), black 0);
+        mask:
+            radial-gradient(farthest-side, transparent calc(100% - 5px), black 0);
+        transition: background 0.6s ease-in-out;
+    }
 `;
-export const BoxTitulo= styled.div`
+
+export const BoxTitulo = styled.div`
     position: relative;
     display: flex;
     align-items: center;
     justify-content: center;
     align-self: center;
-    height: 5.29vh;
-    width: 16vw;
-    font-size: 24px;
-    background-color: rgba(255, 255, 255, 0.1);
-    border-radius: 1rem;
-    top: 1rem;
-    font-weight: 1%;
+    height: 7vh;
+    width: 100%;
+    font-size: 20px;
+    background-color: var(--cinza-claro);
+    border-radius: 16px;
+    margin-bottom: 5%;
     color: rgba(255, 255, 255, 1);
 `;
 export const BoxTarefas = styled.div`
-    height: auto;
-    width: 12vw;
-    background-color: rgba(255, 255, 255, 0.1);
-    font-size: 18px;
-    border-radius: 2rem;
+    height: 6vh;
+    width: 100%;
+    background-color: rgba(255, 255, 255, 0.06);
+    font-size: 16px;
+    border-radius: 16px;
     position: relative;
     display: flex;
-    padding: 1rem;
-    justify-content: space-around;
-    flex-wrap: wrap;
+    justify-content: center;
+    padding: 2vh;
 `;
 export const BoxNomeTarefa = styled.div`
     position: relative;
+    display: flex;
     align-self: center;
     width: 12vw;
     height: auto;
     color: rgba(255, 255, 255, 1);
-    display: block;
 `;
 
 export const NomeTarefa = styled.h2`
@@ -236,24 +278,27 @@ export const NomeTarefa = styled.h2`
     align-self: center;
     color: rgba(255, 255, 255, 1);
     font-size: 18px;
-    width: 10vw;
+    width: 100%;
+    height: 100%;
     white-space: normal;
-word-wrap: break-word;
-overflow-wrap: break-word;
+    word-wrap: break-word;
+    overflow-wrap: break-word;
+    font-weight: 100;
 `;
+
 export const QuadroEisen = styled.div`
-    height: 2vh;
-    width: 1vw;
+    height: 1vh;
+    width: 1vh;
     font-size: 18px;
-    border-radius: 1rem;
+    border-radius: 20px;
     position: relative;
     display: flex;
-    padding: 1rem;
+    padding: 2vh;
     align-items: center;
     justify-content: flex-end;
-    left: 0;
     color: #FFFFFF;
 `;
+
 export const ImportanteUrgente = styled(QuadroEisen)`
   background-color: #B3261E;
 `;
@@ -269,22 +314,22 @@ export const NaoImportanteUrgente = styled(QuadroEisen)`
 
 export const NaoImportanteNaoUrgente = styled(QuadroEisen)`
   background-color: #34C759;
-
 `;
+
 export const Icones = styled.span`
     position: relative;
-    left: 30%;
+    left: 1vh;
     color: rgba(255, 255, 255, 1);
-    left: 1rem;
-    
-
+    cursor: pointer;
 `;
 export const BoxPomodoro = styled.div`
-    width: 20rem;
-    height: 3rem;
+    width: 100%;
+    height: 6vh;
     display: flex;
     align-items:center;
-    padding: 0.5rem;
-    border-radius: 1rem;
+    padding: 2.5vh;
+    border-radius: 16px;
+    font-size: 18px;
+    font-weight: 100;
     background-color: rgba(255, 255, 255, 0.1);
 `;

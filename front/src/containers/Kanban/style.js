@@ -1,40 +1,38 @@
 import styled from 'styled-components';
 
+export const Background = styled.div`
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: row;
+  color: var(--cor-texto);
+  padding: 4vh;
+  cursor: default;
+`;
+
 export const Painel = styled.div`
     position: relative; 
     display: flex;
     flex-direction: column;
-    height: 95vh;
     width: 33.33%;
-    margin: 1rem 1rem 1rem 1rem;
-    background-color: #252525;
-    border-radius: 1rem;
-    overflow-y: scroll;
-    scroll-behavior: smooth;
-    &::-webkit-scrollbar {
-    width: 6px;
-  }
-
-  &::-webkit-scrollbar-thumb {
-    background-color: rgba(255, 255, 255, 0.15);
-    border-radius: 10px;
-  }
-
-  &::-webkit-scrollbar-thumb:hover {
-    background-color: rgba(255, 255, 255, 0.25);
-  }
-    
+    background-color: var(--fundo-menu);
+    border-radius: 20px;
+    padding: 3vh 0 3vh 3vh;
+    gap: 3vh;
 `;
+
 export const PainelTarefas = styled.div`
   display: flex;
   flex-direction: column;
-  width: 95%;
-  height: 78.42vh;
-  position: absolute;
+  width: 100%;
+  height: 100%;
   overflow-y: scroll;
-  top: 5rem;
-  left: 1rem;
+  overflow-x: hidden;
   scroll-behavior: smooth;
+  background-color: var(--fundo-menu);
+  gap: 1.5vh;
+  padding-right: calc(3vh - 6px);
+
   &::-webkit-scrollbar {
     width: 6px;
   }
@@ -47,95 +45,121 @@ export const PainelTarefas = styled.div`
   &::-webkit-scrollbar-thumb:hover {
     background-color: rgba(255, 255, 255, 0.25);
   }
-
-
 `;
 
 export const BoxTitulo= styled.div`
-    position: absolute;
     display: flex;
     align-items: center;
     justify-content: center;
     align-self: center;
-    height: 5.29vh;
-    width: 24vw;
-    font-size: 22px;
+    height: 7vh;
+    width: calc(100% - 3vh);
+    font-size: 20px;
     background-color: rgba(255, 255, 255, 0.1);
     border-radius: 1rem;
     top: 1rem;
     font-weight: bold;
     color: rgba(255, 255, 255, 1);
+    margin-right: 3vh;
 `;
+
 export const Container = styled.div`
   display: flex;                  
-  height: 100vh; 
-  width: 100%;
+  height: 92vh; 
+  width: 168.5vh;
   position: relative;
   flex-direction: row;
   justify-content: space-around;
+  gap: 3vh;
 
 `;
+
 export const BoxTarefa = styled.div`
-    width: 24vw;
-    
-    background-color: rgba(255, 255, 255, 0.1);
-    border-radius: 2rem;
+    width: 100%;
+    background-color: var(--fundo-menu-ativo);
+    border-radius: 20px;
     display: flex;
+    height: 7vh;
     align-items: center;
     justify-content: space-between;
-    margin-bottom: 1rem;
-    padding: 0.5rem 1rem;
-    gap: 1rem;
-    
-     
+    padding: 2vh;
 `;
+
 export const BoxNomeTarefa = styled.div`
-    position: relative;
-    
-    padding: 0.5rem;
+    padding: 2vh;
     color: rgba(255, 255, 255, 1);
-    display: block;
-    width: 18vw;
+    display: flex;
+    align-items: center;
+    width: 100%;
 `;
 
 export const NomeTarefa = styled.h2`
-    position: relative;
     align-self: center;
     font-weight: normal;
-    font-size: 24px;
-    
+    font-size: 20px;
     color: rgba(255, 255, 255, 1);
     white-space: normal;
-word-wrap: break-word;
-overflow-wrap: break-word;
+    word-wrap: break-word;
+    overflow-wrap: break-word;
 `;
+
 export const BoxIcones = styled.div`
-    position: relative;
-    align-self: center;
-    
     color: rgba(255, 255, 255, 1);
     display: flex;
     justify-content: center;
+    :hover{
+      cursor: pointer;
+    }
+    gap: 1vh;
     
 `;
-export const Icones = styled.button`
-    position: relative;
-    align-self: center;
-    color: rgba(255, 255, 255, 1);
 
+export const Icones = styled.button`
+  position: relative;
+  align-self: center;
+  color: rgba(255, 255, 255, 1);
+  background: transparent;
+  border: none;
+  font-size: 22px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  cursor: pointer;
+
+  transition: 0.2s ease;
+
+  ${(props) =>
+    props.type === "delete" &&
+    `
+      &:hover {
+        color: var(--Importante-Urgente);
+      }
+    `
+  }
+
+  ${(props) =>
+    props.type === "arrow" &&
+    `
+      &:hover {
+        color: rgba(255, 255, 255, 0.5);
+      }
+    `
+  }
 `;
+
+
 export const BoxAdicionar= styled.button`
-    position: relative;
     display: flex;
     align-items: center;
     justify-content: center;
     align-self: center;
-    height: 5.29vh;
-    width: 24vw;
-    font-size: 20px;
-    background-color: rgba(255, 255, 255, 0.1);
-    border-radius: 1rem;
-    margin-top: auto;
-    bottom: 1rem;
+    height: 7vh;
+    width: calc(100% - 3vh);
+    font-size: 18px;
+    background-color: var(--cinza-claro);
+    border-radius: 16px;
     color: rgba(255, 255, 255, 1);
+    cursor: pointer;
+    margin-right: 3vh;
 `;
