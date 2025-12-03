@@ -48,6 +48,7 @@ function Menu() {
 
   const [temNotificacoes, setTemNotificacoes] = useState(false);
 
+
   const withVersion = (url, ver) => {
     if (!url) return null;
     return `${url}${url.includes('?') ? '&' : '?'}v=${ver}`;
@@ -229,12 +230,21 @@ function Menu() {
   };
 
   const handleCronometro = () => {
-    navigate('/cronometro');
+    if (location.pathname === "/cronometro") {
+      navigate("/home"); 
+    } else {
+      navigate("/cronometro"); 
+    }
   };
 
   const handleLembretes = () => {
     setTemNotificacoes(false);
-    navigate('/lembretes');
+
+    if (location.pathname === "/lembretes") {
+      navigate("/home");
+    } else {
+      navigate("/lembretes");
+    }
   };
 
   return (
@@ -260,7 +270,7 @@ function Menu() {
           />
         </IconUsuario>
 
-        <InfoUsuario style={{cursor: 'default'}}>
+        <InfoUsuario style={{ cursor: 'default' }}>
           <NomeUsuario>{usuario.nome}</NomeUsuario>
           <Username>@{usuario.username}</Username>
         </InfoUsuario>
@@ -406,7 +416,7 @@ function Menu() {
 
       <OpcoesAbaixo>
         <OpcoesAbaixo1>
-          <span className="material-symbols-outlined" id="sino" onClick={handleCronometro}>
+          <span className="material-symbols-outlined" id="sino" onClick={handleCronometro} >
             schedule
           </span>
           <span className="material-symbols-outlined" id="notificacao" onClick={handleLembretes}>

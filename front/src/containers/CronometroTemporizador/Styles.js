@@ -2,22 +2,20 @@ import styled from "styled-components";
 
 export const Container = styled.div`
   width: 100%;
-  min-height: 100vh;
+  height: 100vh;
   background: var(--fundo);
   display: flex;
   align-items: flex-start;
   justify-content: center;
-  padding: 3vh 2vw;
+  padding: 4vh ;
   box-sizing: border-box;
 `;
 
 export const Card = styled.div`
-  width: calc(100% - 320px);
-  max-width: 1100px;
-  height: 90vh;
+  width: 90%;
+  height: 92vh;
   background: var(--fundo-menu);
-  border-radius: 18px;
-  box-shadow: 0 8px 28px rgba(0, 0, 0, 0.45);
+  border-radius: 20px;
   padding: 36px 48px;
   box-sizing: border-box;
   display: flex;

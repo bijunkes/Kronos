@@ -220,7 +220,7 @@ const handleExcluir = async () => {
         {carregando ? (
           <Vazio>Carregando lembretes...</Vazio>
         ) : lista.length === 0 ? (
-          <Vazio>Nenhum lembrete encontrado.</Vazio>
+          <Vazio>Nenhum lembrete encontrado</Vazio>
         ) : (
           <ListaLembretes>
             {lista.map((l) => {
@@ -281,7 +281,7 @@ const handleExcluir = async () => {
                 Olá {selecionado.usuarioNome || nomeUsuario},<br /><br />
                 Você tem uma atividade com prazo para amanhã.<br /><br />
                 <strong>{selecionado.nomeAtividade}</strong><br /><br />
-                Quando: {selecionado.prazoExtenso}<br /><br />
+                Prazo: {selecionado.prazoExtenso}<br /><br />
                 Listas:{" "}
                 {selecionado.listas?.length ? selecionado.listas.join(", ") : "[Nenhuma lista vinculada]"}
                 <br /><br />
@@ -291,7 +291,7 @@ const handleExcluir = async () => {
                       ? `/listas/${selecionado.listas[0]}` 
                       : "#" 
                   }
-                  style={{ color: "#5b6cff", textDecoration: "underline" }}
+                  style={{ fontSize: "16px",color: "#5b6cff", textDecoration: "underline" }}
                 >
                   Ir para lista
                 </Link>
