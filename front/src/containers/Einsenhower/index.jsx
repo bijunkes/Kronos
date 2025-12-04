@@ -15,7 +15,8 @@ import {
     AdicionarTarefa,
     Icones,
     BoxIcones,
-    BoxNomeTarefa
+    BoxNomeTarefa,
+    Background
 } from "./style.js"
 import { adicionarAtividadeEmMatriz, atualizarAtividadeEmMatriz, listarAtividadesEmMatriz, listarAtividades, atualizarIdEisenAtividade, deletarAtividadeDeMatriz, getPerfil } from "../../services/api.js";
 import ModalTecnicas from "../ModalTecnicas/index.jsx";
@@ -224,33 +225,33 @@ function Eisenhower() {
         if (iconsType === 'icones1') {
             return (
                 <>
-                    <Icones className="material-symbols-outlined" onClick={() => deletar(atividadeId)}>delete</Icones>
-                    <Icones className="material-symbols-outlined" onClick={() => abaixo(atividadeId)}>arrow_downward</Icones>
-                    <Icones className="material-symbols-outlined" onClick={() => proximo(atividadeId)}>arrow_forward</Icones>
+                    <Icones type="delete" className="material-symbols-outlined" onClick={() => deletar(atividadeId)}>delete</Icones>
+                    <Icones type="arrow" className="material-symbols-outlined" onClick={() => abaixo(atividadeId)}>arrow_downward</Icones>
+                    <Icones type="arrow" className="material-symbols-outlined" onClick={() => proximo(atividadeId)}>arrow_forward</Icones>
                 </>
             );
         } else if (iconsType === 'icones2') {
             return (
                 <>
-                    <Icones className="material-symbols-outlined" onClick={() => deletar(atividadeId)}>delete</Icones>
-                    <Icones className="material-symbols-outlined" onClick={() => anterior(atividadeId)}>arrow_back</Icones>
-                    <Icones className="material-symbols-outlined" onClick={() => abaixo(atividadeId)}>arrow_downward</Icones>
+                    <Icones type="delete" className="material-symbols-outlined" onClick={() => deletar(atividadeId)}>delete</Icones>
+                    <Icones type="arrow" className="material-symbols-outlined" onClick={() => anterior(atividadeId)}>arrow_back</Icones>
+                    <Icones type="arrow" className="material-symbols-outlined" onClick={() => abaixo(atividadeId)}>arrow_downward</Icones>
                 </>
             );
         } else if (iconsType === 'icones3') {
             return (
                 <>
-                    <Icones className="material-symbols-outlined" onClick={() => deletar(atividadeId)}>delete</Icones>
-                    <Icones className="material-symbols-outlined" onClick={() => acima(atividadeId)}>arrow_upward</Icones>
-                    <Icones className="material-symbols-outlined" onClick={() => proximo(atividadeId)}>arrow_forward</Icones>
+                    <Icones type="delete" className="material-symbols-outlined" onClick={() => deletar(atividadeId)}>delete</Icones>
+                    <Icones type="arrow" className="material-symbols-outlined" onClick={() => acima(atividadeId)}>arrow_upward</Icones>
+                    <Icones type="arrow" className="material-symbols-outlined" onClick={() => proximo(atividadeId)}>arrow_forward</Icones>
                 </>
             );
         } else if (iconsType === 'icones4') {
             return (
                 <>
-                    <Icones className="material-symbols-outlined" onClick={() => deletar(atividadeId)}>delete</Icones>
-                    <Icones className="material-symbols-outlined" onClick={() => anterior(atividadeId)}>arrow_back</Icones>
-                    <Icones className="material-symbols-outlined" onClick={() => acima(atividadeId)}>arrow_upward</Icones>
+                    <Icones type="delete" className="material-symbols-outlined" onClick={() => deletar(atividadeId)}>delete</Icones>
+                    <Icones type="arrow" className="material-symbols-outlined" onClick={() => anterior(atividadeId)}>arrow_back</Icones>
+                    <Icones type="arrow" className="material-symbols-outlined" onClick={() => acima(atividadeId)}>arrow_upward</Icones>
                 </>
             );
         }
@@ -312,7 +313,7 @@ function Eisenhower() {
     };
 
     return (
-        <>
+        <Background>
             <Container>
                 {carregando && <p>Carregando...</p>}
                 {erro && <p style={{ color: 'red' }}>{erro}</p>}
@@ -377,7 +378,7 @@ function Eisenhower() {
                 />}
             </Container>
 
-        </>
+        </Background>
     )
 
 

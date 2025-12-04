@@ -293,6 +293,7 @@ export const Lista = styled.div`
   &::-webkit-scrollbar-thumb {
     background-color: var(--cinza-claro);
     border-radius: 10px;
+    cursor: pointer;
   }
 `;
 

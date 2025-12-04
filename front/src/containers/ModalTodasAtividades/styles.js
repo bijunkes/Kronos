@@ -51,6 +51,7 @@ export const Conteudo = styled.div`
   &::-webkit-scrollbar-thumb {
     background-color: rgba(255, 255, 255, 0.15);
     border-radius: 10px;
+    cursor: pointer;
   }
 `;
 

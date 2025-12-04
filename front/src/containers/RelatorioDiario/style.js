@@ -141,6 +141,10 @@ export const PainelTarefas = styled.div`
   &::-webkit-scrollbar-thumb:hover {
     background-color: rgba(255, 255, 255, 0.25);
   }
+  
+  &::-webkit-scrollbar-thumb:hover{
+      cursor: pointer;
+    }
 `;
 
 export const Pendente = styled(QuadroKanban)`

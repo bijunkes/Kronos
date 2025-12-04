@@ -7,7 +7,7 @@ export const MenuContainer = styled.div`
   padding: 10px 0;
   width: 180px;
   box-shadow: 0px 4px 8px rgba(0,0,0,0.2);
-  z-index: 999; /* acima do overlay */
+  z-index: 999;
 `;
 
 export const MenuItem = styled.div`

@@ -4,29 +4,27 @@ const LEFT_WIDTH = "520px"
 
 export const Container = styled.div`
   width: 100%;
-  min-height: calc(100vh - 8vh);
+  height: 100vh;
   display: flex;
   justify-content: flex-start;
   align-items: flex-start;
-  padding: 4vh 3vh;
+  padding: 4vh 4vh;
   gap: 3vh;
   box-sizing: border-box;
+  cursor: default;
 `;
 
 export const Card = styled.div`
-  width: ${LEFT_WIDTH};
-  max-width: ${LEFT_WIDTH};
-  min-width: ${LEFT_WIDTH};
   background-color: var(--fundo-menu);
   color: var(--cor-texto);
   border-radius: 20px;
-  box-shadow: 0 0 20px rgba(0,0,0,0.3);
   padding: 3vh;
   display: flex;
   flex-direction: column;
   gap: 3vh;
   box-sizing: border-box;
-  height: 84vh;
+  height: 100%;
+  width: 40%;
 `;
 
 export const Header = styled.div`
@@ -37,7 +35,7 @@ export const Header = styled.div`
   border-bottom: 1px solid rgba(255,255,255,0.06);
 
   h2 {
-    font-size: 2.6vh;
+    font-size: 20px;
     font-weight: bold;
     color: var(--cor-texto);
   }
@@ -51,6 +49,10 @@ export const Header = styled.div`
     font-size: 1.8vh;
     cursor: pointer;
     transition: background 0.2s;
+
+    &:hover {
+      background-color: rgba(179, 38, 30, 0.6);
+    }
   }
 `;
 
@@ -74,6 +76,7 @@ export const ListaLembretes = styled.div`
 
   &::-webkit-scrollbar-thumb:hover {
     background-color: rgba(255, 255, 255, 0.25);
+    cursor: pointer;
   }
 `;
 
@@ -97,33 +100,33 @@ export const Lembrete = styled.div`
         : "transparent"};
 
   &:hover {
-    background-color: rgba(255,255,255,0.04);
+    background-color: var(--cinza-claro);
     transform: translateY(-2px);
   }
 
   h3 {
     margin: 0;
-    font-size: 2.0vh;
+    font-size: 16px;
     color: var(--cor-texto);
   }
 
   p {
     margin: 0;
-    font-size: 1.6vh;
+    font-size: 14px;
     opacity: 0.85;
   }
 
   small {
-    font-size: 1.4vh;
+    font-size: 12px;
     opacity: 0.6;
   }
 `;
 
 export const Vazio = styled.div`
   text-align: center;
-  padding: 4vh 0;
-  opacity: 0.7;
-  font-size: 2vh;
+  padding: 2vh 0;
+  opacity: 0.4;
+  font-size: 16px;
 `;
 
 export const PainelDireito = styled.div`
@@ -132,23 +135,20 @@ export const PainelDireito = styled.div`
   align-items: flex-start;
   justify-content: center;
  
-  padding: 7vh;
-  height: 75vh;
+  height: 100%;
   background-color: var(--fundo);
   box-sizing: border-box;
   position: relative;
+  
 `;
 
 export const DetalheBox = styled.div`
   width: 100%;
-  max-width: 900px;
   height: 100%;
   background-color: var(--fundo-menu);
   border-radius: 20px;
 
   padding: 0 3vh 3vh 3vh;
-
-  box-shadow: 0 0 20px rgba(0,0,0,0.3);
 
   color: var(--cor-texto);
   display: flex;
@@ -158,12 +158,12 @@ export const DetalheBox = styled.div`
   position: relative;
 
   p {
-    font-size: 20px;
+    font-size: 18px;
   }
 
   h2 {
     margin: 0;
-    font-size: 2.9vh;
+    font-size: 20px;
     font-weight: bold;
     color: var(--cor-texto);
     height: 7vh;
@@ -174,7 +174,7 @@ export const DetalheBox = styled.div`
    .btn-excluir {
     position: absolute;
     top: 3vh;
-    right: 2.5vh;
+    right: 3vh;
 
     background: transparent;
     border: none;

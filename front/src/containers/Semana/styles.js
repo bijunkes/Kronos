@@ -74,6 +74,7 @@ export const BotaoAdd = styled.span`
   height: 36px;
   border-radius: 4px;
   user-select: none;
+  margin-right: calc(3vh - 6px);
 
   &:hover {
     color: rgba(255, 255, 255, 0.4);
@@ -100,6 +101,7 @@ export const ListaDoDia = styled.div`
   }
   &::-webkit-scrollbar-thumb:hover {
     background-color: rgba(255, 255, 255, 0.25);
+    cursor: pointer;
   }
 `;
 
