@@ -199,7 +199,7 @@ export const deletarAtividade = async (req, res) => {
       "DELETE FROM atividades WHERE idAtividade = ? AND Usuarios_username = ?",
       [idAtividade, usuario]
     );
-    res.json({ message: "Atividade deletada" });
+    res.json({ message: "Atividade excluída" });
   } catch (err) {
     console.error(err);
     res.status(500).json({ error: "Erro ao deletar atividade" });
