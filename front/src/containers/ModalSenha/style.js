@@ -98,8 +98,7 @@ export const Input = styled.input`
   background-color: var(--fundo-campo);
   padding: 2vh 6vh;
   border-radius: 40px;
-  width: 70%;
-  cursor: text;
+  width: 75%;
   margin-bottom: 1.2vh;
   border: none;
   outline: none;
@@ -178,7 +177,7 @@ export const Aviso = styled.p`
 export const Overlay = styled.div`
   position: fixed;
   inset: 0;
-  background: rgba(0,0,0,0.6);
+  background: var(--fundo-menu);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -191,11 +190,10 @@ export const ModalContainer = styled.div`
   width: 420px;
   max-width: 92vw;
   border-radius: 16px;
-  padding: 24px;
-  box-shadow: 0 8px 24px rgba(0,0,0,0.25);
+  padding: 4vh;
   display: flex;
   flex-direction: column;
-  gap: 14px;
+  gap: 2vh;
 `;
 
 export const ButtonRow = styled.div`
