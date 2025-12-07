@@ -1,6 +1,7 @@
 import pool from '../db.js';
 import cron from 'node-cron';
 import { enviarEmailNovoLembrete } from '../services/emailLembretes.js';
+import { enviarEventoLembreteCriado } from "./eventosController.js";
 
 const STATUS = {
   PENDENTE: 0,
@@ -16,7 +17,6 @@ async function verificarAtividades() {
   `);
   return atividades;
 }
-
 
 export async function listarLembretes(req, res) {
   try {
@@ -41,7 +41,6 @@ export async function listarLembretes(req, res) {
     return res.status(500).json({ error: "Erro ao buscar lembretes." });
   }
 }
-
 
 export async function gerarLembretesAtividadesProximas() {
   const atividades = await verificarAtividades();
@@ -73,7 +72,7 @@ export async function gerarLembretesAtividadesProximas() {
       );
 
       if (existe.length === 0) {
-        await pool.query(
+        const [insertRes] = await pool.query(
           `INSERT INTO lembretes
             (tituloLembrete, dhLembrete, descricao, statusLembrete, Usuarios_username)
             VALUES (?, NOW(), ?, ?, ?)`,
@@ -84,7 +83,19 @@ export async function gerarLembretesAtividadesProximas() {
             atividade.Usuarios_username,
           ]
         );
+
+        const novoLembrete = {
+          idLembretes: insertRes.insertId,
+          tituloLembrete: atividade.nomeAtividade,
+          dhLembrete: new Date(),
+          descricao: "Você tem uma atividade com prazo para amanhã.",
+          statusLembrete: STATUS.PROXIMO,
+          Usuarios_username: atividade.Usuarios_username,
+        };
+
         console.log(`Lembrete criado: ${atividade.nomeAtividade} (${atividade.Usuarios_username})`);
+
+        enviarEventoLembreteCriado(novoLembrete);
       }
 
       if (!usuariosNotificados.has(atividade.Usuarios_username)) {
@@ -109,7 +120,6 @@ export async function gerarLembretesAtividadesProximas() {
     }
   }
 }
-
 
 export async function gerarLembretesExpirados() {
   const atividades = await verificarAtividades();
@@ -141,7 +151,7 @@ export async function gerarLembretesExpirados() {
       );
 
       if (existe.length === 0) {
-        await pool.query(
+        const [insertRes] = await pool.query(
           `INSERT INTO lembretes
             (tituloLembrete, dhLembrete, descricao, statusLembrete, Usuarios_username)
             VALUES (?, NOW(), ?, ?, ?)`,
@@ -152,7 +162,19 @@ export async function gerarLembretesExpirados() {
             atividade.Usuarios_username,
           ]
         );
+
+        const novoLembrete = {
+          idLembretes: insertRes.insertId,
+          tituloLembrete: atividade.nomeAtividade,
+          dhLembrete: new Date(),
+          descricao: "A atividade expirou no dia anterior.",
+          statusLembrete: STATUS.EXPIRADO,
+          Usuarios_username: atividade.Usuarios_username,
+        };
+
         console.log(`Lembrete expirado criado: ${atividade.nomeAtividade} (${atividade.Usuarios_username})`);
+
+        enviarEventoLembreteCriado(novoLembrete);
       }
 
       if (!usuariosNotificados.has(atividade.Usuarios_username)) {
@@ -178,7 +200,6 @@ export async function gerarLembretesExpirados() {
   }
 }
 
-
 export async function excluirLembretes(req, res) {
   const usernameAuth = req.usuarioUsername;
 
@@ -193,7 +214,7 @@ export async function excluirLembretes(req, res) {
     );
 
     console.log(`Lembretes excluídos para ${usernameAuth}`);
-    return res.json({ message: "Todos os lembretes foram excluídos com sucesso." });
+    return res.json({ message: "Todos os lembretes foram excluídos." });
 
   } catch (error) {
     console.error("Erro ao excluir lembretes:", error);
@@ -284,8 +305,6 @@ export const excluirLembrete = async (req, res) => {
   }
 };
 
-
-
 export async function detalhesLembrete(req, res) {
   try {
     const rawId = req.params.id;
@@ -326,7 +345,7 @@ export async function detalhesLembrete(req, res) {
     const [ativRes] = await pool.query(
       `SELECT idAtividade, nomeAtividade, prazoAtividade, ListaAtividades_idLista
          FROM atividades
-        WHERE nomeAtividade = ? AND Usuarios_username = ?
+        WHERE nomeAtividade = ? AND Usuarios_username = ? 
         LIMIT 1`,
       [lembrete.tituloLembrete, usernameAuth]
     );
@@ -353,17 +372,16 @@ export async function detalhesLembrete(req, res) {
     }
 
     return res.json({
-        idLembrete: lembrete.idLembretes,
-        tituloLembrete: lembrete.tituloLembrete,
-        descricao: lembrete.descricao,
-        dhLembrete: lembrete.dhLembrete,
-        statusLembrete: lembrete.statusLembrete,
-        usuarioNome,
-        prazoAtividade: atividade ? atividade.prazoAtividade : null,
-        idAtividade: atividade ? atividade.idAtividade : null, 
-        listas,
-      });
-
+      idLembrete: lembrete.idLembretes,
+      tituloLembrete: lembrete.tituloLembrete,
+      descricao: lembrete.descricao,
+      dhLembrete: lembrete.dhLembrete,
+      statusLembrete: lembrete.statusLembrete,
+      usuarioNome,
+      prazoAtividade: atividade ? atividade.prazoAtividade : null,
+      idAtividade: atividade ? atividade.idAtividade : null,
+      listas,
+    });
 
   } catch (err) {
     console.error("Erro ao buscar detalhes do lembrete:", err);
@@ -382,7 +400,7 @@ cron.schedule(
 );
 
 cron.schedule(
-  "0 0 * * *",
+  "00 00 * * *",
   async () => {
     console.log("Gerando lembretes de atividades expiradas (00h)...");
     await gerarLembretesExpirados();

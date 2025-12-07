@@ -36,7 +36,11 @@ export const Intervalo = styled.div`
   padding: 1.5vh;
   border-radius: 16px;
   cursor: default;
+<<<<<<< HEAD
+ 
+=======
   
+>>>>>>> 2289d63f0a668ffa1d8ededcd380f9ac92dd5808
   background-color: ${({ $ativo }) =>
     $ativo ? 'var(--fundo-menu-ativo)' : 'transparent'};
 

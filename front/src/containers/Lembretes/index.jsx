@@ -182,7 +182,6 @@ export default function LembretesPage() {
       await excluirLembretes();
       setLista([]);
       setSelecionado(null);
-      showOkToast("Todos os lembretes foram excluídos.", "success");
     } catch (err) {
       console.error("Erro ao excluir todos:", err);
       showOkToast("Falha ao excluir todos os lembretes.", "error");
