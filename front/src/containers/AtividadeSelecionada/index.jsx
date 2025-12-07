@@ -282,7 +282,7 @@ function AtividadeSelecionada({ atividade, onAtualizarAtividade }) {
                     setTecnicasAtivas(prev => ({ ...prev, pomodoro: false }));
                     onAtualizarAtividade?.({ ...atividade, Pomodoro_idStatus: null });
 
-                    showOkToast("Atividade removida do Pomodoro!");
+                    showOkToast("Atividade removida do Pomodoro");
                     return;
                 }
 
@@ -291,7 +291,7 @@ function AtividadeSelecionada({ atividade, onAtualizarAtividade }) {
                 setTecnicasAtivas(prev => ({ ...prev, pomodoro: true }));
                 onAtualizarAtividade?.({ ...atividade, Pomodoro_idStatus: idSessao });
 
-                showOkToast("Atividade adicionada ao Pomodoro!");
+                showOkToast("Atividade adicionada ao Pomodoro");
 
             } catch (err) {
                 console.error("Erro ao adicionar/remover do Pomodoro:", err);
@@ -500,7 +500,7 @@ function AtividadeSelecionada({ atividade, onAtualizarAtividade }) {
                                     setTecnicasAtivas(prev => ({ ...prev, pomodoro: false }));
                                     onAtualizarAtividade?.({ ...atividade, Pomodoro_idStatus: null });
 
-                                    showOkToast("Atividade concluída e removida do Pomodoro!");
+                                    showOkToast("Atividade concluída e removida do Pomodoro");
                                 }
                             }
                         }}

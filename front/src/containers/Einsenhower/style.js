@@ -105,7 +105,7 @@ export const Lista = styled.ul`
   }
 
   &::-webkit-scrollbar-thumb {
-    background-color: rgba(255, 255, 255, 0.15);
+    background-color: rgba(255, 255, 255, 0.2);
     border-radius: 10px;
   }
 
@@ -117,7 +117,7 @@ export const Lista = styled.ul`
 `;
 
 export const Atividade = styled.li`
-  background: rgba(27, 27, 27, 0.1);
+  background: rgba(27, 27, 27, 0.15);
   display: flex;
   color: #FFFFFF;
   min-height: 6vh;
