@@ -8,7 +8,7 @@ import {
   Input,
   ButtonRow,
   Button,
-  ToggleEye,        
+  ToggleEye,
 } from "./style.js";
 
 import olhoFechado from "../../assets/olhoFechado.png";
@@ -43,24 +43,24 @@ function ModalSenha({ onClose, onSubmit }) {
         <Titulo>Redefinir senha</Titulo>
         <Subtitulo>Digite sua nova senha abaixo</Subtitulo>
 
-        
-          <Input
-            type={showPassword ? "text" : "password"}
-            placeholder="Nova Senha"
-            value={novaSenha}
-            onChange={e => setNovaSenha(e.target.value)}
-            onKeyDown={onKeyDown}
-          />
-          
+
+        <Input
+          type={showPassword ? "text" : "password"}
+          placeholder="Nova Senha"
+          value={novaSenha}
+          onChange={e => setNovaSenha(e.target.value)}
+          onKeyDown={onKeyDown}
+        />
+
 
         <div style={{ position: "relative", width: "100%", marginBottom: 16 }}>
           <Input
-          type={showPassword ? "text" : "password"}
-          placeholder="Confirmar Senha"
-          value={confirmarSenha}
-          onChange={e => setConfirmarSenha(e.target.value)}
-          onKeyDown={onKeyDown}
-          style={{ marginBottom: 0 }}
+            type={showPassword ? "text" : "password"}
+            placeholder="Confirmar Senha"
+            value={confirmarSenha}
+            onChange={e => setConfirmarSenha(e.target.value)}
+            onKeyDown={onKeyDown}
+            style={{ marginBottom: 0 }}
           />
           <ToggleEye
             src={showPassword ? olhoAberto : olhoFechado}
@@ -68,7 +68,7 @@ function ModalSenha({ onClose, onSubmit }) {
             onClick={togglePassword}
             style={{
               position: "absolute",
-              right: 16,
+              right: 30,
               top: "50%",
               transform: "translateY(-50%)",
               cursor: "pointer",

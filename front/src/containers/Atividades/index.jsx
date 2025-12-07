@@ -128,7 +128,7 @@ function Atividades() {
         prazoAtividade: atividade.prazoAtividade,
         statusAtividade: novoStatus,
         dataConclusao: novaConclusao,
-        ListaAtividades_idLista: idLista,
+        ListaAtividades_idLista: atividade.ListaAtividades_idLista,
         Pomodorostatus: null,
         Kanban_idAtividadeKanban: atividade.Kanban_idAtividadeKanban,
         Eisenhower_idAtividadeEisenhower: null
