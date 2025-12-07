@@ -227,14 +227,48 @@ function Menu({ temNotificacoes, setTemNotificacoes }) {
   };
 
   const handleCronometro = () => {
-    if (location.pathname === "/cronometro") {
-      navigate("/home"); 
-    } else {
-      navigate("/cronometro"); 
-    }
-  };
+      if (location.pathname === "/cronometro") {
+        navigate("/home"); 
+      } else {
+        navigate("/cronometro"); 
+      }
+    };
 
-  const handleLembretes = () => {
+    const handleLembretes = async () => {
+    try {
+      const token = localStorage.getItem("token");
+
+      if (token) {
+        const resp = await fetch(
+          `${import.meta.env.VITE_API_URL}/lembretes`,
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          }
+        );
+
+        if (resp.ok) {
+          const lembretes = await resp.json();
+
+          const maxDh = lembretes.reduce((max, l) => {
+            const d = l.dhLembrete ? new Date(l.dhLembrete) : null;
+            if (!d || isNaN(d)) return max;
+            if (!max || d > max) return d;
+            return max;
+          }, null);
+
+          if (maxDh) {
+            localStorage.setItem("lembretes_last_seen", maxDh.toISOString());
+          } else {
+            localStorage.removeItem("lembretes_last_seen");
+          }
+        }
+      }
+    } catch (err) {
+      console.warn("Erro ao carregar lembretes para marcar como vistos:", err);
+    }
+
     setTemNotificacoes(false);
 
     if (location.pathname === "/lembretes") {
@@ -243,6 +277,7 @@ function Menu({ temNotificacoes, setTemNotificacoes }) {
       navigate("/lembretes");
     }
   };
+
 
   return (
     <MenuWrapper>

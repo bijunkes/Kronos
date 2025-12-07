@@ -65,9 +65,34 @@ function App() {
         if (!token) return;
 
         const lembretes = await listarLembretes();
-        if (Array.isArray(lembretes) && lembretes.length > 0) {
-          setTemNotificacoes(true);
+
+        if (!Array.isArray(lembretes) || lembretes.length === 0) {
+          setTemNotificacoes(false);
+          return;
         }
+
+        const maxDh = lembretes.reduce((max, l) => {
+          const d = l.dhLembrete ? new Date(l.dhLembrete) : null;
+          if (!d || isNaN(d)) return max;
+          if (!max || d > max) return d;
+          return max;
+        }, null);
+
+        if (!maxDh) {
+          setTemNotificacoes(false);
+          return;
+        }
+
+        const lastSeenStr = localStorage.getItem("lembretes_last_seen");
+
+        if (!lastSeenStr) {
+          setTemNotificacoes(true);
+          return;
+        }
+
+        const lastSeen = new Date(lastSeenStr);
+
+        setTemNotificacoes(maxDh > lastSeen);
       } catch (err) {
         console.error("Erro ao carregar lembretes iniciais:", err);
       }
