@@ -24,6 +24,7 @@ export const Container = styled.div`
   position: fixed;
   border-radius: 20px;
   background-color: var(--fundo-menu);
+  cursor: default;
 `;
 
 export const Titulo = styled.h2`

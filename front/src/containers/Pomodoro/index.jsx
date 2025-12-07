@@ -478,7 +478,7 @@ function Pomodoro() {
 
       setAtividadesSelecionadas(listaFinal);
 
-      console.log("Atividades atualizadas com sucesso!");
+      console.log("Atividades atualizadas com sucesso.");
     } catch (err) {
       console.error("Erro ao salvar atividades:", err);
     }

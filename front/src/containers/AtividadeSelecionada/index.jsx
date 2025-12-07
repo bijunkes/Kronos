@@ -29,12 +29,6 @@ function AtividadeSelecionada({ atividade, onAtualizarAtividade }) {
         alterarAtividadeEmTecnica(tipo, atividade);
     }
 
-    const toggleTecnica = async (tipo) => {
-        const novoEstado = { ...tecnicasAtivas, [tipo]: !tecnicasAtivas[tipo] };
-        setTecnicasAtivas(novoEstado);
-
-    };
-
     useEffect(() => {
         const carregarListas = async () => {
             try {
@@ -282,7 +276,7 @@ function AtividadeSelecionada({ atividade, onAtualizarAtividade }) {
                     setTecnicasAtivas(prev => ({ ...prev, pomodoro: false }));
                     onAtualizarAtividade?.({ ...atividade, Pomodoro_idStatus: null });
 
-                    showOkToast("Atividade removida do Pomodoro!");
+                    showOkToast("Atividade removida do Pomodoro");
                     return;
                 }
 
@@ -291,7 +285,7 @@ function AtividadeSelecionada({ atividade, onAtualizarAtividade }) {
                 setTecnicasAtivas(prev => ({ ...prev, pomodoro: true }));
                 onAtualizarAtividade?.({ ...atividade, Pomodoro_idStatus: idSessao });
 
-                showOkToast("Atividade adicionada ao Pomodoro!");
+                showOkToast("Atividade adicionada ao Pomodoro");
 
             } catch (err) {
                 console.error("Erro ao adicionar/remover do Pomodoro:", err);
@@ -303,34 +297,95 @@ function AtividadeSelecionada({ atividade, onAtualizarAtividade }) {
     };
 
     const excluirDeTecnicas = async (tipo, atividadeParam) => {
-        if (tipo == "kanban") {
-            const listaKanban = await listarAtividadesEmKanban();
-            console.log(listaKanban);
-            const atividadeDeletada = listaKanban.find(a => a.idAtividadeKanban == atividadeParam.Kanban_idAtividadeKanban);
-            if (!atividadeDeletada) {
-                console.warn("Atividade não encontrada no Kanban:", atividadeParam.Kanban_idAtividadeKanban);
-                return false;
-            }
-            console.log("Excluindo do Kanban:", atividadeDeletada.idAtividadeKanban);
-            await deletarAtividadeDeKanban(atividadeDeletada.idAtividadeKanban);
+        try {
+            if (!atividadeParam?.idAtividade) return false;
 
-            setTecnicasAtivas(prev => ({ ...prev, kanban: false }));
-            return true;
-        } else if (tipo == "eisenhower") {
-            const listaMatriz = await listarAtividadesEmMatriz();
-            console.log(listaMatriz);
-            const atividadeDeletada = listaMatriz.find(a => a.idAtividadeEisenhower == atividadeParam.Eisenhower_idAtividadeEisenhower);
-            if (!atividadeDeletada) {
-                console.warn("Atividade não encontrada na Matriz:", atividadeParam.Eisenhower_idAtividadeEisenhower);
-                return false;
+            if (tipo === "kanban") {
+                const listaKanban = await listarAtividadesEmKanban();
+                const item = listaKanban.find(k => k.idAtividade === atividadeParam.idAtividade || k.Kanban_idAtividadeKanban === atividadeParam.Kanban_idAtividadeKanban);
+
+                if (!item) {
+                    console.warn("Entrada do Kanban não encontrada para a atividade", atividadeParam.idAtividade);
+                    return false;
+                }
+
+                await deletarAtividadeDeKanban(item.idAtividadeKanban);
+                setTecnicasAtivas(prev => ({ ...prev, kanban: false }));
+                return true;
             }
-            console.log("Excluindo da Matriz:", atividadeDeletada.idAtividadeEisenhower);
-            await deletarAtividadeDeMatriz(atividadeDeletada.idAtividadeEisenhower);
-            setTecnicasAtivas(prev => ({ ...prev, eisenhower: false }));
-            return true;
+
+            if (tipo == "eisenhower") {
+
+                if (!tecnicasAtivas.eisenhower) {
+                    if (atividad.statusAtividade == 1) {
+                        showOkToast('Não é possível adicionar atividades concluídas em técnicas', err)
+                        return;
+                    }
+
+                    try {
+                        const res = await adicionarAtividadeEmMatriz({
+                            classificacao: 4,
+                            dataAlteracao: capturaData()
+                        });
+
+                        const idEisen = res.idAtividadeEisenhower;
+
+                        await atualizarIdEisenAtividade(atividad.idAtividade, {
+                            Eisenhower_idAtividadeEisenhower: idEisen,
+                            Usuarios_username: atividad.Usuarios_username,
+                            idAtividade: atividad.idAtividade
+                        });
+
+                        setTecnicasAtivas(prev => ({ ...prev, eisenhower: true }));
+                        onAtualizarAtividade?.({
+                            ...atividade,
+                            Eisenhower_idAtividadeEisenhower: idEisen
+                        });
+
+                        showOkToast('Atividade adicionada em Não importante e Não urgente');
+                        return;
+
+                    } catch (err) {
+                        console.error("Erro ao adicionar ou atualizar atividade: ", err);
+                        return;
+                    }
+                }
+
+                if (tecnicasAtivas.eisenhower) {
+                    try {
+                        await excluirDeTecnicas("eisenhower", atividad);
+                    } catch (err) {
+                        console.error("Erro ao excluir da matriz:", err);
+                    }
+
+                    try {
+                        await atualizarIdEisenAtividade(atividad.idAtividade, {
+                            Eisenhower_idAtividadeEisenhower: null,
+                            Usuarios_username: atividad.Usuarios_username,
+                            idAtividade: atividad.idAtividade
+                        });
+
+                        setTecnicasAtivas(prev => ({ ...prev, eisenhower: false }));
+                        onAtualizarAtividade?.({
+                            ...atividade,
+                            Eisenhower_idAtividadeEisenhower: null
+                        });
+
+                        showOkToast('Atividade retirada de Eisenhower');
+                    } catch (err) {
+                        console.error("Erro ao atualizar id Eisenhower:", err);
+                    }
+                    return;
+                }
+            }
+
+            return false;
+        } catch (err) {
+            console.error("Erro em excluirDeTecnicas:", err);
+            return false;
         }
-        return false;
     };
+
 
     const formatarDataMySQL = (data) => {
         if (!data) return null;
@@ -355,43 +410,43 @@ function AtividadeSelecionada({ atividade, onAtualizarAtividade }) {
             'Tem certeza que deseja excluir esta atividade? Ela não será contabilizada nos relatórios',
             { confirmLabel: 'Excluir', cancelLabel: 'Cancelar' }
         );
-
         if (!ok) return;
 
         try {
+            await removerAtividadeDoPomodoro(atividade.idAtividade).catch(err => {
+                console.warn("Erro ao remover do Pomodoro (continuando):", err);
+            });
 
-            await removerAtividadeDoPomodoro(atividade.idAtividade);
+            const promises = [];
 
-            if (atividade.Kanban_idAtividadeKanban !== null) {
-
-                const removed = await excluirDeTecnicas("kanban", atividade);
-                if (removed) {
-                    await atualizarIdKanbanAtividade(atividade.idAtividade, {
-                        Kanban_idAtividadeKanban: null,
-                        Usuarios_username: atividade.Usuarios_username,
-                        idAtividade: atividade.idAtividade
-                    });
-                }
+            if (atividade.Kanban_idAtividadeKanban !== null || atividade.Kanban_idAtividadeKanban === 0 || atividade.Kanban_idAtividadeKanban) {
+                promises.push(
+                    excluirDeTecnicas("kanban", atividade).catch(err => {
+                        console.warn("Falha ao excluir do Kanban (continuando):", err);
+                        return false;
+                    })
+                );
             }
-            if (atividade.Eisenhower_idAtividadeEisenhower !== null) {
-                const removedE = await excluirDeTecnicas("eisenhower", atividade);
-                if (removedE) {
-                    await atualizarIdEisenAtividade(atividade.idAtividade, {
-                        Eisenhower_idAtividadeEisenhower: null,
-                        Usuarios_username: atividade.Usuarios_username,
-                        idAtividade: atividade.idAtividade
-                    });
-                }
+
+            if (atividade.Eisenhower_idAtividadeEisenhower !== null || atividade.Eisenhower_idAtividadeEisenhower === 0 || atividade.Eisenhower_idAtividadeEisenhower) {
+                promises.push(
+                    excluirDeTecnicas("eisenhower", atividade).catch(err => {
+                        console.warn("Falha ao excluir da Matriz (continuando):", err);
+                        return false;
+                    })
+                );
             }
+
+            await Promise.all(promises);
+
             await deletarAtividade(atividade.idAtividade);
 
             onAtualizarAtividade?.(null);
-            showOkToast('Atividade excluída de Eisenhower');
         } catch (err) {
-            console.error('Erro ao excluir atividade', err);
-
+            console.error('Erro ao excluir atividade completamente:', err);
         }
     };
+
 
     const handleMoverLista = async (e) => {
         const novaListaId = e.target.value;
@@ -500,7 +555,7 @@ function AtividadeSelecionada({ atividade, onAtualizarAtividade }) {
                                     setTecnicasAtivas(prev => ({ ...prev, pomodoro: false }));
                                     onAtualizarAtividade?.({ ...atividade, Pomodoro_idStatus: null });
 
-                                    showOkToast("Atividade concluída e removida do Pomodoro!");
+                                    showOkToast("Atividade concluída e removida do Pomodoro");
                                 }
                             }
                         }}

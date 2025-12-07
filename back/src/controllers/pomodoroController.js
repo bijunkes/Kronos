@@ -222,7 +222,7 @@ export const registrarTempoPomodoro = async (req, res) => {
        WHERE idStatus = ?`,
       [focoSegundos, curtoSegundos, longoSegundos, idSessao]
     );
-    res.json({ message: "Tempo atualizado com sucesso!" });
+    res.json({ message: "Tempo atualizado com sucesso." });
   } catch (err) {
     console.error("Erro ao registrar tempo:", err);
     res.status(500).json({ error: "Falha ao atualizar tempos da sessão." });
