@@ -63,7 +63,7 @@ export function showOkToast(message, type = 'success', opts = {}) {
             if (e.key === 'Enter' || e.key === ' ') toast.remove(t.id);
           }}
         >
-         OK
+          OK
         </div>
       </div>
     ),
@@ -74,7 +74,8 @@ export function showOkToast(message, type = 'success', opts = {}) {
     }
   );
 }
-  export function showConfirmToast(
+
+export function showConfirmToast(
   message,
   opts = { confirmLabel: 'Excluir', cancelLabel: 'Cancelar' }
 ) {
@@ -95,7 +96,7 @@ export function showOkToast(message, type = 'success', opts = {}) {
   const rowStyle = {
     display: 'flex',
     gap: 10,
-    justifyContent: 'center', 
+    justifyContent: 'center',
     alignItems: 'center',
   };
 
@@ -120,66 +121,60 @@ export function showOkToast(message, type = 'success', opts = {}) {
   const green = { bg: '#16a34a', hover: '#15803d' }; // Excluir/Confirmar
 
   return new Promise((resolve) => {
-    const id = toast.custom(
-      (t) => {
-        let cancelRef, okRef;
-        return (
-          <div
-            style={cardStyle}
-            role="alertdialog"
-            aria-live="assertive"
-            aria-modal="true"
-          >
-            <div>{message}</div>
-            <div style={rowStyle}>
-              <button
-                ref={(el) => (cancelRef = el)}
-                autoFocus
-                style={{ ...baseBtn, backgroundColor: red.bg }}
-                onMouseEnter={() => (cancelRef.style.backgroundColor = red.hover)}
-                onMouseLeave={() => (cancelRef.style.backgroundColor = red.bg)}
-                onClick={() => {
-                  resolve(false);
-                  toast.remove(id);
-                }}
-                onKeyDown={(e) => {
-                  if (e.key === 'Enter') {
-                    resolve(false);
-                    toast.remove(id);
-                  }
-                }}
-              >
-                {opts.cancelLabel || 'Cancelar'}
-              </button>
+    let hasResolved = false;
 
-              <button
-                ref={(el) => (okRef = el)}
-                style={{ ...baseBtn, backgroundColor: green.bg }}
-                onMouseEnter={() => (okRef.style.backgroundColor = green.hover)}
-                onMouseLeave={() => (okRef.style.backgroundColor = green.bg)}
-                onClick={() => {
-                  resolve(true);
-                  toast.remove(id);
-                }}
-                onKeyDown={(e) => {
-                  if (e.key === 'Enter') {
-                    resolve(true);
-                    toast.remove(id);
-                  }
-                }}
-              >
-                {opts.confirmLabel || 'Excluir'}
-              </button>
-            </div>
+    const resolveOnce = (value, toastId) => {
+      if (hasResolved) return;
+      hasResolved = true;
+      resolve(value);
+      toast.remove(toastId);
+    };
+
+    toast.custom(
+      (t) => (
+        <div
+          style={cardStyle}
+          role="alertdialog"
+          aria-live="assertive"
+          aria-modal="true"
+        >
+          <div>{message}</div>
+          <div style={rowStyle}>
+            <button
+              style={{ ...baseBtn, backgroundColor: red.bg }}
+              onMouseEnter={(e) => {
+                e.currentTarget.style.backgroundColor = red.hover;
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.backgroundColor = red.bg;
+              }}
+              onClick={() => resolveOnce(false, t.id)}
+            >
+              {opts.cancelLabel || 'Cancelar'}
+            </button>
+
+            <button
+              style={{ ...baseBtn, backgroundColor: green.bg }}
+              onMouseEnter={(e) => {
+                e.currentTarget.style.backgroundColor = green.hover;
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.backgroundColor = green.bg;
+              }}
+              onClick={() => resolveOnce(true, t.id)}
+            >
+              {opts.confirmLabel || 'Excluir'}
+            </button>
           </div>
-        );
-      },
+        </div>
+      ),
       {
-        duration: Infinity,              // não fecha sozinho
+        duration: Infinity, // não fecha sozinho
         position: (opts && opts.position) || 'top-center',
         id: opts?.id,
       }
     );
   });
 }
+
 

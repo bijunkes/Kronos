@@ -28,8 +28,9 @@ import {
 } from '../../services/api.js';
 
 import ModalLista from '../../containers/ModalLista/index.jsx';
+import toast from 'react-hot-toast';
 
-function Menu() {
+function Menu({ temNotificacoes, setTemNotificacoes }) {
   const navigate = useNavigate();
 
   const [usuario, setUsuario] = useState({
@@ -45,9 +46,6 @@ function Menu() {
   const [listas, setListas] = useState([]);
   const [submenuAberto, setSubmenuAberto] = useState('');
   const [submenuSelecionado, setSubmenuSelecionado] = useState({ pai: '', item: '' });
-
-  const [temNotificacoes, setTemNotificacoes] = useState(false);
-
 
   const withVersion = (url, ver) => {
     if (!url) return null;
@@ -147,32 +145,6 @@ function Menu() {
       }
     };
   }, [iconUrl, imgVer]);
-
-  useEffect(() => {
-    const token = localStorage.getItem("token");
-    if (!token) return; 
-
-    const url = `${import.meta.env.VITE_API_URL}/lembretes/eventos?token=${encodeURIComponent(token)}`;
-    const evtSource = new EventSource(url);
-
-    evtSource.addEventListener("ping", (e) => {
-      console.log("SSE conectado:", e.data);
-    });
-
-    evtSource.addEventListener("lembreteCriado", () => {
-      setTemNotificacoes(true);
-    });
-
-    evtSource.addEventListener("erro", (e) => {
-      console.warn("Evento de erro SSE:", e.data);
-    });
-
-    evtSource.onerror = (err) => {
-      console.warn("Erro SSE:", err);
-    };
-
-    return () => evtSource.close();
-  }, []);
 
   const handleClick = (item, temRota = true) => {
     if (submenuAberto === item) {

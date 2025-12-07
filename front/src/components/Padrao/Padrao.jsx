@@ -3,7 +3,7 @@ import { Outlet, useLocation, useNavigate } from 'react-router-dom';
 import Menu from '../Menu';
 import { Background } from './styles';
 
-function Padrao() {
+function Padrao({ temNotificacoes, setTemNotificacoes }) {
   const navigate = useNavigate();
   const location = useLocation();
 
@@ -30,7 +30,8 @@ function Padrao() {
           zIndex: 10,
         }}
       >
-        <Menu />
+        <Menu temNotificacoes={temNotificacoes}
+        setTemNotificacoes={setTemNotificacoes}/>
       </div>
 
       <div
