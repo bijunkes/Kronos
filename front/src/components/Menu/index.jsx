@@ -148,6 +148,32 @@ function Menu() {
     };
   }, [iconUrl, imgVer]);
 
+  useEffect(() => {
+    const token = localStorage.getItem("token");
+    if (!token) return; 
+
+    const url = `${import.meta.env.VITE_API_URL}/lembretes/eventos?token=${encodeURIComponent(token)}`;
+    const evtSource = new EventSource(url);
+
+    evtSource.addEventListener("ping", (e) => {
+      console.log("SSE conectado:", e.data);
+    });
+
+    evtSource.addEventListener("lembreteCriado", () => {
+      setTemNotificacoes(true);
+    });
+
+    evtSource.addEventListener("erro", (e) => {
+      console.warn("Evento de erro SSE:", e.data);
+    });
+
+    evtSource.onerror = (err) => {
+      console.warn("Erro SSE:", err);
+    };
+
+    return () => evtSource.close();
+  }, []);
+
   const handleClick = (item, temRota = true) => {
     if (submenuAberto === item) {
       setSubmenuAberto('');
@@ -214,11 +240,10 @@ function Menu() {
       window.dispatchEvent(new Event('listasAtualizadas'));
       navigate(`/listas/${encodeURIComponent(novaLista.nomeLista)}`);
 
-      setTemNotificacoes(true);
     } catch (err) {
       const msg = err?.response?.data?.error || 'Erro inesperado ao criar lista';
       console.error('Erro ao criar lista:', msg);
-      alert(msg);
+      toast.error(msg);
     }
   };
 

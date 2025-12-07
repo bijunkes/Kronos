@@ -17,7 +17,7 @@ export const Container = styled.div`
   width: 168.5vh;
   padding: 3vh;
   border-radius: 20px;
-  background-color: var(--fundo-menu);
+  background-color: var(--fundo);
   box-sizing: border-box;
 `;
 

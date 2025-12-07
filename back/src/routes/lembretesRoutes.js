@@ -9,8 +9,12 @@ import {
 } from "../controllers/lembretesController.js";
 
 import verificarToken from "../middlewares/userMiddleware.js";
+import { eventosLembretes } from "../controllers/eventosController.js";
+import { autenticarSSE } from "../middlewares/authSSE.js";
 
 const router = express.Router();
+
+router.get("/eventos", autenticarSSE, eventosLembretes);
 
 router.get("/", verificarToken, listarLembretes);
 
